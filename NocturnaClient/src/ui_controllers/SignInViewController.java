@@ -31,6 +31,7 @@ import logic.AdminManagerFactory;
 import logic.UserManagerFactory;
 import model.Admin;
 import model.User;
+import utils.CustomAlert;
 
 /**
  *
@@ -132,13 +133,13 @@ public class SignInViewController {
 
     public void resetPass(ActionEvent event) {
         try {
-            String mail = lanzarAlertTextField("Reseteo de contraseña", "Introduce tu correo electrónico para que te enviemos tu nueva contraseña", "Correo electrónico");
+            String mail = CustomAlert.throwAlertTextField("Reseteo de contraseña", "Introduce tu correo electrónico para que te enviemos tu nueva contraseña", "Correo electrónico");
 
             UserManagerFactory.get().resetPassword_XML(User.class, mail);
 
-            lanzarAlertCustom(Alert.AlertType.INFORMATION, "Te hemos enviado un correo electronico con tu nueva contraseña.");
+            CustomAlert.throwAlertCustom(Alert.AlertType.INFORMATION, "Te hemos enviado un correo electronico con tu nueva contraseña.");
         } catch (Exception e) {
-            lanzarAlertCustom(Alert.AlertType.ERROR, "No hy ninguna cuenta asociada a ese correo electronico");
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "No hy ninguna cuenta asociada a ese correo electronico");
         }
 
     }
@@ -156,12 +157,16 @@ public class SignInViewController {
 
             controller.initStage(root);
         } catch (IOException e) {
-            lanzarAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error al cargar la ventana, intentalo más tarde");
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error al cargar la ventana, intentalo más tarde");
         }
     }
 
     public void signIn(ActionEvent event) {
         try {
+            if(tfMail.getText().isEmpty() || pfPass.getText().isEmpty()){
+                throw new Exception();
+            }
+            
             user = new User();
             user.setMail(tfMail.getText());
             user.setPasswd(pfPass.getText());
@@ -179,9 +184,11 @@ public class SignInViewController {
 
             controller.initStage(root);
         } catch (SignInException e) {
-            lanzarAlertCustom(Alert.AlertType.ERROR, e.getMessage());
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, e.getMessage());
         } catch (IOException e) {
-            lanzarAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error al cargar la ventana, intentalo más tarde");
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error al cargar la ventana, intentalo más tarde");
+        } catch(Exception e){
+            System.out.println("ERROR " + e.getMessage());
         }
 
     }
@@ -194,58 +201,18 @@ public class SignInViewController {
 
         AdminManagerFactory.get().create_XML(user);
 
-        lanzarAlertConfirmacionCustom("Admin creado correctamente");
+        CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION, "Admin creado correctamente");
 
         btnRegistrarAdmin.setDisable(true);
 
     }
 
     public void closeAppFromX(WindowEvent event) {
-        if (lanzarAlertConfirmacionCustom("¿Está seguro de que desea salir?")) {
+        if (CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION, "¿Está seguro de que desea salir?")) {
             Platform.exit();
         } else {
             event.consume();
         }
-    }
-
-    public void lanzarAlertCustom(Alert.AlertType tipo, String mensaje) {
-        Alert alert = new Alert(tipo);
-        alert.setHeaderText(mensaje);
-        alert.showAndWait();
-    }
-
-    public boolean lanzarAlertConfirmacionCustom(String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setHeaderText(mensaje);
-        Optional<ButtonType> confirmar = alert.showAndWait();
-        return confirmar.get() == ButtonType.OK;
-    }
-
-    private String lanzarAlertTextField(String titulo, String cabecera, String prompt) {
-        Alert alert = new Alert(Alert.AlertType.NONE);
-        alert.setTitle(titulo);
-        alert.setHeaderText(cabecera);
-
-        TextField textField = new TextField();
-        textField.setPromptText(prompt);
-
-        GridPane grid = new GridPane();
-        grid.add(textField, 0, 0);
-
-        alert.getDialogPane().setContent(grid);
-
-        ButtonType btnAceptar = new ButtonType("Aceptar");
-        ButtonType btnCancelar = new ButtonType("Cancelar");
-
-        alert.getButtonTypes().setAll(btnAceptar, btnCancelar);
-
-        Optional<ButtonType> confirmar = alert.showAndWait();
-
-        if (confirmar.get() == btnAceptar) {
-            return textField.getText();
-        }
-
-        return null;
     }
 
     public void cambiarTema() {

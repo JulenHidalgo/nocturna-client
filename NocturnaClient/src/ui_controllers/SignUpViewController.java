@@ -35,6 +35,7 @@ import logic.ClientManagerFactory;
 import logic.UserManagerFactory;
 import model.Client;
 import model.User;
+import utils.CustomAlert;
 
 /**
  *
@@ -125,24 +126,11 @@ public class SignUpViewController {
     }
 
     private void closeAppFromX(WindowEvent event) {
-        if (lanzarAlertConfirmacionCustom("¿Está seguro de que desea salir?")) {
+        if (CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION,"¿Está seguro de que desea salir?")) {
             Platform.exit();
         } else {
             event.consume();
         }
-    }
-
-    private void lanzarAlertCustom(AlertType tipo, String mensaje) {
-        Alert alert = new Alert(tipo);
-        alert.setHeaderText(mensaje);
-        alert.showAndWait();
-    }
-
-    private boolean lanzarAlertConfirmacionCustom(String mensaje) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setHeaderText(mensaje);
-        Optional<ButtonType> confirmar = alert.showAndWait();
-        return confirmar.get() == ButtonType.OK;
     }
 
     public void initStage(Parent root) {
@@ -194,32 +182,6 @@ public class SignUpViewController {
 
     }
 
-    private String lanzarAlertTextField(String titulo, String cabecera, String prompt) {
-        Alert alert = new Alert(Alert.AlertType.NONE);
-        alert.setTitle(titulo);
-        alert.setHeaderText(cabecera);
-
-        TextField textField = new TextField();
-        textField.setPromptText(prompt);
-
-        GridPane grid = new GridPane();
-        grid.add(textField, 0, 0);
-
-        alert.getDialogPane().setContent(grid);
-
-        ButtonType btnAceptar = new ButtonType("Aceptar");
-        ButtonType btnCancelar = new ButtonType("Cancelar");
-
-        alert.getButtonTypes().setAll(btnAceptar, btnCancelar);
-
-        Optional<ButtonType> confirmar = alert.showAndWait();
-
-        if (confirmar.get() == btnAceptar) {
-            return textField.getText();
-        }
-
-        return null;
-    }
 
     private void updateInfo(ActionEvent event) {
         try {
@@ -229,7 +191,7 @@ public class SignUpViewController {
                     || tfMail.getText().isEmpty()) {
 
                 LOGGER.warning("Hay campos vacios");
-                lanzarAlertCustom(AlertType.ERROR, "Todos los campos tienen que estar llenos");
+                CustomAlert.throwAlertCustom(AlertType.ERROR, "Todos los campos tienen que estar llenos");
                 throw new Exception();
             }
             checkMail();
@@ -242,7 +204,7 @@ public class SignUpViewController {
 
             ClientManagerFactory.get().edit_XML(newUser, newUser.getId().toString());
 
-            lanzarAlertCustom(AlertType.INFORMATION, "La información se ha modificado con exito");
+            CustomAlert.throwAlertCustom(AlertType.INFORMATION, "La información se ha modificado con exito");
         } catch (Exception e) {
 
         }
@@ -250,10 +212,10 @@ public class SignUpViewController {
     }
 
     private void deleteUser(ActionEvent event) {
-        if (lanzarAlertTextField("Borrado de cuenta", "Introduce la contraseña para borrar la cuenta (Se perderán todas las entradas asociadas al usuario), pulsa cancelar para salir", "Contraseña de la cuenta") != null) {
+        if (CustomAlert.throwAlertTextField("Borrado de cuenta", "Introduce la contraseña para borrar la cuenta (Se perderán todas las entradas asociadas al usuario), pulsa cancelar para salir", "Contraseña de la cuenta") != null) {
             ClientManagerFactory.get().remove(user.getId().toString());
 
-            lanzarAlertCustom(AlertType.INFORMATION, "El usuario se ha borrado correctamente.");
+            CustomAlert.throwAlertCustom(AlertType.INFORMATION, "El usuario se ha borrado correctamente.");
 
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/signInView.fxml"));
@@ -267,7 +229,7 @@ public class SignUpViewController {
                 controller.initStage(root);
 
             } catch (IOException e) {
-                lanzarAlertCustom(AlertType.ERROR, "Ha sucedido un error al cargar la ventana, intentalo más tarde");
+                CustomAlert.throwAlertCustom(AlertType.ERROR, "Ha sucedido un error al cargar la ventana, intentalo más tarde");
                 LOGGER.warning("Error while opening 'SignIn' window");
             }
         }
@@ -305,12 +267,12 @@ public class SignUpViewController {
             if (confirmar.get() == btnAceptar) {
                 if (!pfNueva1.getText().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$")) {
                     LOGGER.warning("Password validation error, pattern incorrect");
-                    lanzarAlertCustom(AlertType.ERROR, "La contraseña tiene que tener al menos 6 caracteres, una mayúscula, una minúscula y un número");
+                    CustomAlert.throwAlertCustom(AlertType.ERROR, "La contraseña tiene que tener al menos 6 caracteres, una mayúscula, una minúscula y un número");
                     throw new Exception();
                 }
                 if (!pfNueva1.getText().equals(pfNueva2.getText())) {
                     LOGGER.warning("Password validation error, pfNueva1 and pfNueva2 don't match");
-                    lanzarAlertCustom(AlertType.ERROR, "Las contraseñas no coinciden");
+                    CustomAlert.throwAlertCustom(AlertType.ERROR, "Las contraseñas no coinciden");
                     throw new Exception();
                 }
                 UserManagerFactory.get().updatePasswd_XML(user, pfNueva1.getText());
@@ -330,7 +292,7 @@ public class SignUpViewController {
                     || tfMail.getText().isEmpty() || pfPass.getText().isEmpty()) {
 
                 LOGGER.warning("Hay campos vacios");
-                lanzarAlertCustom(AlertType.ERROR, "Todos los campos tienen que estar llenos");
+                CustomAlert.throwAlertCustom(AlertType.ERROR, "Todos los campos tienen que estar llenos");
                 throw new Exception();
             }
 
@@ -363,10 +325,10 @@ public class SignUpViewController {
             controller.initStage(root);
 
         } catch (IOException e) {
-            lanzarAlertCustom(AlertType.ERROR, "Ha sucedido un error al cargar la ventana, intentalo más tarde");
+            CustomAlert.throwAlertCustom(AlertType.ERROR, "Ha sucedido un error al cargar la ventana, intentalo más tarde");
             LOGGER.warning("Error while opening 'ShowAllEvents' window");
         } catch (Exception e) {
-
+            System.out.println("ERROR");
         }
 
     }
@@ -390,7 +352,7 @@ public class SignUpViewController {
     public void checkMail() throws Exception {
         if (!tfMail.getText().matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
             LOGGER.warning("Mail validation error, pattern incorrect");
-            lanzarAlertCustom(AlertType.ERROR, "El correo no tiene un patrón correcto");
+            CustomAlert.throwAlertCustom(AlertType.ERROR, "El correo no tiene un patrón correcto");
             throw new Exception();
         }
     }
@@ -398,7 +360,7 @@ public class SignUpViewController {
     public void checkPhone() throws Exception {
         if (!tfTelefono.getText().matches("^\\d{9}$")) {
             LOGGER.warning("PhoneNumber validation error, pattern incorrect");
-            lanzarAlertCustom(AlertType.ERROR, "El teléfono tiene que contener 9 números");
+            CustomAlert.throwAlertCustom(AlertType.ERROR, "El teléfono tiene que contener 9 números");
             throw new Exception();
         }
     }
@@ -406,7 +368,7 @@ public class SignUpViewController {
     public void checkDNI() throws Exception {
         if (!tfDni.getText().matches("^\\d{8}[A-Za-z]$")) {
             LOGGER.warning("DNI validation error, pattern incorrect");
-            lanzarAlertCustom(AlertType.ERROR, "El DNI tiene que estar compuesto por 8 números y una letra");
+            CustomAlert.throwAlertCustom(AlertType.ERROR, "El DNI tiene que estar compuesto por 8 números y una letra");
             throw new Exception();
         }
     }
@@ -414,12 +376,12 @@ public class SignUpViewController {
     public void checkPass() throws Exception {
         if (!pfPass.getText().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$")) {
             LOGGER.warning("Password validation error, pattern incorrect");
-            lanzarAlertCustom(AlertType.ERROR, "La contraseña tiene que tener al menos 6 caracteres, una mayúscula, una minúscula y un número");
+            CustomAlert.throwAlertCustom(AlertType.ERROR, "La contraseña tiene que tener al menos 6 caracteres, una mayúscula, una minúscula y un número");
             throw new Exception();
         }
         if (!pfPass.getText().equals(pfPass2.getText())) {
             LOGGER.warning("Password validation error, pfPass and pfPass2 don't match");
-            lanzarAlertCustom(AlertType.ERROR, "Las contraseñas no coinciden");
+            CustomAlert.throwAlertCustom(AlertType.ERROR, "Las contraseñas no coinciden");
             throw new Exception();
         }
     }
@@ -427,7 +389,7 @@ public class SignUpViewController {
     public void checkDate() throws Exception {
         if (dpFechaNac.getValue().isAfter(LocalDate.now())) {
             LOGGER.warning("Date validation error, later date");
-            lanzarAlertCustom(AlertType.ERROR, "La fecha de nacimiento no puede ser posterior a la fecha actual");
+            CustomAlert.throwAlertCustom(AlertType.ERROR, "La fecha de nacimiento no puede ser posterior a la fecha actual");
             throw new Exception();
         }
     }
