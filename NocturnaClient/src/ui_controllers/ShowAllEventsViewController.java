@@ -13,13 +13,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -38,10 +41,12 @@ import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
+import logic.ArtistManagerFactory;
 import logic.ClubManagerFactory;
 
 import logic.EventManager;
 import logic.EventManagerFactory;
+import model.Artist;
 import model.Client;
 import model.Club;
 import model.Event;
@@ -144,11 +149,26 @@ public class ShowAllEventsViewController {
         tcMusica.setCellValueFactory(new PropertyValueFactory<>("Musica"));
         tcConsumicion.setCellValueFactory(new PropertyValueFactory<>("Consumicion"));
         
+        
+       
+        tcMusica.setCellValueFactory(cellData -> {
+            Artist[] artista = ArtistManagerFactory.get().findByEvent_XML(Artist[].class, cellData.getValue().getId().toString());
+            List<Artist> artistas = Arrays.asList(artista);
+            String musicas = artistas.stream().map(Artist::getTipoMusica).collect(Collectors.joining(", "));
+            return new SimpleStringProperty(musicas);
+        });
+        
+     
+        //
         //Poner que la columna Sala sea un combobox y cargarle los datos
         List<String> nombresClubs = recogerAllClubs().stream().map(Club::getNombre).collect(Collectors.toList());
         ObservableList<String> clubs = FXCollections.observableArrayList(nombresClubs);
         //tcSala.setCellFactory(ComboBoxTableCell.forTableColumn(FXCollections.observableList(nombresClubs)));
         tcSala.setCellFactory(ChoiceBoxTableCell.forTableColumn(clubs));
+        
+    }
+    
+    private void irShowEventView(){
         
     }
     
@@ -170,7 +190,7 @@ public class ShowAllEventsViewController {
         this.tema = tema;
     }
     
-    private List recogerAllEvents(){ 
+    private List<Event> recogerAllEvents(){ 
       Event[] eventsArray = EventManagerFactory.get().findByDate_XML(Event[].class, LocalDate.now().toString());
       List<Event> events = Arrays.asList(eventsArray);
       return  events;
@@ -232,16 +252,41 @@ public class ShowAllEventsViewController {
                 }
             };
         });
-               
+                  
         tcPrecio.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
-        tcPrecio.setOnEditCommit(event -> {
-            Event selectedEvent = event.getRowValue();
-            
-            Event evento = EventManagerFactory.get().find_XML(Event.class, selectedEvent.getId().toString());
-            evento.setPrecioEntrada(event.getNewValue());
-            EventManagerFactory.get().edit_XML(evento, selectedEvent.getId().toString());
-            cargarTabla(recogerAllEvents());
+        tcPrecio.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Event, Double>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<Event, Double> eventCell) {
+                try {
+                    Event item = eventCell.getRowValue();
+                    Double newValue = eventCell.getNewValue();
+                    if (newValue == null) {
+                        throw new Exception();
+                    }
+                    item.setPrecioEntrada(newValue);
+                    EventManagerFactory.get().edit_XML(item, item.getId().toString());
+
+                    cargarTabla(recogerAllEvents());
+                    throw new UnsupportedOperationException("Not supported yet.");
+                } catch (Exception ex) {
+                    Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         });
+        
+        tcSala.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Event, String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<Event, String> eventCell) {
+                Event item = eventCell.getRowValue();
+                //recoger el club del nuevo valor
+                Club club = recogerAllClubs().stream().filter(c -> c.getNombre().equals(eventCell.getNewValue())).findFirst().orElse(null);
+                item.setClub(club);
+                EventManagerFactory.get().edit_XML(item, item.getId().toString());
+                cargarTabla(recogerAllEvents());
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        });
+        
         
         tcSala.setOnEditCommit(event -> {
             // Recuperamos el evento (fila) que fue editado
@@ -251,7 +296,17 @@ public class ShowAllEventsViewController {
             evento.setClub(club);
             EventManagerFactory.get().edit_XML(evento, selectedEvent.getId().toString());
             cargarTabla(recogerAllEvents());
-        });
+            
+          }); 
+           /**tfBuscador.textProperty().addListener(new ChangeListener<String>() {
+                @Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                    //onTextFieldChange(newValue); 
+                    for(Event e : recogerAllEvents()){
+                        if(tfBuscador.setText(newValue))
+                    }
+                } 
+            });*/
+        
         
         stage.show();
         stage.setScene(scene);
