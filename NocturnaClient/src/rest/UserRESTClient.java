@@ -5,10 +5,12 @@
  */
 package rest;
 
+import exceptions.SignInException;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 import logic.UserManager;
 import model.User;
 
@@ -25,11 +27,11 @@ import model.User;
  *
  * @author 2dam
  */
-public class UserRESTClient implements UserManager{
+public class UserRESTClient implements UserManager {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/RetoFinalServer/webresources";
+    private static final String BASE_URI = "http://localhost:8080/NocturnaServer/webresources";
 
     public UserRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -65,7 +67,7 @@ public class UserRESTClient implements UserManager{
     public void edit_JSON(Object requestEntity, String id) throws ClientErrorException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
     }
-    
+
     @Override
     public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
@@ -104,10 +106,29 @@ public class UserRESTClient implements UserManager{
 
     //mas excepciones
     @Override
-    public <T> T login_XML(Class<T> responseType, String mail, String passwd) throws WebApplicationException {
+    public <T> T login_XML(Class<T> responseType, String mail, String passwd) throws WebApplicationException, SignInException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("login/{0}/{1}", new Object[]{mail, passwd}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+
+        // Realiza la solicitud y captura la respuesta
+        Response response = resource
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .get();
+
+        // Verifica el estado de la respuesta
+        if (response.getStatus() == 400) {
+            // Opcionalmente, puedes extraer información del cuerpo de la respuesta
+            String errorDetails = response.readEntity(String.class); // Suponiendo que el error tenga un mensaje en el cuerpo
+            throw new SignInException();
+        }
+
+        if (response.getStatus() >= 400) {
+            // Lanza una excepción genérica para otros códigos de error si es necesario
+            throw new WebApplicationException("Error HTTP: " + response.getStatus());
+        }
+
+        // Si no hubo errores, devuelve la entidad esperada
+        return response.readEntity(responseType);
     }
 
     public <T> T login_JSON(Class<T> responseType, String mail, String passwd) throws ClientErrorException {
@@ -130,12 +151,12 @@ public class UserRESTClient implements UserManager{
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
-    
+
     public <T> T findAll_JSON(Class<T> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
-    
+
     @Override
     public void remove(String id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
@@ -145,5 +166,5 @@ public class UserRESTClient implements UserManager{
     public void close() {
         client.close();
     }
-    
+
 }

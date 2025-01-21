@@ -5,6 +5,7 @@
  */
 package logic;
 
+import exceptions.SignInException;
 import javax.ws.rs.WebApplicationException;
 
 /**
@@ -25,7 +26,7 @@ public interface UserManager {
 
     public void create_XML(Object requestEntity) throws WebApplicationException;
 
-    public <T> T login_XML(Class<T> responseType, String mail, String passwd) throws WebApplicationException;
+    public <T> T login_XML(Class<T> responseType, String mail, String passwd) throws WebApplicationException, SignInException;
 
     public void updatePasswd_XML(Object requestEntity, String newPasswd) throws WebApplicationException;
 
