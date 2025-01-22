@@ -131,14 +131,19 @@ public class ShowAllEventsViewController {
     private void deleteEvent(ActionEvent event) {
         Event selectedEvent = tablaEvent.getSelectionModel().getSelectedItem();
         EventManagerFactory.get().remove(selectedEvent.getId().toString());
-        cargarTabla();
+        cargarTabla(events);
     }
     
+    @FXML
+    private void createEvent(ActionEvent event) {
+       
+       
+    }
     
-    private void cargarTabla(){
+    private void cargarTabla(List<Event> eventTable){
         initializeTableColumns();        
         // Convertir ArrayList a ObservableList
-        ObservableList<Event> observableEvents = FXCollections.observableArrayList(events);       
+        ObservableList<Event> observableEvents = FXCollections.observableArrayList(eventTable);       
         // Cargar datos en la tabla
         tablaEvent.setItems(observableEvents);
         
@@ -174,6 +179,40 @@ public class ShowAllEventsViewController {
         
     }
     
+    private void aplicarFiltros(){
+        events =  recogerAllEvents();
+        List<Event> eventos = new ArrayList<>();
+        if(!tfBuscador.getText().isEmpty()){
+            events = events.stream().filter(event -> event.getNombre().startsWith(tfBuscador.getText())).collect(Collectors.toList());
+        }
+        if(dateFechaHasta.getValue()!=null){
+            Event[] eventosArray = EventManagerFactory.get().findByDates_XML(Event[].class, dateFecha.getValue().toString(),dateFechaHasta.getValue().toString());
+            for (Event e : Arrays.asList(eventosArray)) {
+                if (events.contains(e)) {
+                    eventos.add(e);
+                }
+            }
+            events = eventos;
+        }else if(dateFecha.getValue()!=null){
+            Event[] eventsArray = EventManagerFactory.get().findByDate_XML(Event[].class, dateFecha.getValue().toString());
+            for (Event e : Arrays.asList(eventsArray)) {
+                if (events.contains(e)) {
+                    eventos.add(e);
+                }
+            }
+            events = eventos;
+        }
+        
+        if(!tfPrecio.getText().isEmpty()){
+            events = events.stream()
+                .filter(event -> event.getPrecioEntrada() >= Double.valueOf(tfPrecio.getText()) && event.getPrecioEntrada() < Double.valueOf(tfPrecio.getText())+1)
+                    .collect(Collectors.toList());
+
+        }
+        
+        cargarTabla(events);
+    }
+    
     private List<Club> recogerAllClubs(){
         Club[] clubArray = ClubManagerFactory.get().findAll_XML(Club[].class);
         List<Club> listClubs = Arrays.asList(clubArray);   
@@ -205,7 +244,7 @@ public class ShowAllEventsViewController {
         LOGGER.info("Initializing Bank Statement window.");
         Scene scene = new Scene(root);
 
-        cargarTabla();
+        cargarTabla(events);
         
         if(user instanceof Client){
             btnAñadirArtistas.setVisible(false);
@@ -240,9 +279,7 @@ public class ShowAllEventsViewController {
                     if(dateFecha.getValue() != null){
                         lbHasta.setVisible(true);
                         dateFechaHasta.setVisible(true);
-                        Event[] eventsArray = EventManagerFactory.get().findByDate_XML(Event[].class, dateFecha.getValue().toString());
-                        events = Arrays.asList(eventsArray);
-                        cargarTabla();
+                        aplicarFiltros();
                     }
                 }
             }
@@ -266,7 +303,7 @@ public class ShowAllEventsViewController {
                     if (dateFecha.getValue() != null) {
                         Event[] eventsArray = EventManagerFactory.get().findByDates_XML(Event[].class, dateFecha.getValue().toString(),dateFechaHasta.getValue().toString());
                         events = Arrays.asList(eventsArray);
-                        cargarTabla();
+                        cargarTabla(events);
                     }
                 }
             }
@@ -283,7 +320,7 @@ public class ShowAllEventsViewController {
             };
         });
                   
-       tcPrecio.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
+       /**tcPrecio.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
         tcPrecio.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Event, Double>>() {
             @Override
             public void handle(TableColumn.CellEditEvent<Event, Double> eventCell) {
@@ -305,9 +342,12 @@ public class ShowAllEventsViewController {
                     Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        });
-  
-        
+        });*/
+       
+        tcPrecio.setCellFactory(column -> new EditingCell());
+        tcNombre.setCellFactory(column -> new EditingCell());
+        tcSala.setCellFactory(column -> new EditingCell());
+        /**
         tcNombre.setCellFactory(TextFieldTableCell.forTableColumn());
         tcNombre.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Event, String>>() {
             @Override
@@ -327,10 +367,10 @@ public class ShowAllEventsViewController {
                     Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        });
+        });*/
         
         
-        tcSala.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Event, String>>() {
+        /**tcSala.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Event, String>>() {
             @Override
             public void handle(TableColumn.CellEditEvent<Event, String> eventCell) {
                 Event item = eventCell.getRowValue();
@@ -341,21 +381,14 @@ public class ShowAllEventsViewController {
                 cargarTabla();
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
-        });
+        });*/
         
         //Filrar los eventos por lo que escriba en el buscador
         tfBuscador.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 //onTextFieldChange(newValue); 
-                List<Event> eventos = new ArrayList<>();
-                for (Event e : events) {
-                    if (e.getNombre().toLowerCase().equalsIgnoreCase(newValue.toLowerCase()) || e.getNombre().toLowerCase().startsWith(newValue.toLowerCase())) {
-                        eventos.add(e);
-                    }
-                }
-                events=eventos;
-                cargarTabla();
+                aplicarFiltros();
             }
         });
         
@@ -364,15 +397,7 @@ public class ShowAllEventsViewController {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 //onTextFieldChange(newValue); 
-                List<Event> eventos = new ArrayList<>();
-                Double precio = Double.parseDouble(newValue);
-                for (Event e : events) {
-                    if (e.getPrecioEntrada()>=precio || e.getPrecioEntrada()<precio+1) {
-                        eventos.add(e);
-                    }
-                }
-                events=eventos;
-                cargarTabla();
+                aplicarFiltros();
             }
         });
 
