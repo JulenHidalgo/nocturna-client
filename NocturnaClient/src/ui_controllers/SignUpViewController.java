@@ -175,7 +175,7 @@ public class SignUpViewController {
         btnSignUp.setOnAction(this::signUp);
         btnCambioPass.setOnAction(this::resetPass);
         btnModificarDatos.setOnAction(this::updateInfo);
-        btnElimCuenta.setOnAction(this::deleteUser);
+//        btnElimCuenta.setOnAction(this::deleteUser);
 
         dpFechaNac.setDayCellFactory(picker -> {
             return new javafx.scene.control.DateCell() {
@@ -249,7 +249,7 @@ public class SignUpViewController {
 
     }
 
-    private void deleteUser(ActionEvent event) {
+   /* private void deleteUser(ActionEvent event) {
         if (lanzarAlertTextField("Borrado de cuenta", "Introduce la contraseña para borrar la cuenta (Se perderán todas las entradas asociadas al usuario), pulsa cancelar para salir", "Contraseña de la cuenta") != null) {
             ClientManagerFactory.get().remove(user.getId().toString());
 
@@ -271,7 +271,7 @@ public class SignUpViewController {
                 LOGGER.warning("Error while opening 'SignIn' window");
             }
         }
-    }
+    }*/
 
     private void resetPass(ActionEvent event) {
         try {
