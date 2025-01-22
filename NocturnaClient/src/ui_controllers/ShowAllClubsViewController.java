@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -20,8 +21,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import logic.ClubManager;
 import logic.ClubManagerFactory;
-import model.Client;
 import model.Club;
 import model.User;
 
@@ -38,6 +39,8 @@ public class ShowAllClubsViewController {
     private boolean tema;
     
     private List<Club> clubs;
+    
+    private ClubManager clubManager;
     
     @FXML
     private TextField txtNameFilter;
@@ -93,29 +96,51 @@ public class ShowAllClubsViewController {
         stage.setScene(scene);
         //Si el usuario es null, significa que no ha entrado a la app todavía y 
         //está intentando registrarse, si no, significa que va a modificar su información.
-        clubs = getClubsInfo();
-        setTableData();
-        stage.show();
-        LOGGER.info("Show all clubs window initialized.");
+       
+        clubManager = ClubManagerFactory.get();
         
-
-    }
-
-    private void setTableData() {
+        clubs = getClubsInfo();
+        
         columnNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         columnUbicacion.setCellValueFactory(new PropertyValueFactory<>("ubicacion"));
         columnCiudad.setCellValueFactory(new PropertyValueFactory<>("ciudad"));
         columnInstagram.setCellValueFactory(new PropertyValueFactory<>("instagram"));
         
-        ObservableList<Club> observableClubs = FXCollections.observableArrayList(clubs);
+        setTableData();
+        stage.show();
+        LOGGER.info("Show all clubs window initialized.");
         
+        btnCreate.setOnAction(this::createClub);
+
+    }
+
+    private void createClub(ActionEvent event) {
+        try {
+            Club club = new Club();
+            club.setCiudad("");
+            club.setInstagram("");
+            club.setNombre("");
+            club.setUbicacion("");
+
+            clubManager.create_XML(club);
+
+            clubs.add(club);
+            
+            clubs = getClubsInfo();
+            setTableData();
+        } catch (Exception ex) {
+            
+        }
+    }
+    
+    private void setTableData() {
+        ObservableList<Club> observableClubs = FXCollections.observableArrayList(clubs);
         tableClubs.setItems(observableClubs);
     }
 
     private List<Club> getClubsInfo() {
-        Club[] clubsArray = ClubManagerFactory.get().findAll_XML(Club[].class);
-        List<Club> clubs = Arrays.asList(clubsArray);
-        return clubs;
+        Club[] clubsArray = clubManager.findAll_XML(Club[].class);
+        return Arrays.asList(clubsArray);
     }
 
 }
