@@ -14,7 +14,7 @@ import model.Artist;
  * @author 2dam
  */
 public class CheckBoxEditingCell extends TableCell<Artist, Boolean> {
-
+/**
     private CheckBox checkBox;
 
     public CheckBoxEditingCell() {
@@ -47,5 +47,6 @@ public class CheckBoxEditingCell extends TableCell<Artist, Boolean> {
     private void getValue(){
         
     }
+    */
 
 }

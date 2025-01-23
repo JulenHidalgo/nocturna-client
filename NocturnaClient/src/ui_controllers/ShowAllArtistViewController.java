@@ -5,6 +5,7 @@
  */
 package ui_controllers;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +18,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -32,6 +34,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Callback;
+import javax.persistence.NoResultException;
 import logic.ArtistManagerFactory;
 import logic.EventManager;
 import logic.EventManagerFactory;
@@ -114,49 +118,52 @@ public class ShowAllArtistViewController {
     }
 
     public void initStage(Parent root) {
-        LOGGER.info("Initializing 'ShowAllArtists' window.");
-        Scene scene = new Scene(root);
+        try {
+            LOGGER.info("Initializing 'ShowAllArtists' window.");
 
+            Scene scene = new Scene(root);
+
+            initializeComponents();
+
+            stage.setOnCloseRequest(this::closeAppFromX);
+            btnEliminar.setOnAction(this::deleteArtist);
+
+            tfFiltroNombre.textProperty().addListener((observable, oldValue, newValue) -> cargarTabla());
+            tfFiltroMusica.textProperty().addListener((observable, oldValue, newValue) -> cargarTabla());
+
+            stage.setScene(scene);
+            stage.show();
+
+            LOGGER.info("'ShowAllArtists' window initialized.");
+
+        } catch (Exception e) {
+            LOGGER.severe("Error while initializing 'ShowAllArtists' window: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void initializeComponents() {
         if (event == null) {
+            user = new User();
+            user.setIsAdmin(true);
+            user.setMail("aaa@gmail.com");
+            user.setPasswd("Abcd*1234");
             if (user.getIsAdmin()) {
                 tvArtists.setEditable(true);
             }
             stage.setTitle("Visualizar artistas");
-
             tcEventos.setText("¿Tiene eventos?");
-
         } else {
             stage.setTitle("Selector de artistas");
             tcEventos.setText("¿Seleccionado?");
         }
-
-        recogerArtistas();
+        cargarTabla();
         cambiarTema();
-
-        stage.setOnCloseRequest(this::closeAppFromX);
-
-        tfFiltroNombre.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                aplicarFiltros();
-            }
-        });
-
-        tfFiltroMusica.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                aplicarFiltros();
-            }
-        });
-
-        stage.show();
-        stage.setScene(scene);
-        LOGGER.info("'ShowAllArtists' window initialized.");
-
     }
 
     private void recogerArtistas() {
-        artists = Arrays.asList(ArtistManagerFactory.get().findAll_XML(Artist[].class));
+        Artist[] artistArray = ArtistManagerFactory.get().findAll_XML(Artist[].class);
+        artists = Arrays.asList(artistArray);
     }
 
     private void aplicarFiltros() {
@@ -172,13 +179,23 @@ public class ShowAllArtistViewController {
 
     }
 
-    private void cargarTabla(List<Event> tableEvents) {
+    private void cargarTabla() {
+        recogerArtistas();
         initializeTableColumns();
+        aplicarFiltros();
         // Convertir ArrayList a ObservableList
-        ObservableList<Event> observableEvents = FXCollections.observableArrayList(tableEvents);
+        ObservableList<Artist> observableArtist = FXCollections.observableArrayList(artistsCopia);
         // Cargar datos en la tabla
-        tablaEvent.setItems(observableEvents);
+        tvArtists.setItems(observableArtist);
 
+    }
+
+    private void deleteArtist(ActionEvent event) {
+        ObservableList<Artist> selectedArtist = tvArtists.getSelectionModel().getSelectedItems();
+        selectedArtist.forEach(item -> {
+            ArtistManagerFactory.get().remove(item.getId().toString());
+        });
+        cargarTabla();
     }
 
     private void initializeTableColumns() {
@@ -186,20 +203,27 @@ public class ShowAllArtistViewController {
         tcTipoMusica.setCellValueFactory(new PropertyValueFactory<>("tipoMusica"));
         tcDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
 
-        tcEventos.setCellValueFactory(cellData -> {
-            Long artistId = cellData.getValue().getId(); // Obtener el ID del artista actual
-            boolean tieneEventos = comprobarEventos(artistId);
-            return new SimpleBooleanProperty(tieneEventos);
+        tcEventos.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Artist, Boolean>, ObservableValue<Boolean>>() {
+            @Override
+            public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Artist, Boolean> param) {
+                long id = param.getValue().getId();
+                boolean eventState = comprobarEventos(id);
+                return new SimpleBooleanProperty(eventState);
+            }
         });
+
         tcEventos.setCellFactory(CheckBoxTableCell.forTableColumn(tcEventos));
 
     }
 
     private boolean comprobarEventos(Long id) {
-        if (EventManagerFactory.get().findByArtist_XML(Event.class, String.valueOf(id)) != null) {
+        try {
+            EventManagerFactory.get().findByArtist_XML(Event[].class, String.valueOf(id));
             return true;
+        } catch (Exception e) {
+            return false;
         }
-        return false;
+
     }
 
     public void closeAppFromX(WindowEvent event) {
