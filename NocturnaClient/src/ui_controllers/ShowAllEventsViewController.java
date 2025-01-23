@@ -127,17 +127,28 @@ public class ShowAllEventsViewController {
 
     private final Logger LOGGER = Logger.getLogger("crudbankjfxclient.view");
     
-    @FXML
+    /**@FXML
     private void deleteEvent(ActionEvent event) {
         Event selectedEvent = tablaEvent.getSelectionModel().getSelectedItem();
         EventManagerFactory.get().remove(selectedEvent.getId().toString());
-        cargarTabla(events);
+        cargarTabla(recogerAllEvents());
+    }*/
+    
+    
+   @FXML
+    private void deleteEvent(ActionEvent event) {
+        ObservableList<Event>  selectedEvent = tablaEvent.getSelectionModel().getSelectedItems();
+        selectedEvent.forEach(item -> {EventManagerFactory.get().remove(item.getId().toString());});
+       
+       
+        cargarTabla(recogerAllEvents());
     }
     
     @FXML
     private void createEvent(ActionEvent event) {
-       
-       
+       Event evento  = new Event();
+       EventManagerFactory.get().create_XML(evento);
+        cargarTabla(events);
     }
     
     private void cargarTabla(List<Event> eventTable){
@@ -170,8 +181,12 @@ public class ShowAllEventsViewController {
         //Poner que la columna Sala sea un combobox y cargarle los datos
         List<String> nombresClubs = recogerAllClubs().stream().map(Club::getNombre).collect(Collectors.toList());
         ObservableList<String> clubs = FXCollections.observableArrayList(nombresClubs);
+        
         //tcSala.setCellFactory(ComboBoxTableCell.forTableColumn(FXCollections.observableList(nombresClubs)));
         tcSala.setCellFactory(ChoiceBoxTableCell.forTableColumn(clubs));
+        for(String c : clubs){
+            System.out.println(c);
+        }
         
     }
     
@@ -320,69 +335,12 @@ public class ShowAllEventsViewController {
             };
         });
                   
-       /**tcPrecio.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
-        tcPrecio.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Event, Double>>() {
-            @Override
-            public void handle(TableColumn.CellEditEvent<Event, Double> eventCell) {
-                try {
-                    Event item = eventCell.getRowValue();
-                    Double newValue = eventCell.getNewValue();
-                    if (newValue == null) {
-                        throw new Exception();
-                    }
-                    item.setPrecioEntrada(newValue);
-                    Artist[] artista = ArtistManagerFactory.get().findByEvent_XML(Artist[].class, item.getId().toString());
-            List<Artist> artistas = Arrays.asList(artista);
-            Set<Artist> conjunto = new HashSet<>(artistas);
-            item.setArtists(conjunto);
-                    EventManagerFactory.get().edit_XML(item, item.getId().toString());
-                    events = recogerAllEvents();
-                    cargarTabla();
-                } catch (Exception ex) {
-                    Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });*/
-       
         tcPrecio.setCellFactory(column -> new EditingCell());
+        tcConsumicion.setCellFactory(column -> new EditingCell());
+        tcNumEntradas.setCellFactory(column -> new EditingCell());
         tcNombre.setCellFactory(column -> new EditingCell());
         tcSala.setCellFactory(column -> new EditingCell());
-        /**
-        tcNombre.setCellFactory(TextFieldTableCell.forTableColumn());
-        tcNombre.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Event, String>>() {
-            @Override
-            public void handle(TableColumn.CellEditEvent<Event, String> eventCell) {
-                 try {
-                    Event item = eventCell.getRowValue();
-                    String newValue = eventCell.getNewValue();
-                    if (newValue == null || newValue.isEmpty()) {
-                        throw new Exception();
-                    }
-                    item.setNombre(newValue);
-                    EventManagerFactory.get().edit_XML(item, item.getId().toString());
-                    events = recogerAllEvents();
-                    cargarTabla();
-                    
-                } catch (Exception ex) {
-                    Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });*/
-        
-        
-        /**tcSala.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Event, String>>() {
-            @Override
-            public void handle(TableColumn.CellEditEvent<Event, String> eventCell) {
-                Event item = eventCell.getRowValue();
-                //recoger el club del nuevo valor
-                Club club = recogerAllClubs().stream().filter(c -> c.getNombre().equals(eventCell.getNewValue())).findFirst().orElse(null);
-                item.setClub(club);
-                EventManagerFactory.get().edit_XML(item, item.getId().toString());
-                cargarTabla();
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        });*/
-        
+       
         //Filrar los eventos por lo que escriba en el buscador
         tfBuscador.textProperty().addListener(new ChangeListener<String>() {
             @Override

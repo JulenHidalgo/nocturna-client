@@ -109,7 +109,7 @@ public class Event implements Serializable {
     }
    
     
-    public Set<Artist> getArtits(){
+    public Set<Artist> getArtists(){
        return  this.artists;     
     }
 
