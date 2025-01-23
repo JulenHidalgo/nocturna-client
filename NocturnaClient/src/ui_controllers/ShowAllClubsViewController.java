@@ -5,17 +5,22 @@
  */
 package ui_controllers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -25,6 +30,7 @@ import logic.ClubManager;
 import logic.ClubManagerFactory;
 import model.Club;
 import model.User;
+import utils.CustomAlert;
 
 /**
  *
@@ -107,11 +113,51 @@ public class ShowAllClubsViewController {
         columnInstagram.setCellValueFactory(new PropertyValueFactory<>("instagram"));
         
         setTableData();
+        if (user.getIsAdmin() == true) {
+            btnCreate.setOnAction(this::createClub);
+            btnDelete.setOnAction(this::deleteClub);
+            btnSelect.setDisable(true);
+            //btnDelete.setDisable(true);
+            tableClubs.setEditable(user.getIsAdmin());
+        } else {
+            btnCreate.setVisible(user.getIsAdmin());
+            btnDelete.setVisible(user.getIsAdmin());
+            btnSelect.setDisable(true);
+        }
+        
         stage.show();
         LOGGER.info("Show all clubs window initialized.");
-        
-        btnCreate.setOnAction(this::createClub);
+                
+        txtNameFilter.textProperty().addListener((observable, oldValue, newValue) -> {
+            List<Club> clubFilter = new ArrayList<>();
+            if (!newValue.isEmpty()) {
+                for (Club club : clubs) {
+                    if (club.getNombre().contains(newValue)){
+                        clubFilter.add(club);
+                    }
+                    ObservableList<Club> observableClubs = FXCollections.observableArrayList(clubFilter);
+                    tableClubs.setItems(observableClubs);
+            }
+            } else {
+                setTableData();
+            }
+        });
+        tableClubs.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        //tableClubs.getSelectionModel().selectedItemProperty().addListener(this::selectionNumberChange);
 
+    }
+    
+    private void selectionNumberChange(ObservableValue<? extends Club> observable, String oldValue, String newValue) {
+        
+    }
+    
+    private void deleteClub(ActionEvent event) {
+        ObservableList<Club> obserbableClubs = tableClubs.getSelectionModel().getSelectedItems();
+        for (Club club : obserbableClubs) {
+            clubManager.remove(club.getId().toString());
+        }
+        clubs = getClubsInfo();
+        setTableData();
     }
 
     private void createClub(ActionEvent event) {
@@ -129,7 +175,8 @@ public class ShowAllClubsViewController {
             clubs = getClubsInfo();
             setTableData();
         } catch (Exception ex) {
-            
+            LOGGER.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "ERROR CREANDO USUARIO");
         }
     }
     
@@ -140,7 +187,11 @@ public class ShowAllClubsViewController {
 
     private List<Club> getClubsInfo() {
         Club[] clubsArray = clubManager.findAll_XML(Club[].class);
-        return Arrays.asList(clubsArray);
+        List<Club> clubes = new ArrayList<>();
+        for (int i = 0; i < clubsArray.length; i++) {
+            clubes.add(clubsArray[i]);
+        }
+        return clubes;
     }
 
 }
