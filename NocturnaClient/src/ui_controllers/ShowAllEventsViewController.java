@@ -11,7 +11,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
+import java.sql.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -146,10 +146,22 @@ public class ShowAllEventsViewController {
     
     @FXML
     private void createEvent(ActionEvent event) {
-       Event evento  = new Event();
-       EventManagerFactory.get().create_XML(evento);
-        cargarTabla(events);
+        
+            Event evento = new Event();
+            evento.setConsumicion(0);
+            evento.setNombre("");
+            evento.setNumEntradas(0);
+            evento.setPrecioEntrada(0.0);
+            evento.setFecha(Date.valueOf(LocalDate.now()));
+            
+            EventManagerFactory.get().create_XML(evento);
+            
+            events = recogerAllEvents();
+            cargarTabla(events);
+        
+
     }
+    
     
     private void cargarTabla(List<Event> eventTable){
         initializeTableColumns();        
@@ -335,11 +347,11 @@ public class ShowAllEventsViewController {
             };
         });
                   
-        tcPrecio.setCellFactory(column -> new EditingCell());
-        tcConsumicion.setCellFactory(column -> new EditingCell());
-        tcNumEntradas.setCellFactory(column -> new EditingCell());
-        tcNombre.setCellFactory(column -> new EditingCell());
-        tcSala.setCellFactory(column -> new EditingCell());
+        tcPrecio.setCellFactory(column -> new EventEditingCell());
+        tcConsumicion.setCellFactory(column -> new EventEditingCell());
+        tcNumEntradas.setCellFactory(column -> new EventEditingCell());
+        tcNombre.setCellFactory(column -> new EventEditingCell());
+        tcSala.setCellFactory(column -> new EventEditingCell());
        
         //Filrar los eventos por lo que escriba en el buscador
         tfBuscador.textProperty().addListener(new ChangeListener<String>() {
