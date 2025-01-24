@@ -67,7 +67,8 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
         setGraphic(null);
         setContentDisplay(ContentDisplay.TEXT_ONLY);
     }
-
+    
+    
     @Override
     public void updateItem(T item, boolean empty) {
         super.updateItem(item, empty);
@@ -104,17 +105,18 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
     private void createTextField() {
         textField = new TextField(getString());
         textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+        textField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                cancelEdit();
+            }
+        });
         textField.setOnAction(event -> commitEdit((T) textField.getText()));
         textField.focusedProperty().addListener((ObservableValue<? extends Boolean> arg0, Boolean arg1, Boolean arg2) -> {
             if (!arg2) {
                 commitEdit((T) textField.getText());
             }
         });
-        textField.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.ESCAPE) {
-                cancelEdit();
-            }
-        });
+        
     }
 
     private void createTextFieldForDouble() {
@@ -166,12 +168,12 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
     choiceBox.setItems(clubs);
    
     // Establecer el valor actual del ChoiceBox
-    String currentValue = (String) getItem().toString();
-    choiceBox.setValue(currentValue);
-   
 
-    // Configurar eventos para confirmar o cancelar la edición
+        String currentValue = (String) getItem().toString();
+        choiceBox.setValue(currentValue);
+     
     choiceBox.setOnAction(event -> commitEdit((T) choiceBox.getValue()));
+    
     choiceBox.setOnKeyPressed(event -> {
         if (event.getCode() == KeyCode.ESCAPE) {
             cancelEdit();
@@ -209,6 +211,7 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
             if (newValue instanceof String) {
                 event.setNombre((String) newValue);
             } else if (newValue instanceof Club) {
+                 String selectedClubName = (String) newValue;
                 event.setClub((Club) newValue);
             } else if (newValue instanceof Double) {
                 event.setPrecioEntrada((Double) newValue);
@@ -229,6 +232,10 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
 
                 // Llamar al método para persistir los datos
                 EventManagerFactory.get().edit_XML(event, event.getId().toString());
+
+            // Recargar los datos desde el backend
+            ObservableList<Event> events = FXCollections.observableArrayList(EventManagerFactory.get().findAll_XML(Event[].class));
+            getTableView().setItems(events);
             } catch (Exception e) {
                 // Si algo falla en la persistencia, muestra un mensaje de error
                 Platform.runLater(() -> {
