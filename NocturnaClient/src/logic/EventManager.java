@@ -5,6 +5,7 @@
  */
 package logic;
 
+import exceptions.ReadException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
@@ -20,7 +21,7 @@ public interface EventManager {
 
     public <T> T findByDate_JSON(Class<T> responseType, String fecha) throws WebApplicationException;
 
-    public <T> T findByArtist_XML(Class<T> responseType, String idArtist) throws WebApplicationException;
+    public <T> T findByArtist_XML(Class<T> responseType, String idArtist) throws WebApplicationException, ReadException;
 
     public <T> T findByArtist_JSON(Class<T> responseType, String idArtist) throws WebApplicationException;
 

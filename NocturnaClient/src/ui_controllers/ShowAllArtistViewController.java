@@ -24,6 +24,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -43,6 +44,7 @@ import model.Artist;
 import model.Club;
 import model.Event;
 import model.User;
+import utils.ArtistEditingCell;
 import utils.CustomAlert;
 
 /**
@@ -149,14 +151,29 @@ public class ShowAllArtistViewController {
             user.setMail("aaa@gmail.com");
             user.setPasswd("Abcd*1234");
             if (user.getIsAdmin()) {
+                btnCrear.setOnAction(this::crearArtista);
                 tvArtists.setEditable(true);
+                tcEventos.setEditable(false);
+                tvArtists.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+                tcNombre.setCellFactory(column -> new ArtistEditingCell());
+                tcTipoMusica.setCellFactory(column -> new ArtistEditingCell());
+                tcDescripcion.setCellFactory(column -> new ArtistEditingCell());
+            } else {
+                tvArtists.setEditable(false);
             }
             stage.setTitle("Visualizar artistas");
             tcEventos.setText("¿Tiene eventos?");
         } else {
             stage.setTitle("Selector de artistas");
             tcEventos.setText("¿Seleccionado?");
+            tvArtists.setEditable(false);
+            if (user.getIsAdmin()) {
+                tvArtists.setEditable(false);
+                tcEventos.setEditable(true);
+            }
         }
+
+        tcEventos.setEditable(false);
         cargarTabla();
         cambiarTema();
     }
@@ -164,6 +181,12 @@ public class ShowAllArtistViewController {
     private void recogerArtistas() {
         Artist[] artistArray = ArtistManagerFactory.get().findAll_XML(Artist[].class);
         artists = Arrays.asList(artistArray);
+    }
+
+    private void crearArtista(ActionEvent event) {
+        Artist artist = new Artist();
+        ArtistManagerFactory.get().create_XML(artist);
+        cargarTabla();
     }
 
     private void aplicarFiltros() {
@@ -206,9 +229,9 @@ public class ShowAllArtistViewController {
         tcEventos.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Artist, Boolean>, ObservableValue<Boolean>>() {
             @Override
             public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Artist, Boolean> param) {
-                long id = param.getValue().getId();
-                boolean eventState = comprobarEventos(id);
-                return new SimpleBooleanProperty(eventState);
+                long id;
+                id = param.getValue().getId();
+                return new SimpleBooleanProperty(comprobarEventos(id));
             }
         });
 
@@ -226,7 +249,7 @@ public class ShowAllArtistViewController {
 
     }
 
-    public void closeAppFromX(WindowEvent event) {
+    private void closeAppFromX(WindowEvent event) {
         if (CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION, "¿Está seguro de que desea salir?")) {
             Platform.exit();
         } else {
@@ -234,7 +257,7 @@ public class ShowAllArtistViewController {
         }
     }
 
-    public void cambiarTema() {
+    private void cambiarTema() {
         if (tema) {
 
         } else {
