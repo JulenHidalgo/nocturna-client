@@ -10,8 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -112,13 +114,19 @@ public class ShowAllClubsViewController {
         columnCiudad.setCellValueFactory(new PropertyValueFactory<>("ciudad"));
         columnInstagram.setCellValueFactory(new PropertyValueFactory<>("instagram"));
         
+        columnNombre.setCellFactory(column -> new ClubEditingCell());
+        columnUbicacion.setCellFactory(column -> new ClubEditingCell());
+        columnCiudad.setCellFactory(column -> new ClubEditingCell());
+        columnInstagram.setCellFactory(column -> new ClubEditingCell());
+        
         setTableData();
         if (user.getIsAdmin() == true) {
             btnCreate.setOnAction(this::createClub);
             btnDelete.setOnAction(this::deleteClub);
             btnSelect.setDisable(true);
-            //btnDelete.setDisable(true);
+            btnDelete.setDisable(true);
             tableClubs.setEditable(user.getIsAdmin());
+            tableClubs.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         } else {
             btnCreate.setVisible(user.getIsAdmin());
             btnDelete.setVisible(user.getIsAdmin());
@@ -142,13 +150,23 @@ public class ShowAllClubsViewController {
                 setTableData();
             }
         });
-        tableClubs.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        //tableClubs.getSelectionModel().selectedItemProperty().addListener(this::selectionNumberChange);
-
-    }
-    
-    private void selectionNumberChange(ObservableValue<? extends Club> observable, String oldValue, String newValue) {
         
+        tableClubs.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Club>() {
+            @Override
+            public void onChanged(ListChangeListener.Change<? extends Club> c) {
+                if (c.getList().isEmpty()) {
+                    btnSelect.setDisable(true);
+                    btnDelete.setDisable(true);
+                }else if (c.getList().size() == 1) {
+                    btnSelect.setDisable(false);
+                    btnDelete.setDisable(false);
+                }else if (c.getList().size() > 1) {
+                    btnSelect.setDisable(true);
+                    btnDelete.setDisable(false);
+                }
+            }
+        });
+
     }
     
     private void deleteClub(ActionEvent event) {
@@ -174,6 +192,11 @@ public class ShowAllClubsViewController {
             
             clubs = getClubsInfo();
             setTableData();
+            
+            if (tableClubs.getSelectionModel() != null && !tableClubs.getItems().isEmpty()) {
+                int lastIndex = tableClubs.getItems().size() - 1;
+                tableClubs.getSelectionModel().clearAndSelect(lastIndex);
+            }
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "UserRESTful service: Exception logging up .", ex.getMessage());
             CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "ERROR CREANDO USUARIO");

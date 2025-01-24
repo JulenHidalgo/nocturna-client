@@ -13,6 +13,11 @@
 
 <AnchorPane id="AnchorPane" fx:id="aPClubs" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-image: url('file:/C:/Users/2dam/Downloads/fondo.jpg'); -fx-background-size: cover;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui_controllers.ShowAllClubsViewController">
     <children>
+        <HBox fx:id="hbMenu" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <fx:include prefWidth="1280.0" source="menu.fxml" />
+            </children>
+        </HBox>
       <TableView fx:id="tableClubs" layoutX="426.0" layoutY="260.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="150.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="175.0">
         <columns>
           <TableColumn fx:id="columnNombre" prefWidth="264.0" text="Nombre" />
