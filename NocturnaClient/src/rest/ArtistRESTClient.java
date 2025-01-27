@@ -29,7 +29,7 @@ public class ArtistRESTClient implements ArtistManager{
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/RetoFinalServer/webresources";
+    private static final String BASE_URI = "http://localhost:8080/NocturnaServer/webresources";
 
     public ArtistRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -120,7 +120,7 @@ public class ArtistRESTClient implements ArtistManager{
     @Override
     public <T> T findByEvent_XML(Class<T> responseType, String idEvent) throws WebApplicationException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("artistsByEvent/{0}", new Object[]{idEvent}));
+        resource = resource.path(java.text.MessageFormat.format("findArtistsByEvent/{0}", new Object[]{idEvent}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
