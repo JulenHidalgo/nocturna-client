@@ -30,7 +30,6 @@ public class Event implements Serializable {
      
     private String nombre = "";
     
-    @Future
     private Date fecha = valueOf(LocalDate.now());
     
     private Integer NumEntradas = 0;

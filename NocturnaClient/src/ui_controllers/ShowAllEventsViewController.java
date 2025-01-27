@@ -6,6 +6,7 @@
 package ui_controllers;
 
 
+import java.io.IOException;
 import static java.sql.Date.valueOf;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -27,11 +28,13 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -115,8 +118,6 @@ public class ShowAllEventsViewController {
     @FXML
     Button btnSeleccionar;
     
- 
-
     
     private Stage stage;
 
@@ -132,8 +133,6 @@ public class ShowAllEventsViewController {
     private void deleteEvent(ActionEvent event) {
         ObservableList<Event>  selectedEvent = tablaEvent.getSelectionModel().getSelectedItems();
         selectedEvent.forEach(item -> {EventManagerFactory.get().remove(item.getId().toString());});
-       
-       
         cargarTabla(recogerAllEvents());
     }
     
@@ -144,10 +143,22 @@ public class ShowAllEventsViewController {
             EventManagerFactory.get().create_XML(evento);            
             events = recogerAllEvents();
             cargarTabla(events);
-        
-
+   
     }
     
+     @FXML
+    private void añadirAtists(ActionEvent event){
+         try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllArtistsView.fxml"));
+            Parent root = loader.load();
+            ShowAllEventsViewController controller = (ShowAllEventsViewController) loader.getController();
+            controller.setStage(stage);
+            controller.setTema(tema);
+            controller.setUser(user);
+        } catch (IOException ex) {
+            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     private void cargarTabla(List<Event> eventTable){
         initializeTableColumns();        
@@ -184,9 +195,21 @@ public class ShowAllEventsViewController {
     }
     
     private void irShowEventView(){
-        
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showEventsView.fxml"));
+            Parent root = loader.load();
+            ShowAllEventsViewController controller = (ShowAllEventsViewController) loader.getController();
+            controller.setStage(stage);
+            controller.setTema(tema);
+        } catch (IOException ex) {
+            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
+   
+            
+            
+            
     private void aplicarFiltros(){
         events =  recogerAllEvents();
         List<Event> eventos = new ArrayList<>();
@@ -260,6 +283,7 @@ public class ShowAllEventsViewController {
             btnCrearEvento.setVisible(false);
         }else{
             tablaEvent.setEditable(true);
+            tablaEvent.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             tcMusica.setEditable(false);
         }
         
@@ -328,12 +352,15 @@ public class ShowAllEventsViewController {
             };
         });
                   
+        //hacer la modificacion de las columnas
         tcPrecio.setCellFactory(column -> new EventEditingCell());
         tcConsumicion.setCellFactory(column -> new EventEditingCell());
         tcNumEntradas.setCellFactory(column -> new EventEditingCell());
         tcNombre.setCellFactory(column -> new EventEditingCell());
         tcSala.setCellFactory(column -> new EventEditingCell());
-       tcFecha.setCellFactory(column -> new EventEditingCell());
+        tcFecha.setCellFactory(column -> new EventEditingCell());
+        
+        
         //Filrar los eventos por lo que escriba en el buscador
         tfBuscador.textProperty().addListener(new ChangeListener<String>() {
             @Override

@@ -1,5 +1,6 @@
 package ui_controllers;
 
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Arrays;
 import javafx.application.Platform;
@@ -12,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import logic.ArtistManagerFactory;
@@ -44,13 +46,12 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
             }else if (item instanceof Integer) {
                 createTextFieldForInteger();
                 setGraphic(textField);
-            } else if (2==getTableView().getColumns().indexOf(getTableColumn())) {
-                createChoiceBox();
-                setGraphic(choiceBox);
-            } else if (item instanceof Date) {
+            }else if (item instanceof Date) {
                 createDatePicker();
                 setGraphic(datePicker);
             }else{
+               // createDatePicker();
+               // setGraphic(datePicker);
                 createChoiceBox();
                 setGraphic(choiceBox);
             }
@@ -110,23 +111,20 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
                 cancelEdit();
             }
         });
-        textField.setOnAction(event -> commitEdit((T) textField.getText()));
-        textField.focusedProperty().addListener((ObservableValue<? extends Boolean> arg0, Boolean arg1, Boolean arg2) -> {
-            if (!arg2) {
-                commitEdit((T) textField.getText());
+        textField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                commitEdit(textField.getText());
             }
         });
-        
     }
 
     private void createTextFieldForDouble() {
         textField = new TextField();
         textField.setText(getString());
         textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
-        textField.setOnAction(event -> commitEdit((T) Double.valueOf(textField.getText())));
-        textField.focusedProperty().addListener((ObservableValue<? extends Boolean> arg0, Boolean arg1, Boolean arg2) -> {
-            if (!arg2) {
-                commitEdit((T) Double.valueOf(textField.getText()));
+        textField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                 commitEdit((T) Double.valueOf(textField.getText()));
             }
         });
         textField.setOnKeyPressed(event -> {
@@ -140,10 +138,9 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
         textField = new TextField();
         textField.setText(getString());
         textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
-        textField.setOnAction(event -> commitEdit((T) Integer.valueOf(textField.getText())));
-        textField.focusedProperty().addListener((ObservableValue<? extends Boolean> arg0, Boolean arg1, Boolean arg2) -> {
-            if (!arg2) {
-                commitEdit((T) Integer.valueOf(textField.getText()));
+        textField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                 commitEdit((T) Integer.valueOf(textField.getText()));
             }
         });
         textField.setOnKeyPressed(event -> {
@@ -168,12 +165,25 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
     choiceBox.setItems(clubs);
    
     // Establecer el valor actual del ChoiceBox
-
-        String currentValue = (String) getItem().toString();
-        choiceBox.setValue(currentValue);
+    String currentValue = (String) getItem().toString();
+    choiceBox.setValue(currentValue);
      
-    choiceBox.setOnAction(event -> commitEdit((T) choiceBox.getValue()));
-    
+
+     
+     choiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+         @Override
+         public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+             if (newValue != null) {
+                 choiceBox.setValue(newValue);
+                 Club clubSeleccionado = listClubs.stream()
+                         .filter(club -> club.getNombre().equals(newValue))
+                         .findFirst()
+                         .orElse(null);
+                 commitEdit((T) clubSeleccionado);
+             }
+         }
+     });
+
     choiceBox.setOnKeyPressed(event -> {
         if (event.getCode() == KeyCode.ESCAPE) {
             cancelEdit();
@@ -211,10 +221,11 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
             if (newValue instanceof String) {
                 event.setNombre((String) newValue);
             } else if (newValue instanceof Club) {
-                 String selectedClubName = (String) newValue;
                 event.setClub((Club) newValue);
             } else if (newValue instanceof Double) {
                 event.setPrecioEntrada((Double) newValue);
+            } else if (newValue instanceof Date) {
+                event.setFecha((Date) newValue);
             } else if (newValue instanceof Integer) {
                 switch (columnIndex) {
                     case 4:
@@ -234,7 +245,7 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
                 EventManagerFactory.get().edit_XML(event, event.getId().toString());
 
             // Recargar los datos desde el backend
-            ObservableList<Event> events = FXCollections.observableArrayList(EventManagerFactory.get().findAll_XML(Event[].class));
+            ObservableList<Event> events = FXCollections.observableArrayList(EventManagerFactory.get().findByDate_XML(Event[].class, LocalDate.now().toString()));
             getTableView().setItems(events);
             } catch (Exception e) {
                 // Si algo falla en la persistencia, muestra un mensaje de error
