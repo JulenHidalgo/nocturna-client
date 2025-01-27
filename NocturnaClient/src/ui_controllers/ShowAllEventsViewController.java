@@ -6,13 +6,17 @@
 package ui_controllers;
 
 
+import java.io.IOException;
+import static java.sql.Date.valueOf;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -24,11 +28,13 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -112,29 +118,52 @@ public class ShowAllEventsViewController {
     @FXML
     Button btnSeleccionar;
     
- 
-
     
     private Stage stage;
 
     private User user;
 
     private boolean tema;
-
+    
+    private List<Event> events = recogerAllEvents();
     private final Logger LOGGER = Logger.getLogger("crudbankjfxclient.view");
     
-    @FXML
+    
+   @FXML
     private void deleteEvent(ActionEvent event) {
-        Event selectedEvent = tablaEvent.getSelectionModel().getSelectedItem();
-        EventManagerFactory.get().remove(selectedEvent.getId().toString());
+        ObservableList<Event>  selectedEvent = tablaEvent.getSelectionModel().getSelectedItems();
+        selectedEvent.forEach(item -> {EventManagerFactory.get().remove(item.getId().toString());});
         cargarTabla(recogerAllEvents());
     }
     
+    @FXML
+    private void createEvent(ActionEvent event) {
+        
+            Event evento = new Event();     
+            EventManagerFactory.get().create_XML(evento);            
+            events = recogerAllEvents();
+            cargarTabla(events);
+   
+    }
     
-    private void cargarTabla(List<Event> tableEvents){
+     @FXML
+    private void añadirAtists(ActionEvent event){
+         try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllArtistsView.fxml"));
+            Parent root = loader.load();
+            ShowAllEventsViewController controller = (ShowAllEventsViewController) loader.getController();
+            controller.setStage(stage);
+            controller.setTema(tema);
+            controller.setUser(user);
+        } catch (IOException ex) {
+            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void cargarTabla(List<Event> eventTable){
         initializeTableColumns();        
         // Convertir ArrayList a ObservableList
-        ObservableList<Event> observableEvents = FXCollections.observableArrayList(tableEvents);       
+        ObservableList<Event> observableEvents = FXCollections.observableArrayList(eventTable);       
         // Cargar datos en la tabla
         tablaEvent.setItems(observableEvents);
         
@@ -148,28 +177,71 @@ public class ShowAllEventsViewController {
         tcNumEntradas.setCellValueFactory(new PropertyValueFactory<>("NumEntradas"));
         tcMusica.setCellValueFactory(new PropertyValueFactory<>("Musica"));
         tcConsumicion.setCellValueFactory(new PropertyValueFactory<>("Consumicion"));
-        
-        
        
-        tcMusica.setCellValueFactory(cellData -> {
+       tcMusica.setCellValueFactory(cellData -> {
             Artist[] artista = ArtistManagerFactory.get().findByEvent_XML(Artist[].class, cellData.getValue().getId().toString());
             List<Artist> artistas = Arrays.asList(artista);
             String musicas = artistas.stream().map(Artist::getTipoMusica).collect(Collectors.joining(", "));
+            if(musicas.isEmpty())
+                return null;
             return new SimpleStringProperty(musicas);
         });
-        
-     
-        //
+      
         //Poner que la columna Sala sea un combobox y cargarle los datos
         List<String> nombresClubs = recogerAllClubs().stream().map(Club::getNombre).collect(Collectors.toList());
         ObservableList<String> clubs = FXCollections.observableArrayList(nombresClubs);
-        //tcSala.setCellFactory(ComboBoxTableCell.forTableColumn(FXCollections.observableList(nombresClubs)));
         tcSala.setCellFactory(ChoiceBoxTableCell.forTableColumn(clubs));
         
     }
     
     private void irShowEventView(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showEventsView.fxml"));
+            Parent root = loader.load();
+            ShowAllEventsViewController controller = (ShowAllEventsViewController) loader.getController();
+            controller.setStage(stage);
+            controller.setTema(tema);
+        } catch (IOException ex) {
+            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+   
+            
+            
+            
+    private void aplicarFiltros(){
+        events =  recogerAllEvents();
+        List<Event> eventos = new ArrayList<>();
+        if(!tfBuscador.getText().isEmpty()){
+            events = events.stream().filter(event -> event.getNombre().toLowerCase().startsWith(tfBuscador.getText().toLowerCase())).collect(Collectors.toList());
+        }
+        if(dateFechaHasta.getValue()!=null){
+            Event[] eventosArray = EventManagerFactory.get().findByDates_XML(Event[].class, dateFecha.getValue().toString(),dateFechaHasta.getValue().toString());
+            for (Event e : Arrays.asList(eventosArray)) {
+                if (events.contains(e)) {
+                    eventos.add(e);
+                }
+            }
+            events = eventos;
+        }else if(dateFecha.getValue()!=null){
+            Event[] eventsArray = EventManagerFactory.get().findByDate_XML(Event[].class, dateFecha.getValue().toString());
+            for (Event e : Arrays.asList(eventsArray)) {
+                if (events.contains(e)) {
+                    eventos.add(e);
+                }
+            }
+            events = eventos;
+        }
         
+        if(!tfPrecio.getText().isEmpty()){
+            events = events.stream()
+                .filter(event -> event.getPrecioEntrada() >= Double.valueOf(tfPrecio.getText()) && event.getPrecioEntrada() < Double.valueOf(tfPrecio.getText())+1)
+                    .collect(Collectors.toList());
+
+        }
+        
+        cargarTabla(events);
     }
     
     private List<Club> recogerAllClubs(){
@@ -178,6 +250,14 @@ public class ShowAllEventsViewController {
         return listClubs;
                 
     }
+    
+     private List<Event> recogerAllEvents(){ 
+      Event[] eventsArray = EventManagerFactory.get().findByDate_XML(Event[].class, LocalDate.now().toString());
+      List<Event> events = Arrays.asList(eventsArray);
+      return  events;
+    }
+     
+     
     public void setStage(Stage stage) {
         this.stage = stage;
     }
@@ -190,18 +270,12 @@ public class ShowAllEventsViewController {
         this.tema = tema;
     }
     
-    private List<Event> recogerAllEvents(){ 
-      Event[] eventsArray = EventManagerFactory.get().findByDate_XML(Event[].class, LocalDate.now().toString());
-      List<Event> events = Arrays.asList(eventsArray);
-      return  events;
-    }
-    
     public void initStage(Parent root) {
 
         LOGGER.info("Initializing Bank Statement window.");
         Scene scene = new Scene(root);
 
-        cargarTabla(recogerAllEvents());
+        cargarTabla(events);
         
         if(user instanceof Client){
             btnAñadirArtistas.setVisible(false);
@@ -209,20 +283,22 @@ public class ShowAllEventsViewController {
             btnCrearEvento.setVisible(false);
         }else{
             tablaEvent.setEditable(true);
+            tablaEvent.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             tcMusica.setEditable(false);
         }
+        
         tablaEvent.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Event>() {
             @Override
             public void changed(ObservableValue<? extends Event> observable, Event oldValue, Event newValue) {
                 if (newValue != null) {
                     btnAñadirArtistas.setDisable(false);
                     btnBorrarEvento.setDisable(false);
-                    btnCrearEvento.setDisable(false);
+                    //btnCrearEvento.setDisable(false);
                     btnSeleccionar.setDisable(false);
                 }else{
                     btnAñadirArtistas.setDisable(true);
                     btnBorrarEvento.setDisable(true);
-                    btnCrearEvento.setDisable(true);
+                    //btnCrearEvento.setDisable(true);
                     btnSeleccionar.setDisable(true);
                 }
             }
@@ -235,13 +311,12 @@ public class ShowAllEventsViewController {
                     if(dateFecha.getValue() != null){
                         lbHasta.setVisible(true);
                         dateFechaHasta.setVisible(true);
-                        Event[] eventsArray = EventManagerFactory.get().findByDate_XML(Event[].class, dateFecha.getValue().toString());
-                        List<Event> events = Arrays.asList(eventsArray);
-                        cargarTabla(events);
+                        aplicarFiltros();
                     }
                 }
             }
         });
+        
         dateFecha.setDayCellFactory(picker -> {
             return new javafx.scene.control.DateCell() {
                 @Override
@@ -252,62 +327,58 @@ public class ShowAllEventsViewController {
                 }
             };
         });
-                  
-        tcPrecio.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
-        tcPrecio.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Event, Double>>() {
+   
+        dateFechaHasta.valueProperty().addListener(new ChangeListener<LocalDate>() {
             @Override
-            public void handle(TableColumn.CellEditEvent<Event, Double> eventCell) {
-                try {
-                    Event item = eventCell.getRowValue();
-                    Double newValue = eventCell.getNewValue();
-                    if (newValue == null) {
-                        throw new Exception();
+            public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
+                if (newValue != null) {
+                    if (dateFecha.getValue() != null) {
+                        Event[] eventsArray = EventManagerFactory.get().findByDates_XML(Event[].class, dateFecha.getValue().toString(),dateFechaHasta.getValue().toString());
+                        events = Arrays.asList(eventsArray);
+                        cargarTabla(events);
                     }
-                    item.setPrecioEntrada(newValue);
-                    EventManagerFactory.get().edit_XML(item, item.getId().toString());
-
-                    cargarTabla(recogerAllEvents());
-                    throw new UnsupportedOperationException("Not supported yet.");
-                } catch (Exception ex) {
-                    Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
+
+        dateFechaHasta.setDayCellFactory(picker -> {
+            return new javafx.scene.control.DateCell() {
+                @Override
+                public void updateItem(LocalDate item, boolean empty) {
+                    super.updateItem(item, empty);
+                    //Establecer como no seleccionable fechas anteriores a la otra fehca
+                    setDisable(item.isBefore(dateFecha.getValue()));
+                }
+            };
+        });
+                  
+        //hacer la modificacion de las columnas
+        tcPrecio.setCellFactory(column -> new EventEditingCell());
+        tcConsumicion.setCellFactory(column -> new EventEditingCell());
+        tcNumEntradas.setCellFactory(column -> new EventEditingCell());
+        tcNombre.setCellFactory(column -> new EventEditingCell());
+        tcSala.setCellFactory(column -> new EventEditingCell());
+        tcFecha.setCellFactory(column -> new EventEditingCell());
         
-        tcSala.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Event, String>>() {
+        
+        //Filrar los eventos por lo que escriba en el buscador
+        tfBuscador.textProperty().addListener(new ChangeListener<String>() {
             @Override
-            public void handle(TableColumn.CellEditEvent<Event, String> eventCell) {
-                Event item = eventCell.getRowValue();
-                //recoger el club del nuevo valor
-                Club club = recogerAllClubs().stream().filter(c -> c.getNombre().equals(eventCell.getNewValue())).findFirst().orElse(null);
-                item.setClub(club);
-                EventManagerFactory.get().edit_XML(item, item.getId().toString());
-                cargarTabla(recogerAllEvents());
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                //onTextFieldChange(newValue); 
+                aplicarFiltros();
             }
         });
         
-        
-        tcSala.setOnEditCommit(event -> {
-            // Recuperamos el evento (fila) que fue editado
-            Event selectedEvent = event.getRowValue();
-            Event evento = EventManagerFactory.get().find_XML(Event.class, selectedEvent.getId().toString());
-            Club club = recogerAllClubs().stream().filter(c -> c.getNombre().equals(event.getNewValue())).findFirst().orElse(null);
-            evento.setClub(club);
-            EventManagerFactory.get().edit_XML(evento, selectedEvent.getId().toString());
-            cargarTabla(recogerAllEvents());
-            
-          }); 
-           /**tfBuscador.textProperty().addListener(new ChangeListener<String>() {
-                @Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    //onTextFieldChange(newValue); 
-                    for(Event e : recogerAllEvents()){
-                        if(tfBuscador.setText(newValue))
-                    }
-                } 
-            });*/
-        
-        
+        //Filtrar los eventos que tengan el precio que ha introducido
+        tfPrecio.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                //onTextFieldChange(newValue); 
+                aplicarFiltros();
+            }
+        });
+
         stage.show();
         stage.setScene(scene);
         LOGGER.info("Bank Statement window initialized.");

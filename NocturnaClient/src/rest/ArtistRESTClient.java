@@ -122,6 +122,7 @@ public class ArtistRESTClient implements ArtistManager {
     @Override
     public <T> T findByEvent_XML(Class<T> responseType, String idEvent) throws WebApplicationException, ReadException{
         WebTarget resource = webTarget;
+
         resource = resource.path(java.text.MessageFormat.format("artistsByEvent/{0}", new Object[]{idEvent}));
 
         Response response = resource
