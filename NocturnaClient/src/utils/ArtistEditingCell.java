@@ -148,6 +148,20 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
                 commitEdit(textField.getText());
             }
         });
+        int columnIndex = getTableView().getColumns().indexOf(getTableColumn());
+        // Actualizar la propiedad correspondiente del objeto Event según el tipo de campo y el índice de la columna
+
+        switch (columnIndex) {
+            case 0:
+                textField.setPromptText("Introduce el nombre");
+                break;
+            case 1:
+                textField.setPromptText("Introduce el tipo de música");
+                break;
+            case 2:
+                textField.setPromptText("Introduce la descripción");
+                break;
+        }
     }
 
     private void createTextArea() {
