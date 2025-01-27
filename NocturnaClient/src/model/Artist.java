@@ -15,7 +15,6 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author 2dam
  */
-
 @XmlRootElement
 public class Artist implements Serializable {
 

@@ -31,7 +31,7 @@ public interface EventManager {
 
     public void edit_JSON(Object requestEntity, String id) throws WebApplicationException ;
 
-    public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException;
+    public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException, ReadException;
 
     public <T> T find_JSON(Class<T> responseType, String id) throws WebApplicationException;
 

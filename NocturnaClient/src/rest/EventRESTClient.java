@@ -62,15 +62,12 @@ public class EventRESTClient implements EventManager {
                 .get();
 
         // Verifica el estado de la respuesta
-        if (response.getStatus() == 404) {
+        if (response.getStatus() == 500) {
             // Opcionalmente, puedes extraer información del cuerpo de la respuesta
             String errorDetails = response.readEntity(String.class); // Suponiendo que el error tenga un mensaje en el cuerpo
             throw new ReadException();
         }
-        response.readEntity(responseType);
-        
-        System.out.println("aaaaa");
-        
+
         return response.readEntity(responseType);
     }
 
@@ -96,10 +93,22 @@ public class EventRESTClient implements EventManager {
                 .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON), Event.class);
     }
 
-    public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException {
+    @Override
+    public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException, ReadException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+        Response response = resource
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .get();
+
+        // Verifica el estado de la respuesta+
+        if (response.getStatus() == 500) {
+            // Opcionalmente, puedes extraer información del cuerpo de la respuesta
+            String errorDetails = response.readEntity(String.class); // Suponiendo que el error tenga un mensaje en el cuerpo
+            throw new ReadException();
+        }
+
+        return response.readEntity(responseType);
     }
 
     public <T> T find_JSON(Class<T> responseType, String id) throws WebApplicationException {

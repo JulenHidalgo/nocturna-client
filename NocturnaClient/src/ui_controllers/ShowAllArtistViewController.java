@@ -5,21 +5,21 @@
  */
 package ui_controllers;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
+import exceptions.ReadException;
+import java.sql.Date;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -29,19 +29,15 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
-import javax.persistence.NoResultException;
 import logic.ArtistManagerFactory;
-import logic.EventManager;
 import logic.EventManagerFactory;
 import model.Artist;
-import model.Club;
 import model.Event;
 import model.User;
 import utils.ArtistEditingCell;
@@ -129,6 +125,23 @@ public class ShowAllArtistViewController {
 
             stage.setOnCloseRequest(this::closeAppFromX);
             btnEliminar.setOnAction(this::deleteArtist);
+            btnSeleccionar.setOnAction(this::irShowArtist);
+
+            tvArtists.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Artist>() {
+                @Override
+                public void onChanged(ListChangeListener.Change<? extends Artist> c) {
+                    if (c.getList().isEmpty()) {
+                        btnSeleccionar.setDisable(true);
+                        btnEliminar.setDisable(true);
+                    } else if (c.getList().size() == 1) {
+                        btnSeleccionar.setDisable(false);
+                        btnEliminar.setDisable(false);
+                    } else if (c.getList().size() > 1) {
+                        btnSeleccionar.setDisable(true);
+                        btnEliminar.setDisable(false);
+                    }
+                }
+            });
 
             tfFiltroNombre.textProperty().addListener((observable, oldValue, newValue) -> cargarTabla());
             tfFiltroMusica.textProperty().addListener((observable, oldValue, newValue) -> cargarTabla());
@@ -145,11 +158,9 @@ public class ShowAllArtistViewController {
     }
 
     private void initializeComponents() {
+        user = new User();
+        user.setIsAdmin(true);
         if (event == null) {
-            user = new User();
-            user.setIsAdmin(true);
-            user.setMail("aaa@gmail.com");
-            user.setPasswd("Abcd*1234");
             if (user.getIsAdmin()) {
                 btnCrear.setOnAction(this::crearArtista);
                 tvArtists.setEditable(true);
@@ -168,7 +179,6 @@ public class ShowAllArtistViewController {
             tcEventos.setText("¿Seleccionado?");
             tvArtists.setEditable(false);
             if (user.getIsAdmin()) {
-                tvArtists.setEditable(false);
                 tcEventos.setEditable(true);
             }
         }
@@ -187,6 +197,8 @@ public class ShowAllArtistViewController {
         Artist artist = new Artist();
         ArtistManagerFactory.get().create_XML(artist);
         cargarTabla();
+        int lastIndex = tvArtists.getItems().size() - 1;
+        tvArtists.getSelectionModel().clearAndSelect(lastIndex);
     }
 
     private void aplicarFiltros() {
@@ -200,6 +212,21 @@ public class ShowAllArtistViewController {
             artistsCopia = artists.stream().filter(artist -> artist.getTipoMusica().startsWith(tfFiltroMusica.getText())).collect(Collectors.toList());
         }
 
+    }
+
+    private void irShowArtist(ActionEvent event) {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showArtistView.fxml"));
+
+        Parent root = loader.load();
+
+        ShowArtistView controller = (ShowArtistView) loader.getController();
+
+        controller.setStage(stage);
+        controller.setTema(tema);
+        controller.setArtist(tvArtists.getSelectionModel().getSelectedItem());
+        controller.setUser(user);
+
+        controller.initStage(root);
     }
 
     private void cargarTabla() {
@@ -231,7 +258,11 @@ public class ShowAllArtistViewController {
             public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Artist, Boolean> param) {
                 long id;
                 id = param.getValue().getId();
-                return new SimpleBooleanProperty(comprobarEventos(id));
+                if (event == null) {
+                    return new SimpleBooleanProperty(comprobarEventos(id));
+                } else {
+                    return new SimpleBooleanProperty(comprobarSeleccionado(id));
+                }
             }
         });
 
@@ -239,14 +270,27 @@ public class ShowAllArtistViewController {
 
     }
 
+    private boolean comprobarSeleccionado(Long id) {
+        try {
+            Artist[] seleccionados = ArtistManagerFactory.get().findByEvent_XML(Artist[].class, String.valueOf(id));
+
+            for (Artist ar : seleccionados) {
+                return this.artists.contains(ar);
+            }
+        } catch (ReadException e) {
+            return false;
+        }
+        return false;
+
+    }
+
     private boolean comprobarEventos(Long id) {
         try {
             EventManagerFactory.get().findByArtist_XML(Event[].class, String.valueOf(id));
             return true;
-        } catch (Exception e) {
+        } catch (ReadException e) {
             return false;
         }
-
     }
 
     private void closeAppFromX(WindowEvent event) {

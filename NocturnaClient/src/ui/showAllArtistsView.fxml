@@ -41,6 +41,6 @@
         </TableView>
         <Button fx:id="btnSeleccionar" disable="true" layoutX="667.0" layoutY="582.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="SELECCIONAR" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="112.0" />
         <Button fx:id="btnCrear" layoutX="640.0" layoutY="574.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Crear nuevo" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="277.0" />
-        <Button fx:id="btnEliminar" layoutX="429.0" layoutY="600.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Eliminar" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="442.0" />
+        <Button fx:id="btnEliminar" disable="true" layoutX="429.0" layoutY="600.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="120.0" text="Eliminar" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="442.0" />
     </children>
 </AnchorPane>
