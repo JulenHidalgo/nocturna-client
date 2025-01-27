@@ -52,6 +52,7 @@ import logic.ClubManagerFactory;
 
 import logic.EventManager;
 import logic.EventManagerFactory;
+import ui_controllers.ShowEventViewController;
 import model.Artist;
 import model.Client;
 import model.Club;
@@ -143,10 +144,10 @@ public class ShowAllEventsViewController {
             EventManagerFactory.get().create_XML(evento);            
             events = recogerAllEvents();
             cargarTabla(events);
-   
+
     }
     
-     @FXML
+    @FXML
     private void añadirAtists(ActionEvent event){
          try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllArtistsView.fxml"));
@@ -155,6 +156,26 @@ public class ShowAllEventsViewController {
             controller.setStage(stage);
             controller.setTema(tema);
             controller.setUser(user);
+        } catch (IOException ex) {
+            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @FXML
+    private void irShowEventView(ActionEvent event){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showEventView.fxml"));
+            
+            Parent root = loader.load();
+            
+            ShowEventViewController controller = (ShowEventViewController) loader.getController();
+           
+            controller.setStage(stage);
+            controller.setTema(tema);
+            controller.setEvent(tablaEvent.getSelectionModel().getSelectedItem());
+            
+            controller.initStage(root);
+            
         } catch (IOException ex) {
             Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -194,17 +215,7 @@ public class ShowAllEventsViewController {
         
     }
     
-    private void irShowEventView(){
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showEventsView.fxml"));
-            Parent root = loader.load();
-            ShowAllEventsViewController controller = (ShowAllEventsViewController) loader.getController();
-            controller.setStage(stage);
-            controller.setTema(tema);
-        } catch (IOException ex) {
-            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+    
     
    
             
@@ -213,9 +224,11 @@ public class ShowAllEventsViewController {
     private void aplicarFiltros(){
         events =  recogerAllEvents();
         List<Event> eventos = new ArrayList<>();
+        
         if(!tfBuscador.getText().isEmpty()){
             events = events.stream().filter(event -> event.getNombre().toLowerCase().startsWith(tfBuscador.getText().toLowerCase())).collect(Collectors.toList());
         }
+        
         if(dateFechaHasta.getValue()!=null){
             Event[] eventosArray = EventManagerFactory.get().findByDates_XML(Event[].class, dateFecha.getValue().toString(),dateFechaHasta.getValue().toString());
             for (Event e : Arrays.asList(eventosArray)) {
@@ -283,7 +296,7 @@ public class ShowAllEventsViewController {
             btnCrearEvento.setVisible(false);
         }else{
             tablaEvent.setEditable(true);
-            tablaEvent.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+            //tablaEvent.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             tcMusica.setEditable(false);
         }
         

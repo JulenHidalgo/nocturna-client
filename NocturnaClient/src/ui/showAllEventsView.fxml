@@ -7,11 +7,18 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <AnchorPane fx:id="bpPrincipal" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-image: url('file:/C:/Users/2dam.TARTANGALH/Desktop/E/fondo.jpg'); -fx-background-size: cover;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui_controllers.ShowAllEventsViewController">
    <children>
+       <HBox fx:id="hbMenu" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <fx:include prefWidth="1280.0" source="menu.fxml" />
+            </children>
+        </HBox>
+      
       <TableView fx:id="tablaEvent" layoutX="111.0" layoutY="224.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="101.0" AnchorPane.leftAnchor="111.0" AnchorPane.rightAnchor="113.0" AnchorPane.topAnchor="224.0">
         <columns>
           <TableColumn fx:id="tcNombre" prefWidth="150.0" text="Nombre" />
@@ -34,7 +41,7 @@
       <DatePicker fx:id="dateFechaHasta" layoutX="635.0" layoutY="174.0" prefHeight="26.0" prefWidth="144.0" visible="false" AnchorPane.topAnchor="174.0" />
       <Label layoutX="468.0" layoutY="152.0" text="Fecha" textFill="WHITE" AnchorPane.topAnchor="152.0" />
       <Label fx:id="lbHasta" layoutX="732.0" layoutY="151.0" text="Hasta" textFill="#f5f5f5" visible="false" />
-      <Button fx:id="btnSeleccionar" disable="true" layoutX="1047.0" layoutY="648.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" text="ver evento" AnchorPane.bottomAnchor="32.0" AnchorPane.rightAnchor="113.0" />
+      <Button fx:id="btnSeleccionar" disable="true" layoutX="1047.0" layoutY="648.0" mnemonicParsing="false" onAction="#irShowEventView" prefHeight="40.0" prefWidth="120.0" text="ver evento" AnchorPane.bottomAnchor="32.0" AnchorPane.rightAnchor="113.0" />
       <Button fx:id="btnBorrarEvento" disable="true" layoutX="771.0" layoutY="648.0" mnemonicParsing="false" onAction="#deleteEvent" prefHeight="40.0" prefWidth="120.0" text="Borrar" AnchorPane.bottomAnchor="32.0" AnchorPane.rightAnchor="410.0" />
       <Button fx:id="btnCrearEvento" layoutX="633.0" layoutY="648.0" mnemonicParsing="false" onAction="#createEvent" prefHeight="40.0" prefWidth="120.0" text="Crear " AnchorPane.bottomAnchor="32.0" AnchorPane.rightAnchor="547.0" />
       <Label layoutX="111.0" layoutY="152.0" text="Buscar" textFill="WHITE" AnchorPane.leftAnchor="111.0" AnchorPane.topAnchor="152.0" />

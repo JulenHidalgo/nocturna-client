@@ -235,7 +235,7 @@ public class SignUpViewController {
                 LOGGER.warning("Error while opening 'SignIn' window");
             }
         }
-    }*/
+    }
 
     private void resetPass(ActionEvent event) {
         try {

@@ -10,8 +10,13 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-image: url('file:/C:/Users/2dam.TARTANGALH/Desktop/E/fondo.jpg'); -fx-background-size: cover;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-image: url('file:/C:/Users/2dam.TARTANGALH/Desktop/E/fondo.jpg'); -fx-background-size: cover;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui_controllers.ShowEventViewController">
    <children>
+      <HBox fx:id="hbMenu" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <fx:include prefWidth="1280.0" source="menu.fxml" />
+            </children>
+        </HBox>
       <VBox alignment="CENTER" layoutY="109.0" prefHeight="617.0" prefWidth="1282.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="109.0">
          <children>
             <Label fx:id="lblNombreEvento" alignment="CENTER" prefHeight="106.0" prefWidth="846.0" text="Nombre Evento" textFill="#fdfdfd">
@@ -54,7 +59,7 @@
                         <Insets right="47.0" />
                      </HBox.margin>
                   </Text>
-                  <ListView maxHeight="40.0" prefHeight="39.0" prefWidth="230.0">
+                  <ListView fx:id="artistsList" maxHeight="40.0" prefHeight="39.0" prefWidth="230.0">
                      <HBox.margin>
                         <Insets left="47.0" />
                      </HBox.margin>
@@ -111,7 +116,7 @@
                         <Insets right="30.0" />
                      </HBox.margin>
                   </Text>
-                  <Button fx:id="btnRestar" mnemonicParsing="false" text="-">
+                  <Button fx:id="btnRestar" mnemonicParsing="false" onAction="#restarTicket" text="-">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -127,7 +132,7 @@
                         <Insets left="15.0" right="15.0" />
                      </HBox.margin>
                   </Label>
-                  <Button fx:id="btnSumar" mnemonicParsing="false" text="+">
+                  <Button fx:id="btnSumar" mnemonicParsing="false" onAction="#sumarTicket" text="+">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -135,7 +140,7 @@
                         <Insets left="15.0" right="30.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="btnComprar" mnemonicParsing="false" prefHeight="39.0" prefWidth="189.0" text="Comprar entrada/s">
+                  <Button fx:id="btnComprar" mnemonicParsing="false" onAction="#irBuyTicketsView" prefHeight="39.0" prefWidth="189.0" text="Comprar entrada/s">
                      <font>
                         <Font size="18.0" />
                      </font>
