@@ -5,18 +5,20 @@
  */
 package ui_controllers;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -135,6 +137,8 @@ public class ShowAllClubsViewController {
         
         stage.show();
         LOGGER.info("Show all clubs window initialized.");
+        
+        btnSelect.setOnAction(this::masInfo);
                 
         txtNameFilter.textProperty().addListener((observable, oldValue, newValue) -> {
             List<Club> clubFilter = new ArrayList<>();
@@ -166,6 +170,17 @@ public class ShowAllClubsViewController {
                 }
             }
         });
+        
+        dateFirst.valueProperty().addListener(new ChangeListener<LocalDate>() {
+            @Override
+            public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
+                if (newValue != null) {
+                    if(dateFirst.getValue() != null){
+                        dateSecond.setVisible(true);
+                    }
+                }
+            }
+        });
 
     }
     
@@ -176,6 +191,24 @@ public class ShowAllClubsViewController {
         }
         clubs = getClubsInfo();
         setTableData();
+    }
+    
+    private void masInfo(ActionEvent event) {
+        try {
+            Club club = tableClubs.getSelectionModel().getSelectedItem();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showClubView.fxml"));
+            
+            Parent root = loader.load();
+            
+            ShowClubViewController controller = (ShowClubViewController) loader.getController();
+            
+            controller.setStage(stage);
+            controller.setUser(user);
+            controller.setClub(club);
+            controller.initStage(root);
+        } catch (IOException ex) {
+            Logger.getLogger(ShowAllClubsViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void createClub(ActionEvent event) {

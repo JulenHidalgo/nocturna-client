@@ -10,6 +10,7 @@ import model.Club;
 public class ClubEditingCell<T> extends TableCell<Club, T> {
 
     private TextField textField;
+    private Hyperlink hyperlink;
 
     public ClubEditingCell() {
     }
@@ -33,9 +34,19 @@ public class ClubEditingCell<T> extends TableCell<Club, T> {
     @Override
     public void cancelEdit() {
         super.cancelEdit();
-        setText(getString());
-        setGraphic(null);
-        setContentDisplay(ContentDisplay.TEXT_ONLY);
+        if (3==getTableView().getColumns().indexOf(getTableColumn())) {
+            createHyperLink();
+            setGraphic(hyperlink);
+            setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        } else {
+            setText(getString());
+            createHyperLink();
+            setGraphic(hyperlink);
+            setContentDisplay(ContentDisplay.TEXT_ONLY);
+        }
+        //setText(getString());
+        //setGraphic(null);
+        //setContentDisplay(ContentDisplay.TEXT_ONLY);
     }
 
     @Override
@@ -52,11 +63,37 @@ public class ClubEditingCell<T> extends TableCell<Club, T> {
                     setGraphic(textField);
                 }
             } else {
-                setText(getString());
-                setGraphic(null);
-                setContentDisplay(ContentDisplay.TEXT_ONLY);
+                if (3==getTableView().getColumns().indexOf(getTableColumn())) {
+                    createHyperLink();
+                    setGraphic(hyperlink);
+                    setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                } else {
+                    setText(getString());
+                    createHyperLink();
+                    setGraphic(hyperlink);
+                    setContentDisplay(ContentDisplay.TEXT_ONLY);
+                }
             }
         }
+    }
+    
+    private void createHyperLink() {
+        hyperlink = new Hyperlink(getString());
+        hyperlink.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+        hyperlink.setStyle("-fx-text-fill: #000000;");
+        hyperlink.setOnAction(event -> {
+        try {
+            java.awt.Desktop.getDesktop().browse(new java.net.URI(hyperlink.getText()));
+        } catch (Exception e) {
+            
+            new Alert(Alert.AlertType.ERROR, "No sse ha podido abrir la URL.").showAndWait();
+        }
+    });
+        hyperlink.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                commitEdit(hyperlink.getText());
+            }
+        });
     }
 
     private void createTextField() {
