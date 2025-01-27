@@ -6,6 +6,7 @@
 package ui_controllers;
 
 import exceptions.ReadException;
+import java.io.IOException;
 import java.sql.Date;
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +46,7 @@ import utils.CustomAlert;
 
 /**
  *
- * @author 2dam
+ * @author Julen Hidalgo
  */
 public class ShowAllArtistViewController {
 
@@ -133,6 +134,7 @@ public class ShowAllArtistViewController {
                     if (c.getList().isEmpty()) {
                         btnSeleccionar.setDisable(true);
                         btnEliminar.setDisable(true);
+
                     } else if (c.getList().size() == 1) {
                         btnSeleccionar.setDisable(false);
                         btnEliminar.setDisable(false);
@@ -145,6 +147,8 @@ public class ShowAllArtistViewController {
 
             tfFiltroNombre.textProperty().addListener((observable, oldValue, newValue) -> cargarTabla());
             tfFiltroMusica.textProperty().addListener((observable, oldValue, newValue) -> cargarTabla());
+            
+            
 
             stage.setScene(scene);
             stage.show();
@@ -185,7 +189,7 @@ public class ShowAllArtistViewController {
 
         tcEventos.setEditable(false);
         cargarTabla();
-        cambiarTema();
+        changeTheme();
     }
 
     private void recogerArtistas() {
@@ -205,28 +209,33 @@ public class ShowAllArtistViewController {
         artistsCopia = artists;
 
         if (!tfFiltroNombre.getText().isEmpty()) {
-            artistsCopia = artists.stream().filter(artist -> artist.getNombre().startsWith(tfFiltroNombre.getText())).collect(Collectors.toList());
+            artistsCopia = artistsCopia.stream().filter(artist -> artist.getNombre().startsWith(tfFiltroNombre.getText())).collect(Collectors.toList());
         }
 
         if (!tfFiltroMusica.getText().isEmpty()) {
-            artistsCopia = artists.stream().filter(artist -> artist.getTipoMusica().startsWith(tfFiltroMusica.getText())).collect(Collectors.toList());
+            artistsCopia = artistsCopia.stream().filter(artist -> artist.getTipoMusica().startsWith(tfFiltroMusica.getText())).collect(Collectors.toList());
         }
 
     }
 
     private void irShowArtist(ActionEvent event) {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showArtistView.fxml"));
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showArtistView.fxml"));
 
-        Parent root = loader.load();
+            Parent root = loader.load();
 
-        ShowArtistView controller = (ShowArtistView) loader.getController();
+            ShowArtistViewController controller = (ShowArtistViewController) loader.getController();
 
-        controller.setStage(stage);
-        controller.setTema(tema);
-        controller.setArtist(tvArtists.getSelectionModel().getSelectedItem());
-        controller.setUser(user);
+            controller.setStage(stage);
+            controller.setTema(tema);
+            controller.setArtist((Artist) tvArtists.getSelectionModel().getSelectedItem());
+            controller.setUser(user);
 
-        controller.initStage(root);
+            controller.initStage(root);    
+        }catch(IOException e){
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error con la sincronización de las ventanas, intentalo más tarde");
+        }
+
     }
 
     private void cargarTabla() {
@@ -301,11 +310,12 @@ public class ShowAllArtistViewController {
         }
     }
 
-    private void cambiarTema() {
+    private void changeTheme() {
+        String currentStyle = anchorPane.getStyle();
         if (tema) {
-
+            anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: url\\('[^']+'\\);", "-fx-background-image: url('/img/fondogris.jpg');"));
         } else {
-
+            anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
         }
     }
 
