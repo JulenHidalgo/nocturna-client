@@ -65,7 +65,7 @@ public class Artist implements Serializable {
         this.descripcion = descripcion;
     }
 
-    @XmlTransient
+
     public Set<Event> getEvents() {
         return events;
     }
