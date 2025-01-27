@@ -5,11 +5,15 @@
  */
 package rest;
 
+import exceptions.InternalServerErrorException;
+import exceptions.ReadException;
+import exceptions.SignUpException;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import logic.ClientManager;
+import javax.ws.rs.core.Response;
 
 /**
  * Jersey REST client generated for REST resource:ClientFacadeREST
@@ -24,7 +28,7 @@ import logic.ClientManager;
  *
  * @author 2dam
  */
-public class ClientRESTClient implements ClientManager{
+public class ClientRESTClient implements ClientManager {
 
     private WebTarget webTarget;
     private Client client;
@@ -79,8 +83,28 @@ public class ClientRESTClient implements ClientManager{
     }
 
     @Override
-    public void create_XML(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Client.class);
+    public void create_XML(Object requestEntity) throws WebApplicationException, SignUpException, InternalServerErrorException, ReadException {
+        WebTarget resource = webTarget;
+        Response response = resource
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+
+        // Verifica el estado de la respuesta
+        if (response.getStatus() == 400 || response.getStatus() == 500) {
+            throw new InternalServerErrorException();
+        }
+
+        if (response.getStatus() == 404) {
+            throw new ReadException();
+        }
+
+        if (response.getStatus() == 406) {
+            throw new SignUpException();
+        }
+
+        if (response.getStatus() >= 400) {
+            throw new WebApplicationException("Error HTTP: " + response.getStatus());
+        }
     }
 
     public void create_JSON(Object requestEntity) throws ClientErrorException {
@@ -107,5 +131,5 @@ public class ClientRESTClient implements ClientManager{
     public void close() {
         client.close();
     }
-    
+
 }

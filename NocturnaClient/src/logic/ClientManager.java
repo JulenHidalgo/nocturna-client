@@ -5,6 +5,9 @@
  */
 package logic;
 
+import exceptions.InternalServerErrorException;
+import exceptions.ReadException;
+import exceptions.SignUpException;
 import javax.ws.rs.WebApplicationException;
 
 /**
@@ -21,7 +24,7 @@ public interface ClientManager {
 
     public <T> T findRange_XML(Class<T> responseType, String from, String to) throws WebApplicationException;
 
-    public void create_XML(Object requestEntity) throws WebApplicationException;
+    public void create_XML(Object requestEntity) throws WebApplicationException, SignUpException, InternalServerErrorException, ReadException;
 
     public <T> T findAll_XML(Class<T> responseType) throws WebApplicationException;
 
