@@ -5,13 +5,17 @@
  */
 package ui_controllers;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -19,7 +23,9 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
+import logic.UserManagerFactory;
 import model.Artist;
+import model.Client;
 import model.Event;
 import model.User;
 
@@ -71,7 +77,49 @@ public class MenuController {
     private boolean tema;
 
     private final Logger LOGGER = Logger.getLogger("SignInViewController.view");
+    
+    @FXML
+    private void irShowAllClubsView(ActionEvent event) throws Exception{
+         try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllClubsView.fxml"));
+            
+            Parent root = loader.load();
+            
+            ShowAllClubsViewController controller = (ShowAllClubsViewController) loader.getController();
+           
+            controller.setStage(stage);
+            controller.setTema(tema);
+            controller.setUser(user);
+            controller.initStage(root);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
+    
+    @FXML
+    private void irShowAllArtistView(ActionEvent event) {
+         try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllArtistsView.fxml"));
+            
+            Parent root = loader.load();
+            
+            ShowAllArtistViewController controller = (ShowAllArtistViewController) loader.getController();
+                 user = new Client();
+        user = UserManagerFactory.get().find_XML(Client.class, "2");
+            controller.setStage(stage);
+            controller.setTema(tema);
+            controller.setUser(user);
+            controller.setEvent(null);
+            controller.initStage(root);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
     public void setStage(Stage stage) {
         this.stage = stage;
     }
@@ -91,42 +139,8 @@ public class MenuController {
     public void initStage(Parent root) {
         LOGGER.info("Initializing the 'Menu'.");
         Scene scene = new Scene(root);
-
-        /**
-        if (event == null) {
-            if (user.getIsAdmin()) {
-                tvArtists.setEditable(true);
-            }
-            stage.setTitle("Visualizar artistas");
-
-            tcEventos.setText("¿Tiene eventos?");
-
-        } else {
-            stage.setTitle("Selector de artistas");
-            tcEventos.setText("¿Seleccionado?");
-        }
-
-        cargarTabla();
-
-        recogerArtistas();
-        cambiarTema();
-
-        stage.setOnCloseRequest(this::closeAppFromX);
-
-        tfFiltroNombre.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                cargarTabla();
-            }
-        });
-
-        tfFiltroMusica.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                cargarTabla();
-            }
-        });
-        */
+        
+       
         stage.show();
         stage.setScene(scene);
         LOGGER.info("'ShowAllArtists' window initialized.");
