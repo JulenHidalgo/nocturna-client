@@ -5,11 +5,14 @@
  */
 package rest;
 
+import exceptions.ReadException;
+import exceptions.SignInException;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
 import logic.EventManager;
 import model.Event;
 
@@ -18,15 +21,15 @@ import model.Event;
  * [entities.event]<br>
  * USAGE:
  * <pre>
-        EventRESTClient client = new EventRESTClient();
-        Object response = client.XXX(...);
-        // do whatever with response
-        client.close();
- </pre>
+ * EventRESTClient client = new EventRESTClient();
+ * Object response = client.XXX(...);
+ * // do whatever with response
+ * client.close();
+ * </pre>
  *
  * @author 2dam
  */
-public class EventRESTClient implements EventManager{
+public class EventRESTClient implements EventManager {
 
     private WebTarget webTarget;
     private Client client;
@@ -49,10 +52,23 @@ public class EventRESTClient implements EventManager{
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public <T> T findByArtist_XML(Class<T> responseType, String idArtist) throws WebApplicationException {
+    @Override
+    public <T> T findByArtist_XML(Class<T> responseType, String idArtist) throws WebApplicationException, ReadException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("findEventsByArtist/{0}", new Object[]{idArtist}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+
+        Response response = resource
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .get();
+
+        // Verifica el estado de la respuesta
+        if (response.getStatus() == 500) {
+            // Opcionalmente, puedes extraer información del cuerpo de la respuesta
+            String errorDetails = response.readEntity(String.class); // Suponiendo que el error tenga un mensaje en el cuerpo
+            throw new ReadException();
+        }
+
+        return response.readEntity(responseType);
     }
 
     public <T> T findByArtist_JSON(Class<T> responseType, String idArtist) throws WebApplicationException {
@@ -77,10 +93,22 @@ public class EventRESTClient implements EventManager{
                 .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON), Event.class);
     }
 
-    public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException {
+    @Override
+    public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException, ReadException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+        Response response = resource
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .get();
+
+        // Verifica el estado de la respuesta+
+        if (response.getStatus() == 500) {
+            // Opcionalmente, puedes extraer información del cuerpo de la respuesta
+            String errorDetails = response.readEntity(String.class); // Suponiendo que el error tenga un mensaje en el cuerpo
+            throw new ReadException();
+        }
+
+        return response.readEntity(responseType);
     }
 
     public <T> T find_JSON(Class<T> responseType, String id) throws WebApplicationException {
@@ -123,7 +151,7 @@ public class EventRESTClient implements EventManager{
                 .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON), Event.class);
     }
 
-    public <T> T findAll_XML(Class <T> responseType) throws WebApplicationException {
+    public <T> T findAll_XML(Class<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
@@ -140,5 +168,5 @@ public class EventRESTClient implements EventManager{
     public void close() {
         client.close();
     }
-    
+
 }

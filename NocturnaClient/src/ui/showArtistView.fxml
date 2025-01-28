@@ -15,65 +15,69 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-image: url('file:/C:/Users/2dam.TARTANGALH/Desktop/retoFinal/img/fondo.jpg'); -fx-background-size: cover;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <HBox fx:id="hbMenu" layoutX="47.0" layoutY="31.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-      <Label fx:id="lblNombre" alignment="CENTER" layoutX="136.0" layoutY="28.0" text="NOMBRE DEL ARTISTA" textAlignment="CENTER" textFill="WHITE" AnchorPane.bottomAnchor="550.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="75.0">
-         <font>
-            <Font size="64.0" />
-         </font>
-      </Label>
-      <HBox prefWidth="200.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="200.0">
-         <children>
-            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Tipo de música:">
-               <font>
-                  <Font size="24.0" />
-               </font>
-            </Text>
-            <Label fx:id="lblTipoMusica" style="-fx-background-color: white;" text="tipo de musica">
-               <font>
-                  <Font size="24.0" />
-               </font>
-               <HBox.margin>
-                  <Insets left="10.0" />
-               </HBox.margin>
-            </Label>
-         </children>
-      </HBox>
-      <VBox prefHeight="150.0" prefWidth="100.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="250.0">
-         <children>
-            <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Descripción:">
-               <font>
-                  <Font size="24.0" />
-               </font>
-            </Text>
-            <ScrollPane fx:id="scrollPane" fitToWidth="true" prefHeight="200.0" style="-fx-background-color: rgba(0, 0, 0, 0.0);">
-               <content>
-                  <Label fx:id="lblDescripcion" text="aqui va a aparecer la descripcion del artista" wrapText="true">
-                     <font>
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-image: url('/img/fondogris.jpg'); -fx-background-size: cover;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui_controllers.ShowArtistViewController">
+    <children>
+        <HBox fx:id="hbMenu" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <fx:include prefWidth="1280.0" source="menu.fxml" />
+            </children>
+        </HBox>
+        <Label fx:id="lblNombre" alignment="CENTER" layoutX="136.0" layoutY="28.0" text="NOMBRE DEL ARTISTA" textAlignment="CENTER" textFill="WHITE" AnchorPane.bottomAnchor="550.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="75.0">
+            <font>
+                <Font size="64.0" />
+            </font>
+        </Label>
+        <HBox prefWidth="200.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="200.0">
+            <children>
+                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Tipo de música:">
+                    <font>
                         <Font size="24.0" />
-                     </font>
-                  </Label>
-               </content>
-            </ScrollPane>
-         </children>
-      </VBox>
-      <Text fill="WHITE" layoutX="112.0" layoutY="373.0" strokeType="OUTSIDE" strokeWidth="0.0" text="FILTRAR POR:" wrappingWidth="112.80000114440918" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="799.0" AnchorPane.topAnchor="455.0">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Text>
-      <TextField fx:id="tfBusqueda" layoutX="125.0" layoutY="61.0" prefHeight="35.0" promptText="Filtro" AnchorPane.leftAnchor="482.0" AnchorPane.rightAnchor="482.0" AnchorPane.topAnchor="450.0" />
-      <ComboBox fx:id="cbFiltrar" layoutX="237.0" layoutY="355.0" prefHeight="35.0" prefWidth="221.0" AnchorPane.leftAnchor="234.0" AnchorPane.topAnchor="450.0" />
-      <DatePicker fx:id="dpDesde" layoutX="714.0" layoutY="309.0" prefHeight="35.0" promptText="fecha" AnchorPane.leftAnchor="834.0" AnchorPane.rightAnchor="297.0" AnchorPane.topAnchor="450.0" />
-      <DatePicker fx:id="dpHasta" layoutX="734.0" layoutY="355.0" prefHeight="35.0" promptText="hasta" visible="false" AnchorPane.leftAnchor="1001.0" AnchorPane.rightAnchor="130.0" AnchorPane.topAnchor="450.0" />
-      <TableView fx:id="tableView" layoutX="131.0" layoutY="99.0" prefHeight="400.0" prefWidth="800.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="500.0">
-        <columns>
-          <TableColumn fx:id="tcNombreEvento" prefWidth="352.0" text="Nombre del evento" />
-          <TableColumn fx:id="tcNombreSala" prefWidth="352.0" text="Nombre de la sala" />
-            <TableColumn fx:id="tcFechaEvento" prefWidth="352.0" text="Fecha del evento" />
-        </columns>
-      </TableView>
-      <Button fx:id="btnSeleccionar" layoutX="667.0" layoutY="582.0" maxHeight="40.0" maxWidth="120.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" text="SELECCIONAR" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="112.0" />
-   </children>
+                    </font>
+                </Text>
+                <Label fx:id="lblTipoMusica" style="-fx-background-color: white;" text="tipo de musica">
+                    <font>
+                        <Font size="24.0" />
+                    </font>
+                    <HBox.margin>
+                        <Insets left="10.0" />
+                    </HBox.margin>
+                </Label>
+            </children>
+        </HBox>
+        <VBox prefHeight="150.0" prefWidth="100.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="250.0">
+            <children>
+                <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Descripción:">
+                    <font>
+                        <Font size="24.0" />
+                    </font>
+                </Text>
+                <ScrollPane fx:id="scrollPane" fitToWidth="true" prefHeight="200.0" style="-fx-background-color: rgba(0, 0, 0, 0.0);">
+                    <content>
+                        <Label fx:id="lblDescripcion" text="aqui va a aparecer la descripcion del artista" wrapText="true">
+                            <font>
+                                <Font size="24.0" />
+                            </font>
+                        </Label>
+                    </content>
+                </ScrollPane>
+            </children>
+        </VBox>
+        <Text fill="WHITE" layoutX="112.0" layoutY="373.0" strokeType="OUTSIDE" strokeWidth="0.0" text="FILTRAR POR:" wrappingWidth="112.80000114440918" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="799.0" AnchorPane.topAnchor="455.0">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Text>
+        <TextField fx:id="tfBusqueda" disable="true" layoutX="125.0" layoutY="61.0" prefHeight="35.0" promptText="Filtro" AnchorPane.leftAnchor="482.0" AnchorPane.rightAnchor="482.0" AnchorPane.topAnchor="450.0" />
+        <ComboBox fx:id="cbFiltrar" layoutX="237.0" layoutY="355.0" prefHeight="35.0" prefWidth="221.0" AnchorPane.leftAnchor="234.0" AnchorPane.topAnchor="450.0" />
+        <DatePicker fx:id="dpDesde" layoutX="714.0" layoutY="309.0" prefHeight="35.0" promptText="fecha" AnchorPane.leftAnchor="834.0" AnchorPane.rightAnchor="297.0" AnchorPane.topAnchor="450.0" />
+        <DatePicker fx:id="dpHasta" layoutX="734.0" layoutY="355.0" prefHeight="35.0" promptText="hasta" visible="false" AnchorPane.leftAnchor="1001.0" AnchorPane.rightAnchor="130.0" AnchorPane.topAnchor="450.0" />
+        <TableView fx:id="tableView" layoutX="131.0" layoutY="99.0" prefHeight="400.0" prefWidth="800.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="500.0">
+            <columns>
+                <TableColumn fx:id="tcNombreEvento" prefWidth="352.0" text="Nombre del evento" />
+                <TableColumn fx:id="tcNombreSala" prefWidth="352.0" text="Nombre de la sala" />
+                <TableColumn fx:id="tcFechaEvento" prefWidth="352.0" text="Fecha del evento" />
+            </columns>
+        </TableView>
+        <Button fx:id="btnSeleccionar" disable="true" layoutX="667.0" layoutY="582.0" maxHeight="40.0" maxWidth="120.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" text="SELECCIONAR" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="112.0" />
+    </children>
 </AnchorPane>

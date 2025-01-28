@@ -21,11 +21,11 @@ public class CustomAlert {
     public static boolean throwAlertCustom(AlertType tipo, String mensaje) {
         Alert alert = new Alert(tipo);
         alert.setHeaderText(mensaje);
-        alert.showAndWait();
         if (tipo.equals(Alert.AlertType.CONFIRMATION)) {
             Optional<ButtonType> confirmar = alert.showAndWait();
             return confirmar.get() == ButtonType.OK;
         }
+        alert.showAndWait();
         return false;
     }
 

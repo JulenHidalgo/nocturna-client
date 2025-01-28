@@ -5,10 +5,12 @@
  */
 package rest;
 
+import exceptions.ReadException;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 import logic.ArtistManager;
 import model.Artist;
 
@@ -25,7 +27,7 @@ import model.Artist;
  *
  * @author 2dam
  */
-public class ArtistRESTClient implements ArtistManager{
+public class ArtistRESTClient implements ArtistManager {
 
     private WebTarget webTarget;
     private Client client;
@@ -116,12 +118,24 @@ public class ArtistRESTClient implements ArtistManager{
     public void remove(String id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
     }
-    
+
     @Override
-    public <T> T findByEvent_XML(Class<T> responseType, String idEvent) throws WebApplicationException {
+    public <T> T findByEvent_XML(Class<T> responseType, String idEvent) throws WebApplicationException, ReadException{
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("findArtistsByEvent/{0}", new Object[]{idEvent}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+
+        resource = resource.path(java.text.MessageFormat.format("artistsByEvent/{0}", new Object[]{idEvent}));
+
+        Response response = resource
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .get();
+
+        if (response.getStatus() > 200) {
+            // Opcionalmente, puedes extraer información del cuerpo de la respuesta
+            String errorDetails = response.readEntity(String.class); // Suponiendo que el error tenga un mensaje en el cuerpo
+            throw new ReadException();
+        }
+        
+        return response.readEntity(responseType);
     }
 
     public <T> T findByEvent_JSON(Class<T> responseType, String idEvent) throws ClientErrorException {
@@ -134,5 +148,5 @@ public class ArtistRESTClient implements ArtistManager{
     public void close() {
         client.close();
     }
-    
+
 }

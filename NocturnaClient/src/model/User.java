@@ -76,8 +76,14 @@ public class User implements Serializable {
     public void setTickets(Set<Ticket> tickets) {
         this.tickets = tickets;
     }
-    
-    
+
+    public Boolean getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(Boolean isAdmin) {
+        this.isAdmin = isAdmin;
+    }
 
     @Override
     public int hashCode() {
