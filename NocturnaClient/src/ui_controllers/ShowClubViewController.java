@@ -21,12 +21,16 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import logic.EventManager;
 import logic.EventManagerFactory;
@@ -52,6 +56,9 @@ public class ShowClubViewController {
     private List<Event> events;
 
     private EventManager eventManager;
+    
+    @FXML
+    AnchorPane anchorPane;
     
     @FXML
     private TextField txtNombre;
@@ -90,6 +97,10 @@ public class ShowClubViewController {
     public void setUser(User user) {
         this.user = user;
     }
+    
+    public boolean getTema() {
+        return this.tema;
+    }
 
     public void setTema(boolean tema) {
         this.tema = tema;
@@ -113,6 +124,17 @@ public class ShowClubViewController {
             columnFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
             setTableData();
             btnInfo.setDisable(true);
+            changeTheme();
+            
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem item1 = new MenuItem("Cambiar tema");
+            item1.setOnAction(this::cambiarTema);
+            MenuItem item2 = new MenuItem("Imprimir los datos de la tabla");
+            item2.setOnAction(this::imprimirTabla);
+            contextMenu.getItems().addAll(item1, item2);
+
+            anchorPane.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
+            
             stage.show();
             
             btnInfo.setOnAction(this::masInfo);
@@ -132,6 +154,30 @@ public class ShowClubViewController {
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Exception setting up the window", ex.getMessage());
             throw new Exception("ERROR INICIALIZANDO LA VENTANA");
+        }
+    }
+    
+    private void imprimirTabla(ActionEvent event) {
+        
+    }
+    
+    private void cambiarTema(ActionEvent event) {
+        if (getTema()) {
+            setTema(false);
+        } else {
+            setTema(true);
+        }
+        changeTheme();
+    }
+    
+    private void controlMenuConceptual(MouseEvent event, ContextMenu menu) {
+        //Se comprueba si se hace clic con el borón derecho del ratón.
+        if (event.getButton() == MouseButton.SECONDARY) {
+            //Si es así se abre el menú contextual.
+            menu.show(anchorPane, event.getScreenX(), event.getScreenY());
+        } else {
+            //Si no, se cierra el mismo.
+            menu.hide();
         }
     }
     
@@ -170,6 +216,15 @@ public class ShowClubViewController {
             controller.initStage(root);
         } catch (Exception ex) {
             Logger.getLogger(ShowAllClubsViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void changeTheme() {
+        String currentStyle = anchorPane.getStyle();
+        if (tema) {
+            anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: url\\('[^']+'\\);", "-fx-background-image: url('/img/fondogris.jpg');"));
+        } else {
+            anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
         }
     }
     

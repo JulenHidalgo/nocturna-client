@@ -25,12 +25,18 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import logic.ClubManager;
@@ -54,6 +60,12 @@ public class ShowAllClubsViewController {
     private List<Club> clubs;
     
     private ClubManager clubManager;
+    
+    @FXML
+    private Label lblTitulo;
+    
+    @FXML
+    private AnchorPane anchorPane;
     
     @FXML
     private TextField txtNameFilter;
@@ -97,6 +109,10 @@ public class ShowAllClubsViewController {
     public void setUser(User user) {
         this.user = user;
     }
+    
+    public boolean getTema() {
+        return this.tema;
+    }
 
     public void setTema(boolean tema) {
         this.tema = tema;
@@ -124,6 +140,15 @@ public class ShowAllClubsViewController {
             columnUbicacion.setCellFactory(column -> new ClubEditingCell());
             columnCiudad.setCellFactory(column -> new ClubEditingCell());
             columnInstagram.setCellFactory(column -> new ClubEditingCell());
+            
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem item1 = new MenuItem("Cambiar tema");
+            item1.setOnAction(this::cambiarTema);
+            MenuItem item2 = new MenuItem("Imprimir los datos de la tabla");
+            item2.setOnAction(this::imprimirTabla);
+            contextMenu.getItems().addAll(item1, item2);
+
+            anchorPane.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
 
             setTableData();
             if (user.getIsAdmin() == true) {
@@ -139,6 +164,7 @@ public class ShowAllClubsViewController {
                 btnSelect.setDisable(true);
             }
 
+            changeTheme();
             stage.show();
             LOGGER.info("Show all clubs window initialized.");
 
@@ -188,6 +214,41 @@ public class ShowAllClubsViewController {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Exception setting up de window.", e.getMessage());
             throw new Exception("ERROR INICIANDO LA VENTANA");
+        }
+    }
+    
+    private void imprimirTabla(ActionEvent event) {
+        
+    }
+    
+    private void cambiarTema(ActionEvent event) {
+        if (getTema()) {
+            setTema(false);
+        } else {
+            setTema(true);
+        }
+        changeTheme();
+    }
+    
+    private void changeTheme() {
+        String currentStyle = anchorPane.getStyle();
+        if (tema) {
+            lblTitulo.setStyle("-fx-text-fill: black;");
+            anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: url\\('[^']+'\\);", "-fx-background-image: url('/img/fondogris.jpg');"));
+        } else {
+            lblTitulo.setStyle("-fx-text-fill: white;");
+            anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
+        }
+    }
+    
+    private void controlMenuConceptual(MouseEvent event, ContextMenu menu) {
+        //Se comprueba si se hace clic con el borón derecho del ratón.
+        if (event.getButton() == MouseButton.SECONDARY) {
+            //Si es así se abre el menú contextual.
+            menu.show(anchorPane, event.getScreenX(), event.getScreenY());
+        } else {
+            //Si no, se cierra el mismo.
+            menu.hide();
         }
     }
     
