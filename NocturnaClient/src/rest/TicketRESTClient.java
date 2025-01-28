@@ -29,7 +29,7 @@ public class TicketRESTClient implements TicketManager{
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/RetoFinalServer/webresources";
+    private static final String BASE_URI = "http://localhost:8080/NocturnaServer/webresources";
 
     public TicketRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();

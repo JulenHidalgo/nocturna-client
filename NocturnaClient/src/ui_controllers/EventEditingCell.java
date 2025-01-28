@@ -37,7 +37,7 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
         if (!isEmpty()) {
             super.startEdit();
             T item = getItem();
-            if (item instanceof String) {
+            if (item instanceof String && getTableView().getColumns().indexOf(getTableColumn())==0) {
                 createTextField();
                 setGraphic(textField);
             } else if (item instanceof Double) {
@@ -50,8 +50,6 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
                 createDatePicker();
                 setGraphic(datePicker);
             }else{
-               // createDatePicker();
-               // setGraphic(datePicker);
                 createChoiceBox();
                 setGraphic(choiceBox);
             }
@@ -122,16 +120,19 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
         textField = new TextField();
         textField.setText(getString());
         textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
-        textField.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.ENTER) {
-                 commitEdit((T) Double.valueOf(textField.getText()));
-            }
-        });
+        
         textField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ESCAPE) {
                 cancelEdit();
             }
         });
+        
+        textField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                 commitEdit((T) Double.valueOf(textField.getText()));
+            }
+        });
+        
     }
  
     private void createTextFieldForInteger() {
@@ -139,15 +140,17 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
         textField.setText(getString());
         textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
         textField.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.ENTER) {
-                 commitEdit((T) Integer.valueOf(textField.getText()));
-            }
-        });
-        textField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ESCAPE) {
                 cancelEdit();
             }
         });
+        
+        textField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                 commitEdit((T) Integer.valueOf(textField.getText()));
+            }
+        });
+        
     }
     
  private void createChoiceBox() {
@@ -165,7 +168,11 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
     choiceBox.setItems(clubs);
    
     // Establecer el valor actual del ChoiceBox
-    String currentValue = (String) getItem().toString();
+    String currentValue = "";
+    if(getItem()!=null){
+        currentValue = (String) getItem().toString();
+    }
+    
     choiceBox.setValue(currentValue);
      
 
@@ -235,20 +242,20 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
                     case 6:
                         event.setConsumicion((int) newValue);
                         break;
-                    // Agrega más casos según la estructura de tus datos
+                  
                 }
             }
-            // Persistir el cambio en el backend
+           
             try {
 
-                // Llamar al método para persistir los datos
+             
                 EventManagerFactory.get().edit_XML(event, event.getId().toString());
 
-            // Recargar los datos desde el backend
+          
             ObservableList<Event> events = FXCollections.observableArrayList(EventManagerFactory.get().findByDate_XML(Event[].class, LocalDate.now().toString()));
             getTableView().setItems(events);
             } catch (Exception e) {
-                // Si algo falla en la persistencia, muestra un mensaje de error
+                
                 Platform.runLater(() -> {
                     new Alert(Alert.AlertType.ERROR, "Error al actualizar el mantenimiento en el servidor.", ButtonType.OK).showAndWait();
                 });
@@ -256,7 +263,7 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
             }
         }
 
-        // Llamar al commitEdit original para finalizar la edición
+        
         super.commitEdit((T) newValue);
     }
 }

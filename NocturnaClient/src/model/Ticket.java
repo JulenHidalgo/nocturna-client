@@ -27,8 +27,8 @@ public class Ticket implements Serializable {
     @NotNull
     private String dniComprador;
 
-    @NotNull
-    private Long idEvento;
+    /**@NotNull
+    private Long idEvento;*/
 
 
     private Set<String> dniAsistentes;
@@ -47,7 +47,7 @@ public class Ticket implements Serializable {
     
     private User user;
 
-    public Ticket(String dniComprador, Long idEvento, Set<String> dniAsistentes, Double importeCompra, Integer cantidad, FormaPago formapago) {
+    /**public Ticket(String dniComprador, Long idEvento, Set<String> dniAsistentes, Double importeCompra, Integer cantidad, FormaPago formapago) {
         this.dniComprador = dniComprador;
         this.idEvento = idEvento;
         this.dniAsistentes = dniAsistentes;
@@ -55,7 +55,7 @@ public class Ticket implements Serializable {
         this.fechaCompra = valueOf(LocalDate.now());
         this.cantidad = cantidad;
         this.formapago = formapago;
-    }
+    }*/
 
     public Ticket() {
     }
@@ -82,9 +82,9 @@ public class Ticket implements Serializable {
         return dniComprador;
     }
 
-    public Long getIdEvento() {
+    /**public Long getIdEvento() {
         return idEvento;
-    }
+    }*/
 
     public Set getDniAsistentes() {
         return dniAsistentes;
@@ -110,9 +110,9 @@ public class Ticket implements Serializable {
         this.dniComprador = dniComprador;
     }
 
-    public void setIdEvento(Long idEvento) {
+   /** public void setIdEvento(Long idEvento) {
         this.idEvento = idEvento;
-    }
+    }*/
 
     public void setDniAsistentes(Set dniAsistentes) {
         this.dniAsistentes = dniAsistentes;
