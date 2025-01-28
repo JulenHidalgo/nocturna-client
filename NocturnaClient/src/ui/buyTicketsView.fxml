@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
@@ -15,7 +16,7 @@
                <fx:include prefWidth="1280.0" source="menu.fxml" />
            </children>
        </HBox>
-       <Label layoutX="258.0" layoutY="197.0" prefHeight="30.0" prefWidth="210.0" text="Nombre del evento:" textFill="#fafafa" AnchorPane.leftAnchor="330.0" AnchorPane.topAnchor="175.0">
+       <Label layoutX="337.0" layoutY="211.0" prefHeight="30.0" prefWidth="210.0" text="Nombre del evento:" textFill="#fafafa" AnchorPane.leftAnchor="337.0" AnchorPane.topAnchor="211.0">
          <font>
             <Font name="Calisto MT" size="24.0" />
          </font>
@@ -29,13 +30,14 @@
             </Label>
          </children>
       </HBox>
-      <ListView fx:id="listViewListaDni" layoutX="540.0" layoutY="300.0" prefHeight="218.0" prefWidth="200.0" AnchorPane.topAnchor="230.0" />
-      <Label layoutX="268.0" layoutY="207.0" prefHeight="30.0" prefWidth="210.0" text="DNI asistentes:" textFill="#fafafa" AnchorPane.leftAnchor="330.0" AnchorPane.topAnchor="230.0">
+      <TextField fx:id="tfnuevoDni" layoutX="553.0" layoutY="268.0" prefHeight="26.0" prefWidth="199.0" />
+      <ListView fx:id="listViewListaDni" layoutX="553.0" layoutY="305.0" prefHeight="218.0" prefWidth="200.0" AnchorPane.topAnchor="305.0" />
+      <Label layoutX="337.0" layoutY="266.0" prefHeight="30.0" prefWidth="210.0" text="DNI asistentes:" textFill="#fafafa" AnchorPane.leftAnchor="337.0" AnchorPane.topAnchor="266.0">
          <font>
             <Font name="Calisto MT" size="24.0" />
          </font>
       </Label>
-      <Label layoutX="709.0" layoutY="503.0" prefHeight="30.0" prefWidth="70.0" text="Total:" textFill="#fafafa" AnchorPane.rightAnchor="425.0" AnchorPane.topAnchor="490.0">
+      <Label layoutX="775.0" layoutY="569.0" prefHeight="30.0" prefWidth="70.0" text="Total:" textFill="#fafafa" AnchorPane.rightAnchor="434.6" AnchorPane.topAnchor="569.0">
          <font>
             <Font name="Calisto MT" size="24.0" />
          </font>
@@ -45,25 +47,26 @@
             <Button fx:id="btnComprar" mnemonicParsing="false" prefHeight="40.0" prefWidth="149.0" text="COMPRAR ENTRADA(S)" />
          </children>
       </HBox>
-      <RadioButton fx:id="rdBtnBizum" layoutX="370.0" layoutY="512.0" mnemonicParsing="false" text="Bizum" textFill="#fafafa" AnchorPane.leftAnchor="330.0" AnchorPane.topAnchor="470.0">
+      <RadioButton fx:id="rdBtnBizum" layoutX="321.0" layoutY="549.0" mnemonicParsing="false" text="Bizum" textFill="#fafafa" AnchorPane.leftAnchor="321.0" AnchorPane.topAnchor="549.0">
          <font>
             <Font name="Calisto MT" size="24.0" />
          </font>
       </RadioButton>
-      <RadioButton fx:id="rdBtnTarjeta" layoutX="370.0" layoutY="562.0" mnemonicParsing="false" text="Tarjeta bancaria" textFill="#fafafa" AnchorPane.leftAnchor="330.0" AnchorPane.topAnchor="510.0">
+      <RadioButton fx:id="rdBtnTarjeta" layoutX="321.0" layoutY="589.0" mnemonicParsing="false" text="Tarjeta bancaria" textFill="#fafafa" AnchorPane.leftAnchor="321.0" AnchorPane.topAnchor="589.0">
          <font>
             <Font name="Calisto MT" size="24.0" />
          </font>
       </RadioButton>
-      <Label fx:id="lblName" layoutX="268.0" layoutY="207.0" prefHeight="30.0" prefWidth="210.0" text="Nombre" textFill="#fafafa" AnchorPane.leftAnchor="540.0" AnchorPane.topAnchor="175.0">
+      <Label fx:id="lblName" layoutX="547.0" layoutY="211.0" prefHeight="30.0" prefWidth="210.0" text="Nombre" textFill="#fafafa" AnchorPane.leftAnchor="547.0" AnchorPane.topAnchor="211.0">
          <font>
             <Font name="Calisto MT" size="24.0" />
          </font>
       </Label>
-      <Label fx:id="lblTotal" layoutX="719.0" layoutY="513.0" prefHeight="30.0" prefWidth="70.0" text="22" textFill="#fafafa" AnchorPane.rightAnchor="325.0" AnchorPane.topAnchor="490.0">
+      <Label fx:id="lblTotal" layoutX="875.0" layoutY="569.0" prefHeight="30.0" prefWidth="70.0" text="22" textFill="#fafafa" AnchorPane.rightAnchor="334.6" AnchorPane.topAnchor="569.0">
          <font>
             <Font name="Calisto MT" size="24.0" />
          </font>
       </Label>
+      <Button fx:id="btnAgregarDni" layoutX="784.0" layoutY="269.0" mnemonicParsing="false" text="Button" />
    </children>
 </AnchorPane>
