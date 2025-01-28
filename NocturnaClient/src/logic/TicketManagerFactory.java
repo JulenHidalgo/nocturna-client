@@ -16,10 +16,10 @@ import rest.TicketRESTClient;
 public class TicketManagerFactory {
       private static TicketManager ticketManager;
     
-    public static EventManager get(){
+    public static TicketManager get(){
         if(ticketManager == null){
             ticketManager = new TicketRESTClient();
         }
-        return (EventManager) new TicketRESTClient();
+        return (TicketManager) new TicketRESTClient();
     }
 }
