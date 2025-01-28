@@ -8,8 +8,11 @@ package ui_controllers;
 import exceptions.ReadException;
 import java.io.IOException;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -63,7 +66,7 @@ public class ShowAllArtistViewController {
     TextField tfFiltroMusica;
 
     @FXML
-    TableView tvArtists;
+    TableView<Artist> tvArtists;
 
     @FXML
     TableColumn tcNombre;
@@ -126,7 +129,11 @@ public class ShowAllArtistViewController {
 
             stage.setOnCloseRequest(this::closeAppFromX);
             btnEliminar.setOnAction(this::deleteArtist);
-            btnSeleccionar.setOnAction(this::irShowArtist);
+            if (event == null) {
+                btnSeleccionar.setOnAction(this::irShowArtist);
+            } else {
+                btnSeleccionar.setOnAction(this::seleccionarArtistasEvento);
+            }
 
             tvArtists.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Artist>() {
                 @Override
@@ -147,8 +154,6 @@ public class ShowAllArtistViewController {
 
             tfFiltroNombre.textProperty().addListener((observable, oldValue, newValue) -> cargarTabla());
             tfFiltroMusica.textProperty().addListener((observable, oldValue, newValue) -> cargarTabla());
-            
-            
 
             stage.setScene(scene);
             stage.show();
@@ -164,6 +169,7 @@ public class ShowAllArtistViewController {
     private void initializeComponents() {
         user = new User();
         user.setIsAdmin(true);
+        event = EventManagerFactory.get().findAll_XML(Event[].class)[0];
         if (event == null) {
             if (user.getIsAdmin()) {
                 btnCrear.setOnAction(this::crearArtista);
@@ -181,13 +187,12 @@ public class ShowAllArtistViewController {
         } else {
             stage.setTitle("Selector de artistas");
             tcEventos.setText("¿Seleccionado?");
-            tvArtists.setEditable(false);
-            if (user.getIsAdmin()) {
-                tcEventos.setEditable(true);
-            }
+            tvArtists.setEditable(true);
+            tcNombre.setEditable(false);
+            tcTipoMusica.setEditable(false);
+            tcDescripcion.setEditable(false);
+            tcEventos.setEditable(true);
         }
-
-        tcEventos.setEditable(false);
         cargarTabla();
         changeTheme();
     }
@@ -219,7 +224,7 @@ public class ShowAllArtistViewController {
     }
 
     private void irShowArtist(ActionEvent event) {
-        try{
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showArtistView.fxml"));
 
             Parent root = loader.load();
@@ -231,8 +236,8 @@ public class ShowAllArtistViewController {
             controller.setArtist((Artist) tvArtists.getSelectionModel().getSelectedItem());
             controller.setUser(user);
 
-            controller.initStage(root);    
-        }catch(IOException e){
+            controller.initStage(root);
+        } catch (IOException e) {
             CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error con la sincronización de las ventanas, intentalo más tarde");
         }
 
@@ -317,6 +322,24 @@ public class ShowAllArtistViewController {
         } else {
             anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
         }
+    }
+
+    public void seleccionarArtistasEvento(ActionEvent event) {
+        List<Artist> artistasSeleccionados = new ArrayList<>();
+
+        for (int i = 0; i < tvArtists.getItems().size(); i++) {
+            Artist artist = tvArtists.getItems().get(i);
+            ObservableValue<Boolean> checkBoxValue = tcEventos.getCellObservableValue(artist);
+            Boolean isChecked = checkBoxValue.getValue(); // Obtener el valor del CheckBox
+
+            if (isChecked != null && isChecked) {
+                artistasSeleccionados.add(artist);
+            }
+        }
+        tvArtists.refresh();
+
+        // Imprimir los artistas seleccionados
+        artistasSeleccionados.forEach(artist -> System.out.println(artist.getNombre()));
     }
 
 }
