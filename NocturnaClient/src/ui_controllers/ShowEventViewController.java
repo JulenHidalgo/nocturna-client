@@ -52,6 +52,9 @@ public class ShowEventViewController {
     Label lblNumEntradas;
     
     @FXML
+    Label lbArtist;
+    
+    @FXML
     Button btnRestar;
 
     @FXML
@@ -60,8 +63,7 @@ public class ShowEventViewController {
     @FXML
     Button btnComprar;
     
-    @FXML
-    ListView artistsList;
+   
     
     private Stage stage;
 
@@ -139,11 +141,14 @@ public class ShowEventViewController {
         lblPrecio.setText(String.valueOf(event.getPrecioEntrada()));
         lblCantConsumiciones.setText(String.valueOf(event.getConsumicion()));
         lblNombreSala.setText(event.getClub().getNombre());
-        List<String>  nombres = event.getArtists().stream().map(Artist::getNombre).collect(Collectors.toList());
-        ObservableList<String> observableArtist = FXCollections.observableArrayList(nombres); 
-        artistsList.setItems(observableArtist);
-        String musicas = event.getArtists().stream().map(Artist::getTipoMusica).collect(Collectors.joining(", "));
-        lblTipoMusica.setText(musicas);
+        
+        if (event.getArtists() != null) {
+            String nombres = event.getArtists().stream().map(Artist::getNombre).collect(Collectors.joining(", "));
+            lbArtist.setText(nombres);
+            String musicas = event.getArtists().stream().map(Artist::getTipoMusica).collect(Collectors.joining(", "));
+            lblTipoMusica.setText(musicas);
+        }
+
         
         stage.show();
         stage.setScene(scene);
