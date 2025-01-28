@@ -6,6 +6,7 @@
 package ui_controllers;
 
 
+import exceptions.ReadException;
 import java.io.IOException;
 import static java.sql.Date.valueOf;
 import java.time.LocalDate;
@@ -199,13 +200,21 @@ public class ShowAllEventsViewController {
         tcMusica.setCellValueFactory(new PropertyValueFactory<>("Musica"));
         tcConsumicion.setCellValueFactory(new PropertyValueFactory<>("Consumicion"));
        
-       tcMusica.setCellValueFactory(cellData -> {
-            Artist[] artista = ArtistManagerFactory.get().findByEvent_XML(Artist[].class, cellData.getValue().getId().toString());
-            List<Artist> artistas = Arrays.asList(artista);
-            String musicas = artistas.stream().map(Artist::getTipoMusica).collect(Collectors.joining(", "));
-            if(musicas.isEmpty())
-                return null;
-            return new SimpleStringProperty(musicas);
+        tcMusica.setCellValueFactory(cellData -> {
+            try {
+                Artist[] artista = ArtistManagerFactory.get().findByEvent_XML(Artist[].class, cellData.getValue().getId().toString());
+                List<Artist> artistas = Arrays.asList(artista);
+                String musicas = artistas.stream().map(Artist::getTipoMusica).collect(Collectors.joining(", "));
+                if (musicas.isEmpty()) {
+                    return null;
+                }
+                return new SimpleStringProperty(musicas);
+            } catch (WebApplicationException ex) {
+                Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ReadException ex) {
+                Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return null;
         });
       
         //Poner que la columna Sala sea un combobox y cargarle los datos
