@@ -13,10 +13,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -24,8 +27,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import logic.ClubManager;
 import logic.EventManager;
+import logic.EventManagerFactory;
 import model.Club;
 import model.Event;
 import model.User;
@@ -51,6 +54,9 @@ public class ShowClubViewController {
     
     @FXML
     private TextField txtNombre;
+    
+    @FXML
+    private Button btnInfo;
     
     @FXML
     private TextField txtCiudad;
@@ -97,6 +103,8 @@ public class ShowClubViewController {
             txtCiudad.setText(club.getCiudad());
             txtUbicacion.setText(club.getUbicacion());
             imgRedes.setOnMouseReleased(this::clickRedes);
+            
+            eventManager = EventManagerFactory.get();
 
             events = getEventsInfo();
             LOGGER.info("Setting table properties and data.");
@@ -104,6 +112,8 @@ public class ShowClubViewController {
             columnFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
             setTableData();
             stage.show();
+            
+            btnInfo.setOnAction(this::masInfo);
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Exception setting up the window", ex.getMessage());
             throw new Exception("ERROR INICIALIZANDO LA VENTANA");
@@ -121,10 +131,30 @@ public class ShowClubViewController {
     
     private void setTableData() {
         try {
-            ObservableList<Event> observableClubs = FXCollections.observableArrayList(events);
-            tableEvents.setItems(observableClubs);
+            ObservableList<Event> observableEvents = FXCollections.observableArrayList(events);
+            if (observableEvents.size() > 0) {
+                tableEvents.setItems(observableEvents);
+            }
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Exception setting table data", ex.getMessage());
+        }
+    }
+    
+    private void masInfo(ActionEvent event) {
+        try {
+            Event eventTable = tableEvents.getSelectionModel().getSelectedItem();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showEventView.fxml"));
+            
+            Parent root = loader.load();
+            
+            ShowEventViewController controller = (ShowEventViewController) loader.getController();
+            
+            controller.setStage(stage);
+            controller.setUser(user);
+            controller.setEvent(eventTable);
+            controller.initStage(root);
+        } catch (Exception ex) {
+            Logger.getLogger(ShowAllClubsViewController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

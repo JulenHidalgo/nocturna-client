@@ -261,7 +261,9 @@ public class ShowAllClubsViewController {
     private void setTableData() {
         try {
             ObservableList<Club> observableClubs = FXCollections.observableArrayList(clubs);
-            tableClubs.setItems(observableClubs);
+            if (observableClubs.size() > 0) {
+                tableClubs.setItems(observableClubs);
+            }
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Exception setting table data", ex.getMessage());
         }
