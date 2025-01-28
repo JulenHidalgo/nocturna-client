@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -111,9 +112,23 @@ public class ShowClubViewController {
             columnNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
             columnFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
             setTableData();
+            btnInfo.setDisable(true);
             stage.show();
             
             btnInfo.setOnAction(this::masInfo);
+            
+            tableEvents.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Event>() {
+                @Override
+                public void onChanged(ListChangeListener.Change<? extends Event> c) {
+                    if (c.getList().isEmpty()) {
+                        btnInfo.setDisable(true);
+                    }else if (c.getList().size() == 1) {
+                        btnInfo.setDisable(false);
+                    }else if (c.getList().size() > 1) {
+                        btnInfo.setDisable(true);
+                    }
+                }
+            });
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Exception setting up the window", ex.getMessage());
             throw new Exception("ERROR INICIALIZANDO LA VENTANA");
