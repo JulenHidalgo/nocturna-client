@@ -210,8 +210,6 @@ public class ShowClubViewController {
             
             ShowEventViewController controller = (ShowEventViewController) loader.getController();
             
-            controller.setStage(stage);
-            controller.setUser(user);
             controller.setEvent(eventTable);
             controller.initStage(root);
         } catch (Exception ex) {

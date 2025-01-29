@@ -5,6 +5,7 @@
  */
 package ui_controllers;
 
+import control.Sesion;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -78,9 +79,33 @@ public class MenuController {
 
     private final Logger LOGGER = Logger.getLogger("SignInViewController.view");
     
+    
+    @FXML
+    private void irShowAllEventsView(ActionEvent event) throws Exception{
+         try {
+            stage=Sesion.getStage();
+            tema=Sesion.getTema();
+            user=Sesion.getUser();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllEventsView.fxml"));
+            
+            Parent root = loader.load();
+            
+            ShowAllEventsViewController controller = (ShowAllEventsViewController) loader.getController();
+           
+           
+            controller.initStage(root);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     @FXML
     private void irShowAllClubsView(ActionEvent event) throws Exception{
          try {
+             stage=Sesion.getStage();
+             tema=Sesion.getTema();
+             user=Sesion.getUser();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllClubsView.fxml"));
             
             Parent root = loader.load();
@@ -101,13 +126,15 @@ public class MenuController {
     @FXML
     private void irShowAllArtistView(ActionEvent event) {
          try {
+            stage=Sesion.getStage();
+            tema=Sesion.getTema();
+            user=Sesion.getUser();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllArtistsView.fxml"));
             
             Parent root = loader.load();
             
             ShowAllArtistViewController controller = (ShowAllArtistViewController) loader.getController();
-                 user = new Client();
-        user = UserManagerFactory.get().find_XML(Client.class, "2");
+                 
             controller.setStage(stage);
             controller.setTema(tema);
             controller.setUser(user);
@@ -119,6 +146,76 @@ public class MenuController {
         }
     }
     
+    @FXML
+    private void irShowAllTicketsView(ActionEvent event) throws Exception{
+         try {
+            stage=Sesion.getStage();
+            tema=Sesion.getTema();
+            user=Sesion.getUser();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllTicketsView.fxml"));
+            
+            Parent root = loader.load();
+            
+            ShowAllTicketsViewController controller = (ShowAllTicketsViewController) loader.getController();
+           
+            controller.setStage(stage);
+            controller.setTema(tema);
+            controller.setUser(user);
+            controller.initStage(root);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+      
+    @FXML
+    private void cerrarSesion(ActionEvent event) throws Exception{
+         try {
+            stage=Sesion.getStage();
+            tema=Sesion.getTema();
+            user=Sesion.getUser();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/signInView.fxml"));
+            
+            Parent root = loader.load();
+            
+            SignInViewController controller = (SignInViewController) loader.getController();
+           
+            controller.setStage(stage);
+            controller.setTema(tema);
+            controller.setUser(user);
+            Sesion.setUser(null);
+          
+            controller.initStage(root);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @FXML
+    private void irVerPerfil(ActionEvent event) throws Exception{
+         try {
+            stage=Sesion.getStage();
+            tema=Sesion.getTema();
+            user=Sesion.getUser();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/signUpView.fxml"));
+            
+            Parent root = loader.load();
+            
+            SignUpViewController controller = (SignUpViewController) loader.getController();
+           
+            controller.setStage(stage);
+            controller.setTema(tema);
+            controller.setUser(user);
+            Sesion.setUser(null);
+          
+            controller.initStage(root);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -139,8 +236,8 @@ public class MenuController {
     public void initStage(Parent root) {
         LOGGER.info("Initializing the 'Menu'.");
         Scene scene = new Scene(root);
+        stage=Sesion.getStage();
         
-       
         stage.show();
         stage.setScene(scene);
         LOGGER.info("'ShowAllArtists' window initialized.");

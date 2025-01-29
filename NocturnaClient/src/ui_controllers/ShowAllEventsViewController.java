@@ -6,6 +6,7 @@
 package ui_controllers;
 
 
+import control.Sesion;
 import exceptions.ReadException;
 import java.io.IOException;
 import static java.sql.Date.valueOf;
@@ -53,6 +54,7 @@ import logic.ClubManagerFactory;
 
 import logic.EventManager;
 import logic.EventManagerFactory;
+import logic.UserManagerFactory;
 import ui_controllers.ShowEventViewController;
 import model.Artist;
 import model.Client;
@@ -154,9 +156,7 @@ public class ShowAllEventsViewController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllArtistsView.fxml"));
             Parent root = loader.load();
             ShowAllEventsViewController controller = (ShowAllEventsViewController) loader.getController();
-            controller.setStage(stage);
-            controller.setTema(tema);
-            controller.setUser(user);
+           
         } catch (IOException ex) {
             Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -171,8 +171,6 @@ public class ShowAllEventsViewController {
             
             ShowEventViewController controller = (ShowEventViewController) loader.getController();
            
-            controller.setStage(stage);
-            controller.setTema(tema);
             controller.setEvent(tablaEvent.getSelectionModel().getSelectedItem());
             
             controller.initStage(root);
@@ -279,26 +277,18 @@ public class ShowAllEventsViewController {
       return  events;
     }
      
-     
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public void setTema(boolean tema) {
-        this.tema = tema;
-    }
     
     public void initStage(Parent root) {
 
         LOGGER.info("Initializing Bank Statement window.");
         Scene scene = new Scene(root);
-
+        user = Sesion.getUser();
+        tema = Sesion.getTema();
+        stage = Sesion.getStage();
+        
         cargarTabla(events);
         
+       
         if(user instanceof Client){
             btnAñadirArtistas.setVisible(false);
             btnBorrarEvento.setVisible(false);
@@ -314,13 +304,11 @@ public class ShowAllEventsViewController {
             public void changed(ObservableValue<? extends Event> observable, Event oldValue, Event newValue) {
                 if (newValue != null) {
                     btnAñadirArtistas.setDisable(false);
-                    btnBorrarEvento.setDisable(false);
-                    //btnCrearEvento.setDisable(false);
+                    btnBorrarEvento.setDisable(false);               
                     btnSeleccionar.setDisable(false);
                 }else{
                     btnAñadirArtistas.setDisable(true);
                     btnBorrarEvento.setDisable(true);
-                    //btnCrearEvento.setDisable(true);
                     btnSeleccionar.setDisable(true);
                 }
             }
@@ -400,7 +388,7 @@ public class ShowAllEventsViewController {
                 aplicarFiltros();
             }
         });
-
+        
         stage.show();
         stage.setScene(scene);
         LOGGER.info("Bank Statement window initialized.");

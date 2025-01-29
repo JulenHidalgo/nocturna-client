@@ -14,16 +14,16 @@
         <menus>
           <Menu fx:id="menuVer" mnemonicParsing="false" text="VER">
             <items>
-              <MenuItem mnemonicParsing="false" text="MIS ENTRADAS" />
-                  <MenuItem mnemonicParsing="false" text="EVENTOS" />
+              <MenuItem fx:id="miTickets" mnemonicParsing="false" onAction="#irShowAllTicketsView" text="MIS ENTRADAS" />
+                  <MenuItem fx:id="miEvents" mnemonicParsing="false" onAction="#irShowAllEventsView" text="EVENTOS" />
                   <MenuItem fx:id="miClubs" mnemonicParsing="false" onAction="#irShowAllClubsView" text="SALAS" />
                   <MenuItem fx:id="miArtists" mnemonicParsing="false" onAction="#irShowAllArtistView" text="ARTISTAS" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="PERFIL">
             <items>
-              <MenuItem mnemonicParsing="false" text="MI PERFIL" />
-                  <MenuItem mnemonicParsing="false" text="CERRAR SESIÓN" />
+              <MenuItem fx:id="miPerfil" mnemonicParsing="false" onAction="#irVerPerfil" text="MI PERFIL" />
+                  <MenuItem fx:id="miSignOut" mnemonicParsing="false" onAction="#cerrarSesion" text="CERRAR SESIÓN" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="AYUDA">

@@ -5,6 +5,7 @@
  */
 package ui_controllers;
 
+import control.Sesion;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -116,17 +117,6 @@ public class ShowEventViewController {
         }
     }
     
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public void setTema(boolean tema) {
-        this.tema = tema;
-    }
     
     public void setEvent(Event event){
         this.event = event;
@@ -136,6 +126,9 @@ public class ShowEventViewController {
         
         LOGGER.info("Initializing Bank Statement window.");
         Scene scene = new Scene(root);
+        user = Sesion.getUser();
+        tema = Sesion.getTema();
+        stage = Sesion.getStage();
         
         lblNombreEvento.setText(event.getNombre());
         lblPrecio.setText(String.valueOf(event.getPrecioEntrada()));

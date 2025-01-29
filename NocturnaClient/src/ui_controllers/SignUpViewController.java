@@ -5,6 +5,7 @@
  */
 package ui_controllers;
 
+import control.Sesion;
 import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -315,15 +316,18 @@ public class SignUpViewController {
             client.setPasswd(pfPass.getText());
 
             ClientManagerFactory.get().create_XML(client);
-
+            
+            User user = new Client();
+            user = client;
+            Sesion.setUser(user);
+            
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllEventsView.fxml"));
 
             Parent root = loader.load();
 
             ShowAllEventsViewController controller = (ShowAllEventsViewController) loader.getController();
 
-            controller.setStage(stage);
-            controller.setTema(tema);
+           
             controller.initStage(root);
 
         } catch (IOException e) {

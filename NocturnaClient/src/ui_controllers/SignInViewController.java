@@ -5,6 +5,7 @@
  */
 package ui_controllers;
 
+import control.Sesion;
 import exceptions.SignInException;
 import java.io.IOException;
 import java.util.Optional;
@@ -172,15 +173,13 @@ public class SignInViewController {
             user.setPasswd(pfPass.getText());
 
             user = UserManagerFactory.get().login_XML(User.class, user.getMail(), user.getPasswd());
-
+            Sesion.setUser(user);
+            
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllEventsView.fxml"));
 
             Parent root = loader.load();
 
             ShowAllEventsViewController controller = (ShowAllEventsViewController) loader.getController();
-
-            controller.setStage(stage);
-            controller.setTema(tema);
 
             controller.initStage(root);
         } catch (SignInException e) {
