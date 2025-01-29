@@ -31,7 +31,7 @@ public class Ticket implements Serializable {
     private Long idEvento;*/
 
 
-    private Set<String> dniAsistentes;
+    private String dniAsistentes;
 
     @NotNull
     private Double importeCompra;
@@ -86,7 +86,7 @@ public class Ticket implements Serializable {
         return idEvento;
     }*/
 
-    public Set getDniAsistentes() {
+    public String getDniAsistentes() {
         return dniAsistentes;
     }
 
@@ -114,7 +114,7 @@ public class Ticket implements Serializable {
         this.idEvento = idEvento;
     }*/
 
-    public void setDniAsistentes(Set dniAsistentes) {
+    public void setDniAsistentes(String dniAsistentes) {
         this.dniAsistentes = dniAsistentes;
     }
 

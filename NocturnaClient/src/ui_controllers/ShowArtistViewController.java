@@ -260,10 +260,8 @@ public class ShowArtistViewController {
 
             ShowEventViewController controller = (ShowEventViewController) loader.getController();
 
-            controller.setStage(stage);
-            controller.setTema(tema);
+
             controller.setEvent((Event) tableView.getSelectionModel().getSelectedItem());
-            controller.setUser(user);
 
             controller.initStage(root);
         } catch (IOException e) {
