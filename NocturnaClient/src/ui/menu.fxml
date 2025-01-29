@@ -8,22 +8,22 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="1024.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="1024.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui_controllers.MenuController">
    <children>
-      <MenuBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+      <MenuBar fx:id="menuBar" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
         <menus>
-          <Menu mnemonicParsing="false" text="VER">
+          <Menu fx:id="menuVer" mnemonicParsing="false" text="VER">
             <items>
-              <MenuItem mnemonicParsing="false" text="MIS ENTRADAS" />
-                  <MenuItem mnemonicParsing="false" text="EVENTOS" />
-                  <MenuItem mnemonicParsing="false" text="SALAS" />
-                  <MenuItem mnemonicParsing="false" text="ARTISTAS" />
+              <MenuItem fx:id="miTickets" mnemonicParsing="false" onAction="#irShowAllTicketsView" text="MIS ENTRADAS" />
+                  <MenuItem fx:id="miEvents" mnemonicParsing="false" onAction="#irShowAllEventsView" text="EVENTOS" />
+                  <MenuItem fx:id="miClubs" mnemonicParsing="false" onAction="#irShowAllClubsView" text="SALAS" />
+                  <MenuItem fx:id="miArtists" mnemonicParsing="false" onAction="#irShowAllArtistView" text="ARTISTAS" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="PERFIL">
             <items>
-              <MenuItem mnemonicParsing="false" text="MI PERFIL" />
-                  <MenuItem mnemonicParsing="false" text="CERRAR SESIÓN" />
+              <MenuItem fx:id="miPerfil" mnemonicParsing="false" onAction="#irVerPerfil" text="MI PERFIL" />
+                  <MenuItem fx:id="miSignOut" mnemonicParsing="false" onAction="#cerrarSesion" text="CERRAR SESIÓN" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="AYUDA">
