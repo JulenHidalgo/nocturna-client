@@ -158,9 +158,6 @@ public class MenuController {
             
             ShowAllTicketsViewController controller = (ShowAllTicketsViewController) loader.getController();
            
-            controller.setStage(stage);
-            controller.setTema(tema);
-            controller.setUser(user);
             controller.initStage(root);
             
         } catch (IOException ex) {

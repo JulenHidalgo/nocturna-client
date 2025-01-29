@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -125,7 +126,8 @@ public class buyTicketsViewController {
         ticket.setDniComprador(((Client) user).getDni());
         ticket.setFechaCompra(valueOf(LocalDate.now()));   
         Set<String> listdni = new HashSet<>(listViewListaDni.getItems());
-        ticket.setDniAsistentes(listdni);
+        String dns = listdni.stream().map(Object::toString).collect(Collectors.joining(", "));
+        ticket.setDniAsistentes(dns);
         ticket.setImporteCompra(this.event.getPrecioEntrada() * cantCompra);
         ticket.setEvent(this.event);
         ticket.setUser(user);
