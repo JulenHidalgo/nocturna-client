@@ -8,7 +8,9 @@ package ui_controllers;
 import exceptions.InternalServerErrorException;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,7 +43,10 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import logic.ClubManager;
 import logic.ClubManagerFactory;
+import logic.EventManager;
+import logic.EventManagerFactory;
 import model.Club;
+import model.Event;
 import model.User;
 import utils.CustomAlert;
 
@@ -150,7 +155,7 @@ public class ShowAllClubsViewController {
 
             anchorPane.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
 
-            setTableData();
+            setTableData(clubs);
             if (user.getIsAdmin() == true) {
                 btnCreate.setOnAction(this::createClub);
                 btnDelete.setOnAction(this::deleteClub);
@@ -171,18 +176,9 @@ public class ShowAllClubsViewController {
             btnSelect.setOnAction(this::masInfo);
 
             txtNameFilter.textProperty().addListener((observable, oldValue, newValue) -> {
+                aplicarFiltros();
                 List<Club> clubFilter = new ArrayList<>();
-                if (!newValue.isEmpty()) {
-                    for (Club club : clubs) {
-                        if (club.getNombre().contains(newValue)){
-                            clubFilter.add(club);
-                        }
-                        ObservableList<Club> observableClubs = FXCollections.observableArrayList(clubFilter);
-                        tableClubs.setItems(observableClubs);
-                }
-                } else {
-                    setTableData();
-                }
+                
             });
 
             tableClubs.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Club>() {
@@ -204,17 +200,87 @@ public class ShowAllClubsViewController {
             dateFirst.valueProperty().addListener(new ChangeListener<LocalDate>() {
                 @Override
                 public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
-                    if (newValue != null) {
-                        if(dateFirst.getValue() != null){
-                            dateSecond.setVisible(true);
-                        }
-                    }
+                    aplicarFiltros();
+                }
+            });
+            
+            dateSecond.valueProperty().addListener(new ChangeListener<LocalDate>() {
+                @Override
+                public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
+                    aplicarFiltros();
                 }
             });
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Exception setting up de window.", e.getMessage());
             throw new Exception("ERROR INICIANDO LA VENTANA");
         }
+    }
+    
+    private void aplicarFiltros() {
+        EventManager eventManager = EventManagerFactory.get();
+        List<Event> events = new ArrayList<>();
+        List<Club> clubsFilter = new ArrayList<>();
+        
+        Date fechaConvertidaHasta = Date.from(dateSecond.getValue()
+                .atStartOfDay(ZoneId.systemDefault()).toInstant());
+        boolean first = true;
+        
+        if (!txtNameFilter.getText().isEmpty()) {
+            for (Club club : clubs) {
+                if (club.getNombre().contains(txtNameFilter.getText())){
+                    clubsFilter.add(club);
+                }
+            }
+        } else {
+            clubsFilter = clubs;
+        }
+        
+        if (dateFirst.getValue() != null) {
+            if (dateSecond.isVisible() && dateSecond.getValue() != null) {
+                
+            } else {
+                clubsFilter = setFirstDateFilter(clubsFilter);
+            }
+        }
+        
+        setTableData(clubsFilter);
+    }
+    
+    private List<Club> setFirstDateFilter(List<Club> clubList) {
+        EventManager eventManager = EventManagerFactory.get();
+        List<Event> events = new ArrayList<>();
+        List<Club> clubsFilter = new ArrayList<>();
+        Date fechaConvertidaDesde = Date.from(dateFirst.getValue()
+                .atStartOfDay(ZoneId.systemDefault()).toInstant());
+        boolean first = true;
+        
+        Event[] eventsArray = eventManager.findAll_XML(Event[].class);
+        for (int i = 0; i < eventsArray.length; i++) {
+            if (eventsArray[i].getFecha().equals(fechaConvertidaDesde)) {
+                events.add(eventsArray[i]);
+            }
+        }
+        
+        for (Event event : events) {
+            if(first) {
+                for (Club club : clubList) {
+                    if (club.getId() == event.getClub().getId()) {
+                        clubsFilter.add(club);
+                    }
+                }
+            } else {
+                for (Club club : clubList) {
+                    if (club.getId() == event.getClub().getId()) {
+                        for (Club club1 : clubsFilter) {
+                            if (club1.getId() != club.getId()) {
+                                clubsFilter.add(club);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return clubsFilter;
     }
     
     private void imprimirTabla(ActionEvent event) {
@@ -268,7 +334,7 @@ public class ShowAllClubsViewController {
                 clubManager.remove(club.getId().toString());
             }
             clubs = getClubsInfo();
-            setTableData();
+            setTableData(clubs);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Exception deleting club.", e.getMessage());
             CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "ERROR EN EL PROCESO DE ELIMINACIÓN");
@@ -307,7 +373,7 @@ public class ShowAllClubsViewController {
             clubs.add(club);
             
             clubs = getClubsInfo();
-            setTableData();
+            setTableData(clubs);
             
             if (tableClubs.getSelectionModel() != null && !tableClubs.getItems().isEmpty()) {
                 int lastIndex = tableClubs.getItems().size() - 1;
@@ -319,9 +385,9 @@ public class ShowAllClubsViewController {
         }
     }
     
-    private void setTableData() {
+    private void setTableData(List<Club> clubes) {
         try {
-            ObservableList<Club> observableClubs = FXCollections.observableArrayList(clubs);
+            ObservableList<Club> observableClubs = FXCollections.observableArrayList(clubes);
             if (observableClubs.size() > 0) {
                 tableClubs.setItems(observableClubs);
             }

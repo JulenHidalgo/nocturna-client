@@ -6,7 +6,6 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
@@ -26,13 +25,12 @@
             <TableColumn fx:id="columnInstagram" prefWidth="264.0" text="Redes Sociales" />
         </columns>
       </TableView>
-      <DatePicker fx:id="dateFirst" layoutX="460.0" layoutY="75.0" prefHeight="26.0" prefWidth="180.0" promptText="Fecha de inicio" AnchorPane.leftAnchor="460.0" AnchorPane.topAnchor="125.0" />
+      <DatePicker fx:id="dateFirst" layoutX="460.0" layoutY="75.0" prefHeight="26.0" prefWidth="180.0" promptText="Fecha desde" AnchorPane.leftAnchor="460.0" AnchorPane.topAnchor="125.0" />
       <DatePicker fx:id="dateSecond" layoutX="216.0" layoutY="76.0" prefHeight="26.0" prefWidth="180.0" promptText="Fecha de fin" visible="false" AnchorPane.leftAnchor="688.0" AnchorPane.topAnchor="125.0" />
       <TextField fx:id="txtNameFilter" layoutX="137.0" layoutY="125.0" prefHeight="26.0" prefWidth="300.0" promptText="Filtro por nombre" AnchorPane.leftAnchor="112.0" AnchorPane.topAnchor="125.0" />
       <Button fx:id="btnSelect" layoutX="776.0" layoutY="606.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" text="MÁS INFO" AnchorPane.bottomAnchor="80.0" AnchorPane.rightAnchor="112.0" />
       <Button fx:id="btnCreate" layoutX="786.0" layoutY="616.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" text="CREAR" AnchorPane.bottomAnchor="80.0" AnchorPane.rightAnchor="277.0" />
       <Button fx:id="btnDelete" layoutX="786.0" layoutY="616.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" text="ELIMINAR" AnchorPane.bottomAnchor="80.0" AnchorPane.rightAnchor="442.0" />
-      <ImageView fitHeight="30.0" fitWidth="28.0" layoutX="158.0" layoutY="120.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="295.0" AnchorPane.rightAnchor="700.0" AnchorPane.topAnchor="125.0" />
       <HBox alignment="CENTER" layoutX="540.0" layoutY="17.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="610.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="60.0">
          <children>
             <Label fx:id="lblTitulo" text="Clubs" textFill="WHITE">
