@@ -7,16 +7,13 @@ package ui_controllers;
 
 import exceptions.ReadException;
 import java.io.IOException;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -32,7 +29,6 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -100,6 +96,8 @@ public class ShowAllArtistViewController {
     List<Artist> artists;
 
     List<Artist> artistsCopia;
+    
+    List<Artist> seleccionados = new ArrayList<>();
 
     private final Logger LOGGER = Logger.getLogger("SignInViewController.view");
 
@@ -117,6 +115,10 @@ public class ShowAllArtistViewController {
 
     public void setTema(boolean tema) {
         this.tema = tema;
+    }
+    
+    public List<Artist> getSeleccionados(){
+        return seleccionados;
     }
 
     public void initStage(Parent root) {
@@ -170,15 +172,16 @@ public class ShowAllArtistViewController {
         user = new User();
         user.setIsAdmin(true);
         event = EventManagerFactory.get().findAll_XML(Event[].class)[0];
+        initializeTableColumns();
         if (event == null) {
             if (user.getIsAdmin()) {
                 btnCrear.setOnAction(this::crearArtista);
                 tvArtists.setEditable(true);
                 tcEventos.setEditable(false);
                 tvArtists.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-                tcNombre.setCellFactory(column -> new ArtistEditingCell());
-                tcTipoMusica.setCellFactory(column -> new ArtistEditingCell());
-                tcDescripcion.setCellFactory(column -> new ArtistEditingCell());
+                tcNombre.setCellFactory(column -> new ArtistEditingCell(this));
+                tcTipoMusica.setCellFactory(column -> new ArtistEditingCell(this));
+                tcDescripcion.setCellFactory(column -> new ArtistEditingCell(this));
             } else {
                 tvArtists.setEditable(false);
             }
@@ -192,6 +195,7 @@ public class ShowAllArtistViewController {
             tcTipoMusica.setEditable(false);
             tcDescripcion.setEditable(false);
             tcEventos.setEditable(true);
+            tcEventos.setCellFactory(column -> new ArtistEditingCell(this));
         }
         cargarTabla();
         changeTheme();
@@ -245,7 +249,6 @@ public class ShowAllArtistViewController {
 
     private void cargarTabla() {
         recogerArtistas();
-        initializeTableColumns();
         aplicarFiltros();
         // Convertir ArrayList a ObservableList
         ObservableList<Artist> observableArtist = FXCollections.observableArrayList(artistsCopia);
@@ -267,43 +270,44 @@ public class ShowAllArtistViewController {
         tcTipoMusica.setCellValueFactory(new PropertyValueFactory<>("tipoMusica"));
         tcDescripcion.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
 
-        tcEventos.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Artist, Boolean>, ObservableValue<Boolean>>() {
+        tcEventos.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Artist, String>, ObservableValue<String>>() {
             @Override
-            public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Artist, Boolean> param) {
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<Artist, String> param) {
                 long id;
                 id = param.getValue().getId();
                 if (event == null) {
-                    return new SimpleBooleanProperty(comprobarEventos(id));
+                    return new SimpleStringProperty(comprobarEventos(id));
                 } else {
-                    return new SimpleBooleanProperty(comprobarSeleccionado(id));
+                    return new SimpleStringProperty(comprobarSeleccionado(id));
                 }
             }
         });
 
-        tcEventos.setCellFactory(CheckBoxTableCell.forTableColumn(tcEventos));
-
     }
 
-    private boolean comprobarSeleccionado(Long id) {
+    private String comprobarSeleccionado(Long id) {
         try {
-            Artist[] seleccionados = ArtistManagerFactory.get().findByEvent_XML(Artist[].class, String.valueOf(id));
+            Artist[] seleccionadosBusqueda = ArtistManagerFactory.get().findByEvent_XML(Artist[].class, String.valueOf(id));
 
-            for (Artist ar : seleccionados) {
-                return this.artists.contains(ar);
+            for (Artist ar : seleccionadosBusqueda) {
+                if(this.artists.contains(ar)){
+                    this.seleccionados.add(ar);
+                    return "Sí";
+                }
             }
         } catch (ReadException e) {
-            return false;
+            return "No";
         }
-        return false;
+        return "No";
 
     }
 
-    private boolean comprobarEventos(Long id) {
+    private String comprobarEventos(Long id) {
         try {
             EventManagerFactory.get().findByArtist_XML(Event[].class, String.valueOf(id));
-            return true;
+            return "Sí";
         } catch (ReadException e) {
-            return false;
+            return "No";
         }
     }
 
@@ -325,21 +329,8 @@ public class ShowAllArtistViewController {
     }
 
     public void seleccionarArtistasEvento(ActionEvent event) {
-        List<Artist> artistasSeleccionados = new ArrayList<>();
-
-        for (int i = 0; i < tvArtists.getItems().size(); i++) {
-            Artist artist = tvArtists.getItems().get(i);
-            ObservableValue<Boolean> checkBoxValue = tcEventos.getCellObservableValue(artist);
-            Boolean isChecked = checkBoxValue.getValue(); // Obtener el valor del CheckBox
-
-            if (isChecked != null && isChecked) {
-                artistasSeleccionados.add(artist);
-            }
-        }
-        tvArtists.refresh();
-
-        // Imprimir los artistas seleccionados
-        artistasSeleccionados.forEach(artist -> System.out.println(artist.getNombre()));
+        seleccionados.forEach(artist -> System.out.println(artist.getNombre()));
+        
     }
 
 }
