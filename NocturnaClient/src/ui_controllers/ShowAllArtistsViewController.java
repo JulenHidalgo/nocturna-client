@@ -47,7 +47,7 @@ import utils.CustomAlert;
  *
  * @author Julen Hidalgo
  */
-public class ShowAllArtistViewController {
+public class ShowAllArtistsViewController {
 
     @FXML
     AnchorPane anchorPane;
@@ -96,7 +96,7 @@ public class ShowAllArtistViewController {
     List<Artist> artists;
 
     List<Artist> artistsCopia;
-    
+
     List<Artist> seleccionados = new ArrayList<>();
 
     private final Logger LOGGER = Logger.getLogger("SignInViewController.view");
@@ -116,63 +116,63 @@ public class ShowAllArtistViewController {
     public void setTema(boolean tema) {
         this.tema = tema;
     }
-    
-    public List<Artist> getSeleccionados(){
+
+    public List<Artist> getSeleccionados() {
         return seleccionados;
     }
 
     public void initStage(Parent root) {
-        try {
-            LOGGER.info("Initializing 'ShowAllArtists' window.");
+        LOGGER.info("Initializing 'ShowAllArtists' window.");
 
-            Scene scene = new Scene(root);
+        Scene scene = new Scene(root);
 
-            initializeComponents();
+        changeTheme();
+        initializeInfo();
+        initializeControlListeners();
 
-            stage.setOnCloseRequest(this::closeAppFromX);
-            btnEliminar.setOnAction(this::deleteArtist);
-            if (event == null) {
-                btnSeleccionar.setOnAction(this::irShowArtist);
-            } else {
-                btnSeleccionar.setOnAction(this::seleccionarArtistasEvento);
-            }
+        stage.setScene(scene);
+        stage.show();
 
-            tvArtists.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Artist>() {
-                @Override
-                public void onChanged(ListChangeListener.Change<? extends Artist> c) {
-                    if (c.getList().isEmpty()) {
-                        btnSeleccionar.setDisable(true);
-                        btnEliminar.setDisable(true);
+        LOGGER.info("'ShowAllArtists' window initialized.");
 
-                    } else if (c.getList().size() == 1) {
-                        btnSeleccionar.setDisable(false);
-                        btnEliminar.setDisable(false);
-                    } else if (c.getList().size() > 1) {
-                        btnSeleccionar.setDisable(true);
-                        btnEliminar.setDisable(false);
-                    }
-                }
-            });
-
-            tfFiltroNombre.textProperty().addListener((observable, oldValue, newValue) -> cargarTabla());
-            tfFiltroMusica.textProperty().addListener((observable, oldValue, newValue) -> cargarTabla());
-
-            stage.setScene(scene);
-            stage.show();
-
-            LOGGER.info("'ShowAllArtists' window initialized.");
-
-        } catch (Exception e) {
-            LOGGER.severe("Error while initializing 'ShowAllArtists' window: " + e.getMessage());
-            e.printStackTrace();
-        }
     }
 
-    private void initializeComponents() {
+    private void initializeControlListeners() {
+        stage.setOnCloseRequest(this::closeAppFromX);
+        btnEliminar.setOnAction(this::deleteArtist);
+        if (event == null) {
+            btnSeleccionar.setOnAction(this::goToShowArtistView);
+        } else {
+            btnSeleccionar.setOnAction(this::seleccionarArtistasEvento);
+        }
+
+        tfFiltroNombre.textProperty().addListener((observable, oldValue, newValue) -> loadTableData());
+        tfFiltroMusica.textProperty().addListener((observable, oldValue, newValue) -> loadTableData());
+    }
+    
+    private void listenerForVisibleButtons(){
+                tvArtists.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Artist>() {
+            @Override
+            public void onChanged(ListChangeListener.Change<? extends Artist> c) {
+                if (c.getList().isEmpty()) {
+                    btnSeleccionar.setDisable(true);
+                    btnEliminar.setDisable(true);
+
+                } else if (c.getList().size() == 1) {
+                    btnSeleccionar.setDisable(false);
+                    btnEliminar.setDisable(false);
+                } else if (c.getList().size() > 1) {
+                    btnSeleccionar.setDisable(true);
+                    btnEliminar.setDisable(false);
+                }
+            }
+        });
+    }
+
+    private void initializeInfo() {
         user = new User();
         user.setIsAdmin(true);
         event = EventManagerFactory.get().findAll_XML(Event[].class)[0];
-        initializeTableColumns();
         if (event == null) {
             if (user.getIsAdmin()) {
                 btnCrear.setOnAction(this::crearArtista);
@@ -182,6 +182,8 @@ public class ShowAllArtistViewController {
                 tcNombre.setCellFactory(column -> new ArtistEditingCell(this));
                 tcTipoMusica.setCellFactory(column -> new ArtistEditingCell(this));
                 tcDescripcion.setCellFactory(column -> new ArtistEditingCell(this));
+                btnSeleccionar.setDisable(true);
+                listenerForVisibleButtons();
             } else {
                 tvArtists.setEditable(false);
             }
@@ -196,73 +198,21 @@ public class ShowAllArtistViewController {
             tcDescripcion.setEditable(false);
             tcEventos.setEditable(true);
             tcEventos.setCellFactory(column -> new ArtistEditingCell(this));
-        }
-        cargarTabla();
-        changeTheme();
-    }
-
-    private void recogerArtistas() {
-        Artist[] artistArray = ArtistManagerFactory.get().findAll_XML(Artist[].class);
-        artists = Arrays.asList(artistArray);
-    }
-
-    private void crearArtista(ActionEvent event) {
-        Artist artist = new Artist();
-        ArtistManagerFactory.get().create_XML(artist);
-        cargarTabla();
-        int lastIndex = tvArtists.getItems().size() - 1;
-        tvArtists.getSelectionModel().clearAndSelect(lastIndex);
-    }
-
-    private void aplicarFiltros() {
-        artistsCopia = artists;
-
-        if (!tfFiltroNombre.getText().isEmpty()) {
-            artistsCopia = artistsCopia.stream().filter(artist -> artist.getNombre().startsWith(tfFiltroNombre.getText())).collect(Collectors.toList());
+            btnCrear.setVisible(false);
+            btnEliminar.setVisible(false);
         }
 
-        if (!tfFiltroMusica.getText().isEmpty()) {
-            artistsCopia = artistsCopia.stream().filter(artist -> artist.getTipoMusica().startsWith(tfFiltroMusica.getText())).collect(Collectors.toList());
-        }
-
+        loadTableData();
     }
 
-    private void irShowArtist(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showArtistView.fxml"));
-
-            Parent root = loader.load();
-
-            ShowArtistViewController controller = (ShowArtistViewController) loader.getController();
-
-            controller.setStage(stage);
-            controller.setTema(tema);
-            controller.setArtist((Artist) tvArtists.getSelectionModel().getSelectedItem());
-            controller.setUser(user);
-
-            controller.initStage(root);
-        } catch (IOException e) {
-            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error con la sincronización de las ventanas, intentalo más tarde");
-        }
-
-    }
-
-    private void cargarTabla() {
-        recogerArtistas();
-        aplicarFiltros();
+    private void loadTableData() {
+        artists = Arrays.asList(ArtistManagerFactory.get().findAll_XML(Artist[].class));
+        initializeTableColumns();
+        applyFilters();
         // Convertir ArrayList a ObservableList
         ObservableList<Artist> observableArtist = FXCollections.observableArrayList(artistsCopia);
         // Cargar datos en la tabla
         tvArtists.setItems(observableArtist);
-
-    }
-
-    private void deleteArtist(ActionEvent event) {
-        ObservableList<Artist> selectedArtist = tvArtists.getSelectionModel().getSelectedItems();
-        selectedArtist.forEach(item -> {
-            ArtistManagerFactory.get().remove(item.getId().toString());
-        });
-        cargarTabla();
     }
 
     private void initializeTableColumns() {
@@ -282,7 +232,35 @@ public class ShowAllArtistViewController {
                 }
             }
         });
+    }
 
+    private void applyFilters() {
+        artistsCopia = artists;
+
+        if (!tfFiltroNombre.getText().isEmpty()) {
+            artistsCopia = artistsCopia.stream().filter(artist -> artist.getNombre().startsWith(tfFiltroNombre.getText())).collect(Collectors.toList());
+        }
+
+        if (!tfFiltroMusica.getText().isEmpty()) {
+            artistsCopia = artistsCopia.stream().filter(artist -> artist.getTipoMusica().startsWith(tfFiltroMusica.getText())).collect(Collectors.toList());
+        }
+
+    }
+
+    private void crearArtista(ActionEvent event) {
+        Artist artist = new Artist();
+        ArtistManagerFactory.get().create_XML(artist);
+        loadTableData();
+        int lastIndex = tvArtists.getItems().size() - 1;
+        tvArtists.getSelectionModel().clearAndSelect(lastIndex);
+    }
+
+    private void deleteArtist(ActionEvent event) {
+        ObservableList<Artist> selectedArtist = tvArtists.getSelectionModel().getSelectedItems();
+        selectedArtist.forEach(item -> {
+            ArtistManagerFactory.get().remove(item.getId().toString());
+        });
+        loadTableData();
     }
 
     private String comprobarSeleccionado(Long id) {
@@ -290,7 +268,7 @@ public class ShowAllArtistViewController {
             Artist[] seleccionadosBusqueda = ArtistManagerFactory.get().findByEvent_XML(Artist[].class, String.valueOf(id));
 
             for (Artist ar : seleccionadosBusqueda) {
-                if(this.artists.contains(ar)){
+                if (this.artists.contains(ar)) {
                     this.seleccionados.add(ar);
                     return "Sí";
                 }
@@ -311,6 +289,32 @@ public class ShowAllArtistViewController {
         }
     }
 
+    public void seleccionarArtistasEvento(ActionEvent event) {
+        seleccionados.remove(0);
+        seleccionados.forEach(artist -> System.out.println(artist.getNombre()));
+
+    }
+
+    private void goToShowArtistView(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showArtistView.fxml"));
+
+            Parent root = loader.load();
+
+            ShowArtistViewController controller = (ShowArtistViewController) loader.getController();
+
+            controller.setStage(stage);
+            controller.setTema(tema);
+            controller.setArtist((Artist) tvArtists.getSelectionModel().getSelectedItem());
+            controller.setUser(user);
+
+            controller.initStage(root);
+        } catch (IOException e) {
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error con la sincronización de las ventanas, intentalo más tarde");
+        }
+
+    }
+
     private void closeAppFromX(WindowEvent event) {
         if (CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION, "¿Está seguro de que desea salir?")) {
             Platform.exit();
@@ -326,11 +330,6 @@ public class ShowAllArtistViewController {
         } else {
             anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
         }
-    }
-
-    public void seleccionarArtistasEvento(ActionEvent event) {
-        seleccionados.forEach(artist -> System.out.println(artist.getNombre()));
-        
     }
 
 }

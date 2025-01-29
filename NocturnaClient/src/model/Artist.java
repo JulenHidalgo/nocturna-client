@@ -6,6 +6,7 @@
 package model;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -65,7 +66,6 @@ public class Artist implements Serializable {
         this.descripcion = descripcion;
     }
 
-
     public Set<Event> getEvents() {
         return events;
     }
@@ -83,15 +83,20 @@ public class Artist implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Artist)) {
+        if (this == object) {
+            return true;
+        }
+        if (object == null || getClass() != object.getClass()) {
             return false;
         }
+
         Artist other = (Artist) object;
-        if ((this.idArtist == null && other.idArtist != null) || (this.idArtist != null && !this.idArtist.equals(other.idArtist))) {
-            return false;
-        }
-        return true;
+
+        return Objects.equals(idArtist, other.idArtist)
+                && Objects.equals(nombre, other.nombre)
+                && Objects.equals(tipoMusica, other.tipoMusica)
+                && Objects.equals(descripcion, other.descripcion)
+                && Objects.equals(events, other.events);
     }
 
     @Override
