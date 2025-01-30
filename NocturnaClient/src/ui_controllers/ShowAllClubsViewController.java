@@ -5,6 +5,7 @@
  */
 package ui_controllers;
 
+import control.Sesion;
 import exceptions.InternalServerErrorException;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -117,26 +118,18 @@ public class ShowAllClubsViewController {
 
     private final Logger LOGGER = Logger.getLogger("Show all clubs view");
 
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
     
-    public boolean getTema() {
-        return this.tema;
-    }
-
-    public void setTema(boolean tema) {
-        this.tema = tema;
-    }
 
     public void initStage(Parent root) throws Exception {
         try {
             LOGGER.info("Initializing Show all clubs window.");
             Scene scene = new Scene(root);
+            user = Sesion.getUser();
+            tema = Sesion.getTema();
+            stage = Sesion.getStage();
+            
+            changeTheme();
+            
             stage.setScene(scene);
             stage.setOnCloseRequest(this::closeAppFromX);
             //Si el usuario es null, significa que no ha entrado a la app todavía y 
@@ -179,7 +172,7 @@ public class ShowAllClubsViewController {
                 btnSelect.setDisable(true);
             }
 
-            changeTheme();
+            
             stage.show();
             LOGGER.info("Show all clubs window initialized.");
 
@@ -354,21 +347,24 @@ public class ShowAllClubsViewController {
     }
     
     private void cambiarTema(ActionEvent event) {
-        if (getTema()) {
-            setTema(false);
+        if (tema) {
+            Sesion.setTema(false);
         } else {
-            setTema(true);
+            Sesion.setTema(true);
         }
         changeTheme();
     }
     
     private void changeTheme() {
         String currentStyle = anchorPane.getStyle();
+        tema = Sesion.getTema();
         if (tema) {
             lblTitulo.setStyle("-fx-text-fill: black;");
+            Sesion.setTema(tema);
             anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: url\\('[^']+'\\);", "-fx-background-image: url('/img/fondogris.jpg');"));
         } else {
             lblTitulo.setStyle("-fx-text-fill: white;");
+            Sesion.setTema(tema);
             anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
         }
     }
