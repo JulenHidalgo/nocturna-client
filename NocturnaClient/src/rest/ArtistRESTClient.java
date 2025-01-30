@@ -123,7 +123,7 @@ public class ArtistRESTClient implements ArtistManager {
     public <T> T findByEvent_XML(Class<T> responseType, String idEvent) throws WebApplicationException, ReadException{
         WebTarget resource = webTarget;
 
-        resource = resource.path(java.text.MessageFormat.format("artistsByEvent/{0}", new Object[]{idEvent}));
+        resource = resource.path(java.text.MessageFormat.format("findArtistsByEvent/{0}", new Object[]{idEvent}));
 
         Response response = resource
                 .request(javax.ws.rs.core.MediaType.APPLICATION_XML)

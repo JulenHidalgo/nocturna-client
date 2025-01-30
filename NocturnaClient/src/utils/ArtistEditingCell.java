@@ -1,143 +1,152 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package utils;
 
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import logic.ArtistManagerFactory;
+import javax.ws.rs.WebApplicationException;
 import model.Artist;
+import ui_controllers.ShowAllArtistsViewController;
+import logic.ArtistManagerFactory;
 
 /**
- *
- * @author 2dam
+ * Custom TableCell for editing Artist information.
  */
 public class ArtistEditingCell extends TableCell<Artist, String> {
 
     private TextField textField;
-
     private TextArea textArea;
+    private CheckBox checkBox;
+    private int columnIndex;
+    private ShowAllArtistsViewController controlador;
+    private boolean seleccionado;
 
-    public ArtistEditingCell() {
-
+    public ArtistEditingCell(ShowAllArtistsViewController controlador) {
+        this.controlador = controlador;
     }
 
     @Override
     public void startEdit() {
         if (!isEmpty()) {
             super.startEdit();
-            if (isDescripcion()) {
-                createTextArea();
-            } else {
-                createTextField();
+            this.columnIndex = getTableView().getColumns().indexOf(getTableColumn());
+            switch (columnIndex) {
+                case 0:
+                case 1:
+                    createTextField();
+                    setText(null);
+                    setGraphic(textField);
+                    textField.selectAll();
+                    break;
+                case 2:
+                    createTextArea();
+                    setText(null);
+                    setGraphic(textArea);
+                    textArea.selectAll();
+                    break;
+                case 3:
+                    createCheckBox();
+                    setText(null);
+                    setGraphic(checkBox);
+                    break;
             }
-
-            if (isDescripcion()) {
-                setText(null);
-                setGraphic(textArea);
-                textArea.selectAll();
-            } else {
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-            }
-
         }
     }
 
     @Override
     public void cancelEdit() {
         super.cancelEdit();
-
-        setText((String) getItem());
+        if (columnIndex == 3) {
+            setText(checkBox.isSelected() ? "Sí" : "No");
+        } else {
+            setText((String) getItem());
+        }
         setGraphic(null);
-
     }
 
     @Override
     public void updateItem(String item, boolean empty) {
         super.updateItem(item, empty);
-
         if (empty) {
             setText(null);
             setGraphic(null);
         } else {
             if (isEditing()) {
-                if (isDescripcion()) {
-                    if (textArea != null) {
-                        textArea.setText(getString());
-                    }
-                    setText(null);
-                    setGraphic(textField);
-                } else {
-                    if (textField != null) {
-                        textField.setText(getString());
-                    }
-                    setText(null);
-                    setGraphic(textField);
+                switch (columnIndex) {
+                    case 0:
+                    case 1:
+                        if (textField != null) {
+                            textField.setText(getString());
+                        }
+                        setText(null);
+                        setGraphic(textField);
+                        break;
+                    case 2:
+                        if (textArea != null) {
+                            textArea.setText(getString());
+                        }
+                        setText(null);
+                        setGraphic(textField);
+                        break;
+                    case 3:
+                        if (checkBox != null) {
+                            // Use item directly here too
+                            checkBox.setSelected(item.equals("Sí"));
+                        }
+                        setText(null);
+                        setGraphic(checkBox);
+                        break;
                 }
-
             } else {
-                setText(getString());
-                setGraphic(null);
+                if (columnIndex == 3) {
+                    setText(item.equals("Sí") ? "Sí" : "No");
+                    setGraphic(null);
+                } else {
+                    setText(getString());
+                    setGraphic(null);
+                }
             }
         }
-
     }
 
     @Override
     public void commitEdit(String newValue) {
-        super.commitEdit(newValue);
-        // Obtener el mantenimiento de la fila
-        Artist artist = (Artist) getTableRow().getItem();
+        try {
+            super.commitEdit(newValue);
+            Artist artist = (Artist) getTableRow().getItem();
+            if (artist != null) {
+                switch (columnIndex) {
+                    case 0:
+                        artist.setNombre(newValue);
+                        break;
+                    case 1:
+                        artist.setTipoMusica(newValue);
+                        break;
+                    case 2:
+                        artist.setDescripcion(newValue);
+                        break;
+                    case 3:
+                        if (controlador.getSeleccionados().contains(getTableView().getItems().get(getTableRow().getIndex()))) {
+                            controlador.getSeleccionados().remove(getTableView().getItems().get(getTableRow().getIndex()));
+                            seleccionado = false;
+                            setText("No");
+                        } else {
+                            controlador.getSeleccionados().add(getTableView().getItems().get(getTableRow().getIndex()));
+                            seleccionado = true;
+                            setText("Sí");
+                        }
+                        throw new Exception();
+                }
 
-        if (artist != null) {
-            int columnIndex = getTableView().getColumns().indexOf(getTableColumn());
-            // Actualizar la propiedad correspondiente del objeto Event según el tipo de campo y el índice de la columna
-
-            switch (columnIndex) {
-                case 0:
-                    artist.setNombre(newValue);
-                    break;
-                case 1:
-                    artist.setTipoMusica(newValue);
-                    break;
-                case 2:
-                    artist.setDescripcion(newValue);
-                    break;
-            }
-
-            // Persistir el cambio en el backend
-            try {
-
-                // Llamar al método para persistir los datos
                 ArtistManagerFactory.get().edit_XML(artist, artist.getId().toString());
-            } catch (Exception e) {
-                // Si algo falla en la persistencia, muestra un mensaje de error
-                Platform.runLater(() -> {
-                    new Alert(Alert.AlertType.ERROR, "Error al actualizar el mantenimiento en el servidor.", ButtonType.OK).showAndWait();
-                });
-                e.printStackTrace();
+
             }
-        }
+        } catch (WebApplicationException e) {
+            Platform.runLater(() -> {
+                new Alert(Alert.AlertType.ERROR, "Error al actualizar el mantenimiento en el servidor.", ButtonType.OK).showAndWait();
+            });
+            e.printStackTrace();
+        } catch (Exception e) {
 
-        // Llamar al commitEdit original para finalizar la edición
-        super.commitEdit((String) newValue);
-    }
-
-    private boolean isDescripcion() {
-        if (getTableView().getColumns().indexOf(getTableColumn()) == 2) {
-            return true;
-        } else {
-            return false;
         }
     }
 
@@ -148,19 +157,10 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
                 commitEdit(textField.getText());
             }
         });
-        int columnIndex = getTableView().getColumns().indexOf(getTableColumn());
-        // Actualizar la propiedad correspondiente del objeto Event según el tipo de campo y el índice de la columna
-
-        switch (columnIndex) {
-            case 0:
-                textField.setPromptText("Introduce el nombre");
-                break;
-            case 1:
-                textField.setPromptText("Introduce el tipo de música");
-                break;
-            case 2:
-                textField.setPromptText("Introduce la descripción");
-                break;
+        if (columnIndex == 0) {
+            textField.setPromptText("Introduce el nombre");
+        } else if (columnIndex == 1) {
+            textField.setPromptText("Introduce el tipo de música");
         }
     }
 
@@ -172,11 +172,26 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
                 commitEdit(textArea.getText());
             }
         });
+        textArea.setPromptText("Introduce la descripción");
+    }
+
+    private void createCheckBox() {
+        if (checkBox == null) {
+            checkBox = new CheckBox();
+            checkBox.setOnAction(event -> {
+                commitEdit("Sí");
+            });
+            if (getText().equals("Sí")) {
+                checkBox.setSelected(true);
+            } else {
+                checkBox.setSelected(false);
+            }
+        }
+
+
     }
 
     private String getString() {
         return getItem() == null ? "" : getItem().toString();
-
     }
-
 }
