@@ -10,8 +10,11 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -48,6 +51,13 @@ import logic.EventManagerFactory;
 import model.Club;
 import model.Event;
 import model.User;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 import utils.CustomAlert;
 
 /**
@@ -177,8 +187,6 @@ public class ShowAllClubsViewController {
 
             txtNameFilter.textProperty().addListener((observable, oldValue, newValue) -> {
                 aplicarFiltros();
-                List<Club> clubFilter = new ArrayList<>();
-                
             });
 
             tableClubs.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Club>() {
@@ -220,9 +228,6 @@ public class ShowAllClubsViewController {
         EventManager eventManager = EventManagerFactory.get();
         List<Event> events = new ArrayList<>();
         List<Club> clubsFilter = new ArrayList<>();
-        
-        Date fechaConvertidaHasta = Date.from(dateSecond.getValue()
-                .atStartOfDay(ZoneId.systemDefault()).toInstant());
         boolean first = true;
         
         if (!txtNameFilter.getText().isEmpty()) {
@@ -237,13 +242,60 @@ public class ShowAllClubsViewController {
         
         if (dateFirst.getValue() != null) {
             if (dateSecond.isVisible() && dateSecond.getValue() != null) {
-                
+                clubsFilter = setSecondDateFilter(clubsFilter);
             } else {
                 clubsFilter = setFirstDateFilter(clubsFilter);
+                dateSecond.setVisible(true);
+            }
+        } else {
+            dateSecond.setVisible(false);
+        }
+        
+        if(clubsFilter.size() > 0) {
+            setTableData(clubsFilter);
+        } else {
+            tableClubs.getItems().clear(); 
+        }
+    }
+    
+    private List<Club> setSecondDateFilter(List<Club> clubList) {
+        EventManager eventManager = EventManagerFactory.get();
+        List<Event> events = new ArrayList<>();
+        List<Club> clubsFilter = new ArrayList<>();
+        Date fechaConvertidaHasta = Date.from(dateSecond.getValue()
+                .atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date fechaConvertidaDesde = Date.from(dateFirst.getValue()
+                .atStartOfDay(ZoneId.systemDefault()).toInstant());
+        boolean first = true;
+        
+        Event[] eventsArray = eventManager.findAll_XML(Event[].class);
+        for (int i = 0; i < eventsArray.length; i++) {
+            if (eventsArray[i].getFecha().after(fechaConvertidaDesde) &&
+                    eventsArray[i].getFecha().before(fechaConvertidaHasta)) {
+                events.add(eventsArray[i]);
             }
         }
         
-        setTableData(clubsFilter);
+        for (Event event : events) {
+            if(first) {
+                for (Club club : clubList) {
+                    if (club.getId() == event.getClub().getId()) {
+                        clubsFilter.add(club);
+                    }
+                }
+            } else {
+                for (Club club : clubList) {
+                    if (club.getId() == event.getClub().getId()) {
+                        for (Club club1 : clubsFilter) {
+                            if (club1.getId() != club.getId()) {
+                                clubsFilter.add(club);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return clubsFilter;
     }
     
     private List<Club> setFirstDateFilter(List<Club> clubList) {
@@ -284,7 +336,21 @@ public class ShowAllClubsViewController {
     }
     
     private void imprimirTabla(ActionEvent event) {
-        
+        try {
+            JasperReport report = JasperCompileManager.compileReport("src/reports/ClubReport.jrxml");
+            
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Club>)this.tableClubs.getItems());
+            
+            Map<String, Object> parameters = new HashMap<>();
+            
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            
+            jasperViewer.setVisible(true);
+        } catch (JRException ex) {
+            Logger.getLogger(ShowAllClubsViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private void cambiarTema(ActionEvent event) {
