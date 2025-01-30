@@ -7,6 +7,8 @@ package ui_controllers;
 
 
 import control.Sesion;
+import static control.Sesion.getTema;
+import static control.Sesion.setTema;
 import exceptions.ReadException;
 import java.io.IOException;
 import static java.sql.Date.valueOf;
@@ -15,13 +17,17 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -33,9 +39,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -44,8 +53,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.converter.DoubleStringConverter;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
@@ -61,6 +73,14 @@ import model.Client;
 import model.Club;
 import model.Event;
 import model.User;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
+import utils.CustomAlert;
 
 /**
  *
@@ -277,7 +297,67 @@ public class ShowAllEventsViewController {
       return  events;
     }
      
+     private void cambiarTema(ActionEvent event) {
+        if (tema) {
+            Sesion.setTema(false);
+        } else {
+            Sesion.setTema(true);
+        }
+        tema = Sesion.getTema();        
+        changeTheme();
+    }
     
+    private void changeTheme() {
+        String currentStyle = bpPrincipal.getStyle();
+        
+        if (tema) {
+            lbHasta.setStyle("-fx-text-fill: black;");
+            
+            bpPrincipal.setStyle(currentStyle.replaceAll("-fx-background-image: url\\('[^']+'\\);", "-fx-background-image: url('/img/fondogris.jpg');"));
+        } else {
+            lbHasta.setStyle("-fx-text-fill: white;");
+            
+            bpPrincipal.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
+        }
+    }
+    
+    private void controlMenuConceptual(MouseEvent event, ContextMenu menu) {
+        //Se comprueba si se hace clic con el borón derecho del ratón.
+        if (event.getButton() == MouseButton.SECONDARY) {
+            //Si es así se abre el menú contextual.
+            menu.show(bpPrincipal, event.getScreenX(), event.getScreenY());
+        } else {
+            //Si no, se cierra el mismo.
+            menu.hide();
+        }
+    }
+    
+     private void closeAppFromX(WindowEvent event) {
+        if (CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION,"¿Está seguro de que desea salir?")) {
+            Platform.exit();
+        } else {
+            event.consume();
+        }
+    }
+     
+      private void imprimirTabla(ActionEvent event) {
+        try {
+            JasperReport report = JasperCompileManager.compileReport("src/reports/EventReport.jrxml");
+            
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Event>)this.tablaEvent.getItems());
+            
+            Map<String, Object> parameters = new HashMap<>();
+            
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            
+            jasperViewer.setVisible(true);
+        } catch (JRException ex) {
+            Logger.getLogger(ShowAllClubsViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+      
     public void initStage(Parent root) {
 
         LOGGER.info("Initializing Bank Statement window.");
@@ -287,7 +367,15 @@ public class ShowAllEventsViewController {
         stage = Sesion.getStage();
         
         cargarTabla(events);
+       
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem item1 = new MenuItem("Cambiar tema");
+        item1.setOnAction(this::cambiarTema);
+        MenuItem item2 = new MenuItem("Imprimir los datos de la tabla");
+        item2.setOnAction(this::imprimirTabla);
+        contextMenu.getItems().addAll(item1, item2);
         
+        bpPrincipal.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
        
         if(user instanceof Client){
             btnAñadirArtistas.setVisible(false);
@@ -388,7 +476,7 @@ public class ShowAllEventsViewController {
                 aplicarFiltros();
             }
         });
-        
+        changeTheme();
         stage.show();
         stage.setScene(scene);
         LOGGER.info("Bank Statement window initialized.");

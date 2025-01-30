@@ -83,9 +83,6 @@ public class MenuController {
     @FXML
     private void irShowAllEventsView(ActionEvent event) throws Exception{
          try {
-            stage=Sesion.getStage();
-            tema=Sesion.getTema();
-            user=Sesion.getUser();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllEventsView.fxml"));
             
             Parent root = loader.load();
@@ -103,18 +100,12 @@ public class MenuController {
     @FXML
     private void irShowAllClubsView(ActionEvent event) throws Exception{
          try {
-             stage=Sesion.getStage();
-             tema=Sesion.getTema();
-             user=Sesion.getUser();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllClubsView.fxml"));
             
             Parent root = loader.load();
             
             ShowAllClubsViewController controller = (ShowAllClubsViewController) loader.getController();
-           
-            controller.setStage(stage);
-            controller.setTema(tema);
-            controller.setUser(user);
+    
             controller.initStage(root);
             
         } catch (IOException ex) {
