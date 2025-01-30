@@ -5,6 +5,7 @@
  */
 package ui_controllers;
 
+import control.Sesion;
 import exceptions.ReadException;
 import java.io.IOException;
 import java.time.ZoneId;
@@ -133,9 +134,9 @@ public class ShowArtistViewController {
         LOGGER.info("Initializing 'ShowArtistView' window.");
 
         Scene scene = new Scene(root);
-        
-        changeTheme();
+
         initializeInfo();
+        changeTheme();
         initializeControlListeners();
 
         stage.setScene(scene);
@@ -181,6 +182,9 @@ public class ShowArtistViewController {
     }
 
     private void initializeInfo() {
+        user = Sesion.getUser();
+        stage = Sesion.getStage();
+        tema = Sesion.getTema();
         if (artist != null) {
             lblNombre.setText(artist.getNombre());
             lblDescripcion.setText(artist.getDescripcion());
@@ -210,7 +214,7 @@ public class ShowArtistViewController {
     private void initializeTableColumns() {
         tableView.setEditable(false);
         tableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        
+
         tcNombreEvento.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         tcFechaEvento.setCellValueFactory(new PropertyValueFactory<>("fecha"));
 
@@ -260,7 +264,6 @@ public class ShowArtistViewController {
 
             ShowEventViewController controller = (ShowEventViewController) loader.getController();
 
-
             controller.setEvent((Event) tableView.getSelectionModel().getSelectedItem());
 
             controller.initStage(root);
@@ -276,7 +279,7 @@ public class ShowArtistViewController {
             event.consume();
         }
     }
-    
+
     private void changeTheme() {
         String currentStyle = anchorPane.getStyle();
         if (tema) {
