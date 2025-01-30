@@ -8,8 +8,13 @@ package ui_controllers;
 import exceptions.InternalServerErrorException;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -41,8 +46,18 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import logic.ClubManager;
 import logic.ClubManagerFactory;
+import logic.EventManager;
+import logic.EventManagerFactory;
 import model.Club;
+import model.Event;
 import model.User;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 import utils.CustomAlert;
 
 /**
@@ -150,7 +165,7 @@ public class ShowAllClubsViewController {
 
             anchorPane.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
 
-            setTableData();
+            setTableData(clubs);
             if (user.getIsAdmin() == true) {
                 btnCreate.setOnAction(this::createClub);
                 btnDelete.setOnAction(this::deleteClub);
@@ -171,18 +186,7 @@ public class ShowAllClubsViewController {
             btnSelect.setOnAction(this::masInfo);
 
             txtNameFilter.textProperty().addListener((observable, oldValue, newValue) -> {
-                List<Club> clubFilter = new ArrayList<>();
-                if (!newValue.isEmpty()) {
-                    for (Club club : clubs) {
-                        if (club.getNombre().contains(newValue)){
-                            clubFilter.add(club);
-                        }
-                        ObservableList<Club> observableClubs = FXCollections.observableArrayList(clubFilter);
-                        tableClubs.setItems(observableClubs);
-                }
-                } else {
-                    setTableData();
-                }
+                aplicarFiltros();
             });
 
             tableClubs.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Club>() {
@@ -204,11 +208,14 @@ public class ShowAllClubsViewController {
             dateFirst.valueProperty().addListener(new ChangeListener<LocalDate>() {
                 @Override
                 public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
-                    if (newValue != null) {
-                        if(dateFirst.getValue() != null){
-                            dateSecond.setVisible(true);
-                        }
-                    }
+                    aplicarFiltros();
+                }
+            });
+            
+            dateSecond.valueProperty().addListener(new ChangeListener<LocalDate>() {
+                @Override
+                public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
+                    aplicarFiltros();
                 }
             });
         } catch (Exception e) {
@@ -217,8 +224,133 @@ public class ShowAllClubsViewController {
         }
     }
     
-    private void imprimirTabla(ActionEvent event) {
+    private void aplicarFiltros() {
+        EventManager eventManager = EventManagerFactory.get();
+        List<Event> events = new ArrayList<>();
+        List<Club> clubsFilter = new ArrayList<>();
+        boolean first = true;
         
+        if (!txtNameFilter.getText().isEmpty()) {
+            for (Club club : clubs) {
+                if (club.getNombre().contains(txtNameFilter.getText())){
+                    clubsFilter.add(club);
+                }
+            }
+        } else {
+            clubsFilter = clubs;
+        }
+        
+        if (dateFirst.getValue() != null) {
+            if (dateSecond.isVisible() && dateSecond.getValue() != null) {
+                clubsFilter = setSecondDateFilter(clubsFilter);
+            } else {
+                clubsFilter = setFirstDateFilter(clubsFilter);
+                dateSecond.setVisible(true);
+            }
+        } else {
+            dateSecond.setVisible(false);
+        }
+        
+        if(clubsFilter.size() > 0) {
+            setTableData(clubsFilter);
+        } else {
+            tableClubs.getItems().clear(); 
+        }
+    }
+    
+    private List<Club> setSecondDateFilter(List<Club> clubList) {
+        EventManager eventManager = EventManagerFactory.get();
+        List<Event> events = new ArrayList<>();
+        List<Club> clubsFilter = new ArrayList<>();
+        Date fechaConvertidaHasta = Date.from(dateSecond.getValue()
+                .atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date fechaConvertidaDesde = Date.from(dateFirst.getValue()
+                .atStartOfDay(ZoneId.systemDefault()).toInstant());
+        boolean first = true;
+        
+        Event[] eventsArray = eventManager.findAll_XML(Event[].class);
+        for (int i = 0; i < eventsArray.length; i++) {
+            if (eventsArray[i].getFecha().after(fechaConvertidaDesde) &&
+                    eventsArray[i].getFecha().before(fechaConvertidaHasta)) {
+                events.add(eventsArray[i]);
+            }
+        }
+        
+        for (Event event : events) {
+            if(first) {
+                for (Club club : clubList) {
+                    if (club.getId() == event.getClub().getId()) {
+                        clubsFilter.add(club);
+                    }
+                }
+            } else {
+                for (Club club : clubList) {
+                    if (club.getId() == event.getClub().getId()) {
+                        for (Club club1 : clubsFilter) {
+                            if (club1.getId() != club.getId()) {
+                                clubsFilter.add(club);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return clubsFilter;
+    }
+    
+    private List<Club> setFirstDateFilter(List<Club> clubList) {
+        EventManager eventManager = EventManagerFactory.get();
+        List<Event> events = new ArrayList<>();
+        List<Club> clubsFilter = new ArrayList<>();
+        Date fechaConvertidaDesde = Date.from(dateFirst.getValue()
+                .atStartOfDay(ZoneId.systemDefault()).toInstant());
+        boolean first = true;
+        
+        Event[] eventsArray = eventManager.findAll_XML(Event[].class);
+        for (int i = 0; i < eventsArray.length; i++) {
+            if (eventsArray[i].getFecha().equals(fechaConvertidaDesde)) {
+                events.add(eventsArray[i]);
+            }
+        }
+        
+        for (Event event : events) {
+            if(first) {
+                for (Club club : clubList) {
+                    if (club.getId() == event.getClub().getId()) {
+                        clubsFilter.add(club);
+                    }
+                }
+            } else {
+                for (Club club : clubList) {
+                    if (club.getId() == event.getClub().getId()) {
+                        for (Club club1 : clubsFilter) {
+                            if (club1.getId() != club.getId()) {
+                                clubsFilter.add(club);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return clubsFilter;
+    }
+    
+    private void imprimirTabla(ActionEvent event) {
+        try {
+            JasperReport report = JasperCompileManager.compileReport("src/reports/ClubReport.jrxml");
+            
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Club>)this.tableClubs.getItems());
+            
+            Map<String, Object> parameters = new HashMap<>();
+            
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            
+            jasperViewer.setVisible(true);
+        } catch (JRException ex) {
+            Logger.getLogger(ShowAllClubsViewController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private void cambiarTema(ActionEvent event) {
@@ -268,7 +400,7 @@ public class ShowAllClubsViewController {
                 clubManager.remove(club.getId().toString());
             }
             clubs = getClubsInfo();
-            setTableData();
+            setTableData(clubs);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Exception deleting club.", e.getMessage());
             CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "ERROR EN EL PROCESO DE ELIMINACIÓN");
@@ -307,7 +439,7 @@ public class ShowAllClubsViewController {
             clubs.add(club);
             
             clubs = getClubsInfo();
-            setTableData();
+            setTableData(clubs);
             
             if (tableClubs.getSelectionModel() != null && !tableClubs.getItems().isEmpty()) {
                 int lastIndex = tableClubs.getItems().size() - 1;
@@ -319,9 +451,9 @@ public class ShowAllClubsViewController {
         }
     }
     
-    private void setTableData() {
+    private void setTableData(List<Club> clubes) {
         try {
-            ObservableList<Club> observableClubs = FXCollections.observableArrayList(clubs);
+            ObservableList<Club> observableClubs = FXCollections.observableArrayList(clubes);
             if (observableClubs.size() > 0) {
                 tableClubs.setItems(observableClubs);
             }
