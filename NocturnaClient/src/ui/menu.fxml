@@ -10,12 +10,12 @@
 
 <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="1024.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui_controllers.MenuController">
    <children>
-      <MenuBar fx:id="menuBar" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+      <MenuBar maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
         <menus>
-          <Menu fx:id="menuVer" mnemonicParsing="false" text="VER">
+          <Menu mnemonicParsing="false" text="VER">
             <items>
-              <MenuItem fx:id="miTickets" mnemonicParsing="false" onAction="#irShowAllTicketsView" text="MIS ENTRADAS" />
-                  <MenuItem fx:id="miEvents" mnemonicParsing="false" onAction="#irShowAllEventsView" text="EVENTOS" />
+              <MenuItem fx:id="miEvents" mnemonicParsing="false" onAction="#irShowAllTicketsView" text="MIS ENTRADAS" />
+                  <MenuItem mnemonicParsing="false" onAction="#irShowAllEventsView" text="EVENTOS" />
                   <MenuItem fx:id="miClubs" mnemonicParsing="false" onAction="#irShowAllClubsView" text="SALAS" />
                   <MenuItem fx:id="miArtists" mnemonicParsing="false" onAction="#irShowAllArtistView" text="ARTISTAS" />
             </items>
