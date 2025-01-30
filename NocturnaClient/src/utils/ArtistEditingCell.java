@@ -3,8 +3,9 @@ package utils;
 import javafx.application.Platform;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
+import javax.ws.rs.WebApplicationException;
 import model.Artist;
-import ui_controllers.ShowAllArtistViewController;
+import ui_controllers.ShowAllArtistsViewController;
 import logic.ArtistManagerFactory;
 
 /**
@@ -16,9 +17,10 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
     private TextArea textArea;
     private CheckBox checkBox;
     private int columnIndex;
-    private ShowAllArtistViewController controlador;
+    private ShowAllArtistsViewController controlador;
+    private boolean seleccionado;
 
-    public ArtistEditingCell(ShowAllArtistViewController controlador) {
+    public ArtistEditingCell(ShowAllArtistsViewController controlador) {
         this.controlador = controlador;
     }
 
@@ -87,7 +89,8 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
                         break;
                     case 3:
                         if (checkBox != null) {
-                            checkBox.setSelected(getString().equals("Sí"));
+                            // Use item directly here too
+                            checkBox.setSelected(item.equals("Sí"));
                         }
                         setText(null);
                         setGraphic(checkBox);
@@ -95,7 +98,7 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
                 }
             } else {
                 if (columnIndex == 3) {
-                    setText(getString().equals("Sí") ? "Sí" : "No");
+                    setText(item.equals("Sí") ? "Sí" : "No");
                     setGraphic(null);
                 } else {
                     setText(getString());
@@ -107,39 +110,44 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
 
     @Override
     public void commitEdit(String newValue) {
-        super.commitEdit(newValue);
-        Artist artist = (Artist) getTableRow().getItem();
-        if (artist != null) {
-            switch (columnIndex) {
-                case 0:
-                    artist.setNombre(newValue);
-                    break;
-                case 1:
-                    artist.setTipoMusica(newValue);
-                    break;
-                case 2:
-                    artist.setDescripcion(newValue);
-                    break;
-                case 3:
-                    boolean isSelected = checkBox.isSelected();
-                    if (isSelected) {
-                        controlador.getSeleccionados().add(getTableView().getItems().get(getTableRow().getIndex()));
-                    } else {
-                        controlador.getSeleccionados().remove(getTableView().getItems().get(getTableRow().getIndex()));
-                    }
-                    setText(isSelected ? "Sí" : "No");
-                    break;
-            }
-            try {
+        try {
+            super.commitEdit(newValue);
+            Artist artist = (Artist) getTableRow().getItem();
+            if (artist != null) {
+                switch (columnIndex) {
+                    case 0:
+                        artist.setNombre(newValue);
+                        break;
+                    case 1:
+                        artist.setTipoMusica(newValue);
+                        break;
+                    case 2:
+                        artist.setDescripcion(newValue);
+                        break;
+                    case 3:
+                        if (controlador.getSeleccionados().contains(getTableView().getItems().get(getTableRow().getIndex()))) {
+                            controlador.getSeleccionados().remove(getTableView().getItems().get(getTableRow().getIndex()));
+                            seleccionado = false;
+                            setText("No");
+                        } else {
+                            controlador.getSeleccionados().add(getTableView().getItems().get(getTableRow().getIndex()));
+                            seleccionado = true;
+                            setText("Sí");
+                        }
+                        throw new Exception();
+                }
+
                 ArtistManagerFactory.get().edit_XML(artist, artist.getId().toString());
-            } catch (Exception e) {
-                Platform.runLater(() -> {
-                    new Alert(Alert.AlertType.ERROR, "Error al actualizar el mantenimiento en el servidor.", ButtonType.OK).showAndWait();
-                });
-                e.printStackTrace();
+
             }
+        } catch (WebApplicationException e) {
+            Platform.runLater(() -> {
+                new Alert(Alert.AlertType.ERROR, "Error al actualizar el mantenimiento en el servidor.", ButtonType.OK).showAndWait();
+            });
+            e.printStackTrace();
+        } catch (Exception e) {
+
         }
-        super.commitEdit(newValue);
     }
 
     private void createTextField() {
@@ -168,11 +176,26 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
     }
 
     private void createCheckBox() {
-        checkBox = new CheckBox();
-        checkBox.setSelected(getString().equals("Sí"));
-        checkBox.setOnAction(event -> {
-            commitEdit("");
-        });
+        if (checkBox == null) {
+            checkBox = new CheckBox();
+            checkBox.setOnAction(event -> {
+                commitEdit("");
+            });
+        }
+        if (getText().equals("Sí")) {
+            checkBox.setSelected(true);
+            seleccionado = true;
+        } else if (getText().equals("No")) {
+            checkBox.setSelected(false);
+            seleccionado = false;
+        } else {
+            if (checkBox.isSelected() || seleccionado) {
+                checkBox.setSelected(true);
+            } else {
+                checkBox.setSelected(false);
+            }
+        }
+
     }
 
     private String getString() {

@@ -99,6 +99,10 @@ public class ShowAllArtistsViewController {
 
     List<Artist> seleccionados = new ArrayList<>();
 
+    List<Artist> seleccionadosBusqueda = new ArrayList<>();
+
+    private int i = 0;
+
     private final Logger LOGGER = Logger.getLogger("SignInViewController.view");
 
     public void setStage(Stage stage) {
@@ -149,9 +153,9 @@ public class ShowAllArtistsViewController {
         tfFiltroNombre.textProperty().addListener((observable, oldValue, newValue) -> loadTableData());
         tfFiltroMusica.textProperty().addListener((observable, oldValue, newValue) -> loadTableData());
     }
-    
-    private void listenerForVisibleButtons(){
-                tvArtists.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Artist>() {
+
+    private void listenerForVisibleButtons() {
+        tvArtists.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Artist>() {
             @Override
             public void onChanged(ListChangeListener.Change<? extends Artist> c) {
                 if (c.getList().isEmpty()) {
@@ -200,6 +204,12 @@ public class ShowAllArtistsViewController {
             tcEventos.setCellFactory(column -> new ArtistEditingCell(this));
             btnCrear.setVisible(false);
             btnEliminar.setVisible(false);
+            try {
+                seleccionadosBusqueda = Arrays.asList(ArtistManagerFactory.get().findByEvent_XML(Artist[].class, String.valueOf(event.getId())));
+            } catch (ReadException e) {
+
+            }
+
         }
 
         loadTableData();
@@ -264,17 +274,14 @@ public class ShowAllArtistsViewController {
     }
 
     private String comprobarSeleccionado(Long id) {
-        try {
-            Artist[] seleccionadosBusqueda = ArtistManagerFactory.get().findByEvent_XML(Artist[].class, String.valueOf(id));
-
-            for (Artist ar : seleccionadosBusqueda) {
-                if (this.artists.contains(ar)) {
+        i++;
+        for (Artist ar : seleccionadosBusqueda) {
+            if (ar.getId().equals(id)) {
+                if (i < artistsCopia.size()) {
                     this.seleccionados.add(ar);
-                    return "Sí";
                 }
+                return "Sí";
             }
-        } catch (ReadException e) {
-            return "No";
         }
         return "No";
 
@@ -290,9 +297,8 @@ public class ShowAllArtistsViewController {
     }
 
     public void seleccionarArtistasEvento(ActionEvent event) {
-        seleccionados.remove(0);
         seleccionados.forEach(artist -> System.out.println(artist.getNombre()));
-
+        System.out.println("**************************************");
     }
 
     private void goToShowArtistView(ActionEvent event) {
