@@ -179,22 +179,15 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
         if (checkBox == null) {
             checkBox = new CheckBox();
             checkBox.setOnAction(event -> {
-                commitEdit("");
+                commitEdit("Sí");
             });
-        }
-        if (getText().equals("Sí")) {
-            checkBox.setSelected(true);
-            seleccionado = true;
-        } else if (getText().equals("No")) {
-            checkBox.setSelected(false);
-            seleccionado = false;
-        } else {
-            if (checkBox.isSelected() || seleccionado) {
+            if (getText().equals("Sí")) {
                 checkBox.setSelected(true);
             } else {
                 checkBox.setSelected(false);
             }
         }
+
 
     }
 

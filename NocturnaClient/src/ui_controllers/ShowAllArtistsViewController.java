@@ -9,7 +9,9 @@ import exceptions.ReadException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -97,13 +99,13 @@ public class ShowAllArtistsViewController {
 
     List<Artist> artistsCopia;
 
-    List<Artist> seleccionados = new ArrayList<>();
+    Set<Artist> seleccionados = new HashSet<>();
 
     List<Artist> seleccionadosBusqueda = new ArrayList<>();
 
-    private int i = 0;
+    private int cantidadArtistas = 0;
 
-    private final Logger LOGGER = Logger.getLogger("SignInViewController.view");
+    private final Logger LOGGER = Logger.getLogger("ShowAllArtistView.view");
 
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -121,7 +123,7 @@ public class ShowAllArtistsViewController {
         this.tema = tema;
     }
 
-    public List<Artist> getSeleccionados() {
+    public Set<Artist> getSeleccionados() {
         return seleccionados;
     }
 
@@ -152,31 +154,31 @@ public class ShowAllArtistsViewController {
 
         tfFiltroNombre.textProperty().addListener((observable, oldValue, newValue) -> loadTableData());
         tfFiltroMusica.textProperty().addListener((observable, oldValue, newValue) -> loadTableData());
-    }
 
-    private void listenerForVisibleButtons() {
-        tvArtists.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Artist>() {
-            @Override
-            public void onChanged(ListChangeListener.Change<? extends Artist> c) {
-                if (c.getList().isEmpty()) {
-                    btnSeleccionar.setDisable(true);
-                    btnEliminar.setDisable(true);
+        if (event == null) {
+            tvArtists.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Artist>() {
+                @Override
+                public void onChanged(ListChangeListener.Change<? extends Artist> c) {
+                    if (c.getList().isEmpty()) {
+                        btnSeleccionar.setDisable(true);
+                        btnEliminar.setDisable(true);
 
-                } else if (c.getList().size() == 1) {
-                    btnSeleccionar.setDisable(false);
-                    btnEliminar.setDisable(false);
-                } else if (c.getList().size() > 1) {
-                    btnSeleccionar.setDisable(true);
-                    btnEliminar.setDisable(false);
+                    } else if (c.getList().size() == 1) {
+                        btnSeleccionar.setDisable(false);
+                        btnEliminar.setDisable(false);
+                    } else if (c.getList().size() > 1) {
+                        btnSeleccionar.setDisable(true);
+                        btnEliminar.setDisable(false);
+                    }
                 }
-            }
-        });
+            });
+        }
+
     }
 
     private void initializeInfo() {
         user = new User();
         user.setIsAdmin(true);
-        event = EventManagerFactory.get().findAll_XML(Event[].class)[0];
         if (event == null) {
             if (user.getIsAdmin()) {
                 btnCrear.setOnAction(this::crearArtista);
@@ -187,7 +189,6 @@ public class ShowAllArtistsViewController {
                 tcTipoMusica.setCellFactory(column -> new ArtistEditingCell(this));
                 tcDescripcion.setCellFactory(column -> new ArtistEditingCell(this));
                 btnSeleccionar.setDisable(true);
-                listenerForVisibleButtons();
             } else {
                 tvArtists.setEditable(false);
             }
@@ -274,10 +275,10 @@ public class ShowAllArtistsViewController {
     }
 
     private String comprobarSeleccionado(Long id) {
-        i++;
+        cantidadArtistas++;
         for (Artist ar : seleccionadosBusqueda) {
             if (ar.getId().equals(id)) {
-                if (i < artistsCopia.size()) {
+                if (cantidadArtistas <= artistsCopia.size() + 1) {
                     this.seleccionados.add(ar);
                 }
                 return "Sí";
@@ -297,8 +298,29 @@ public class ShowAllArtistsViewController {
     }
 
     public void seleccionarArtistasEvento(ActionEvent event) {
-        seleccionados.forEach(artist -> System.out.println(artist.getNombre()));
-        System.out.println("**************************************");
+        this.event.setArtists(seleccionados);
+        EventManagerFactory.get().edit_XML(this.event, this.event.getId().toString());
+        CustomAlert.throwAlertCustom(Alert.AlertType.INFORMATION, "La información se ha guardado correctamente");
+        goToShowEventView();
+    }
+
+    private void goToShowEventView() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showEventView.fxml"));
+
+            Parent root = loader.load();
+
+            ShowEventViewController controller = (ShowEventViewController) loader.getController();
+
+            controller.setStage(this.stage);
+            controller.setTema(this.tema);
+            controller.setUser(this.user);
+            controller.setEvent(this.event);
+
+            controller.initStage(root);
+        } catch (IOException e) {
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error con la sincronización de las ventanas, intentalo más tarde");
+        }
     }
 
     private void goToShowArtistView(ActionEvent event) {
