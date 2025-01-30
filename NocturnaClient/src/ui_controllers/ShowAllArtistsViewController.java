@@ -5,6 +5,7 @@
  */
 package ui_controllers;
 
+import control.Sesion;
 import exceptions.ReadException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -131,9 +132,9 @@ public class ShowAllArtistsViewController {
         LOGGER.info("Initializing 'ShowAllArtists' window.");
 
         Scene scene = new Scene(root);
-
-        changeTheme();
+        
         initializeInfo();
+        changeTheme();
         initializeControlListeners();
 
         stage.setScene(scene);
@@ -177,8 +178,9 @@ public class ShowAllArtistsViewController {
     }
 
     private void initializeInfo() {
-        user = new User();
-        user.setIsAdmin(true);
+        user = Sesion.getUser();
+        stage = Sesion.getStage();
+        tema = Sesion.getTema();
         if (event == null) {
             if (user.getIsAdmin()) {
                 btnCrear.setOnAction(this::crearArtista);
@@ -312,9 +314,6 @@ public class ShowAllArtistsViewController {
 
             ShowEventViewController controller = (ShowEventViewController) loader.getController();
 
-            controller.setStage(this.stage);
-            controller.setTema(this.tema);
-            controller.setUser(this.user);
             controller.setEvent(this.event);
 
             controller.initStage(root);
@@ -330,11 +329,8 @@ public class ShowAllArtistsViewController {
             Parent root = loader.load();
 
             ShowArtistViewController controller = (ShowArtistViewController) loader.getController();
-
-            controller.setStage(stage);
-            controller.setTema(tema);
+            
             controller.setArtist((Artist) tvArtists.getSelectionModel().getSelectedItem());
-            controller.setUser(user);
 
             controller.initStage(root);
         } catch (IOException e) {
