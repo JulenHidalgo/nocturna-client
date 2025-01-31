@@ -316,10 +316,7 @@ public class SignUpViewController {
             client.setPasswd(pfPass.getText());
 
             ClientManagerFactory.get().create_XML(client);
-            
-            User user = new Client();
-            user = client;
-            Sesion.setUser(user);
+            Sesion.setUser(client);
             
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllEventsView.fxml"));
 

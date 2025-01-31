@@ -29,8 +29,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import logic.AdminManagerFactory;
+import logic.ClientManagerFactory;
 import logic.UserManagerFactory;
 import model.Admin;
+import model.Client;
 import model.User;
 import utils.CustomAlert;
 
@@ -164,17 +166,26 @@ public class SignInViewController {
 
     public void signIn(ActionEvent event) {
         try {
-            if(tfMail.getText().isEmpty() || pfPass.getText().isEmpty()){
+            if (tfMail.getText().isEmpty() || pfPass.getText().isEmpty()) {
                 throw new Exception();
             }
-            
+
             user = new User();
             user.setMail(tfMail.getText());
             user.setPasswd(pfPass.getText());
 
             user = UserManagerFactory.get().login_XML(User.class, user.getMail(), user.getPasswd());
+            Long id = user.getId();
+            if (user.getIsAdmin()) {
+                user = new Admin();
+                user = AdminManagerFactory.get().find_XML(Admin.class, id.toString());
+            } else {
+                user = new Client();
+                user = ClientManagerFactory.get().find_XML(Client.class, id.toString());
+            }
+
             Sesion.setUser(user);
-            
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllEventsView.fxml"));
 
             Parent root = loader.load();
@@ -186,7 +197,7 @@ public class SignInViewController {
             CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, e.getMessage());
         } catch (IOException e) {
             CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error al cargar la ventana, intentalo más tarde");
-        } catch(Exception e){
+        } catch (Exception e) {
             System.out.println("ERROR " + e.getMessage());
         }
 

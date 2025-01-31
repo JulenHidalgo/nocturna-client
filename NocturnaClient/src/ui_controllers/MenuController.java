@@ -125,7 +125,6 @@ public class MenuController {
             Parent root = loader.load();
             
             ShowAllArtistsViewController controller = (ShowAllArtistsViewController) loader.getController();
-           
             controller.setEvent(null);
             controller.initStage(root);
             
