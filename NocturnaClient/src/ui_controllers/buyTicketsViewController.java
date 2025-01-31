@@ -5,6 +5,7 @@
  */
 package ui_controllers;
 
+import control.Sesion;
 import static java.sql.Date.valueOf;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -25,6 +26,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javax.swing.ButtonGroup;
 import logic.EventManagerFactory;
@@ -41,6 +43,9 @@ import model.FormaPago;
  * @author 2dam
  */
 public class buyTicketsViewController {
+    
+    @FXML
+    AnchorPane panel;
     
     @FXML
     TextField tfnuevoDni;
@@ -89,13 +94,12 @@ public class buyTicketsViewController {
     private final Logger LOGGER = Logger.getLogger("crudbankjfxclient.view");
     
     @FXML
-    private void comprarEntradas(ActionEvent event){
-        
-        
-    }
-    
-    @FXML
     private void añadirDni(ActionEvent event){
+      
+        if(tfnuevoDni!=null){
+            tfnuevoDni.setText(tfnuevoDni.getPromptText());  
+        }
+        
         if (!tfnuevoDni.getText().matches("^\\d{8}[A-Za-z]$")) {
             LOGGER.warning("DNI validation error, pattern incorrect");
             new Alert(Alert.AlertType.ERROR, "Ese DNI no es correcto", ButtonType.OK).showAndWait();
@@ -116,12 +120,9 @@ public class buyTicketsViewController {
     
     @FXML
     private void comprarTickets(ActionEvent event){
-        this.event.setNumEntradas(this.event.getNumEntradas()-cantCompra); 
-        EventManagerFactory.get().edit_XML(this.event, this.event.getId().toString());
+        
         ObservableList<String> observableDni = FXCollections.observableArrayList(listViewListaDni.getItems());
         
-        user = new Client();
-        user = UserManagerFactory.get().find_XML(Client.class, "2");
         ticket.setCantidad(cantCompra); 
         ticket.setDniComprador(((Client) user).getDni());
         ticket.setFechaCompra(valueOf(LocalDate.now()));   
@@ -139,21 +140,16 @@ public class buyTicketsViewController {
             ticket.setFormapago(FormaPago.TARJETA);
         }
         TicketManagerFactory.get().create_XML(ticket);
-            new Alert(Alert.AlertType.CONFIRMATION, "Compra realizada con exito", ButtonType.OK).showAndWait();
+        
+        //modificar el numero de enradas que quedan en el evcento
+        this.event.setNumEntradas(this.event.getNumEntradas()-cantCompra); 
+        EventManagerFactory.get().edit_XML(this.event, this.event.getId().toString());
+        new Alert(Alert.AlertType.CONFIRMATION, "Compra realizada con exito", ButtonType.OK).showAndWait();
+            
     }
      
     
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public void setTema(boolean tema) {
-        this.tema = tema;
-    }
+    
     
     public void setEvent(Event event){
         this.event = event;
@@ -167,7 +163,11 @@ public class buyTicketsViewController {
         
         LOGGER.info("Initializing Bank Statement window.");
         Scene scene = new Scene(root);
-        
+        user = Sesion.getUser();
+        tema = Sesion.getTema();
+        stage = Sesion.getStage();
+        panel.requestFocus();
+        tfnuevoDni.setPromptText(((Client) user).getDni());
         rdBtnBizum.setToggleGroup(toggleGroup);
         rdBtnTarjeta.setToggleGroup(toggleGroup);
         lblName.setText(event.getNombre());

@@ -224,7 +224,7 @@ public class ShowAllEventsViewController {
                 List<Artist> artistas = Arrays.asList(artista);
                 String musicas = artistas.stream().map(Artist::getTipoMusica).collect(Collectors.joining(", "));
                 if (musicas.isEmpty()) {
-                    return null;
+                   return new SimpleStringProperty("No hay artistas");
                 }
                 return new SimpleStringProperty(musicas);
             } catch (WebApplicationException ex) {

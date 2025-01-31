@@ -24,6 +24,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
+import model.Admin;
 import model.Artist;
 import model.Event;
 import model.User;
@@ -106,8 +107,6 @@ public class ShowEventViewController {
             
             buyTicketsViewController controller = (buyTicketsViewController) loader.getController();
            
-            controller.setStage(stage);
-            controller.setTema(tema);
             controller.setEvent(event);
             controller.setCantCompra(Integer.parseInt(lblNumEntradas.getText()));
             controller.initStage(root);
@@ -129,6 +128,10 @@ public class ShowEventViewController {
         user = Sesion.getUser();
         tema = Sesion.getTema();
         stage = Sesion.getStage();
+        
+        if(user instanceof Admin){
+            btnComprar.setVisible(false);
+        }
         
         lblNombreEvento.setText(event.getNombre());
         lblPrecio.setText(String.valueOf(event.getPrecioEntrada()));
