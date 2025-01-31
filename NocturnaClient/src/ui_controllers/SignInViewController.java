@@ -34,6 +34,7 @@ import logic.UserManagerFactory;
 import model.Admin;
 import model.Client;
 import model.User;
+import security.AsimetricEncrypt;
 import utils.CustomAlert;
 
 /**
@@ -169,10 +170,9 @@ public class SignInViewController {
             if (tfMail.getText().isEmpty() || pfPass.getText().isEmpty()) {
                 throw new Exception();
             }
-
             user = new User();
-            user.setMail(tfMail.getText());
-            user.setPasswd(pfPass.getText());
+            user.setMail(AsimetricEncrypt.encrypt(tfMail.getText()));
+            user.setPasswd(AsimetricEncrypt.encrypt(pfPass.getText()));
 
             user = UserManagerFactory.get().login_XML(User.class, user.getMail(), user.getPasswd());
             Long id = user.getId();

@@ -7,6 +7,7 @@ package ui_controllers;
 
 import control.Sesion;
 import java.io.IOException;
+import java.net.URLEncoder;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -36,6 +37,7 @@ import logic.ClientManagerFactory;
 import logic.UserManagerFactory;
 import model.Client;
 import model.User;
+import security.AsimetricEncrypt;
 import utils.CustomAlert;
 
 /**
@@ -136,6 +138,8 @@ public class SignUpViewController {
 
     public void initStage(Parent root) {
         LOGGER.info("Initializing 'SignUp' window.");
+        stage = Sesion.getStage();
+        user = Sesion.getUser();
         Scene scene = new Scene(root);
         //Si el usuario es null, significa que no ha entrado a la app todavía y 
         //está intentando registrarse, si no, significa que va a modificar su información.
@@ -202,6 +206,8 @@ public class SignUpViewController {
             checkModifyInfo();
 
             newUser.setId(user.getId());
+            newUser.setMail(AsimetricEncrypt.encrypt(newUser.getMail()));
+            newUser.setPasswd(AsimetricEncrypt.encrypt(newUser.getPasswd()));
 
             ClientManagerFactory.get().edit_XML(newUser, newUser.getId().toString());
 
@@ -312,9 +318,9 @@ public class SignUpViewController {
             client.setTelefono(Integer.parseInt(tfTelefono.getText()));
             client.setFechaNacimiento(Date.from(dpFechaNac.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
             client.setDni(tfDni.getText());
-            client.setMail(tfMail.getText());
-            client.setPasswd(pfPass.getText());
-
+            client.setMail(AsimetricEncrypt.encrypt(tfMail.getText()));
+            client.setPasswd(URLEncoder.encode(AsimetricEncrypt.encrypt(pfPass.getText()), "UTF-8") );
+            System.out.println(client.getMail());
             ClientManagerFactory.get().create_XML(client);
             Sesion.setUser(client);
             
