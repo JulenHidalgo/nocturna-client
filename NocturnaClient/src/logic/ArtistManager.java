@@ -5,6 +5,7 @@
  */
 package logic;
 
+import exceptions.InternalServerErrorException;
 import exceptions.ReadException;
 import javax.ws.rs.WebApplicationException;
 
@@ -26,11 +27,11 @@ public interface ArtistManager {
 
     public <T> T findAll_XML(Class<T> responseType) throws WebApplicationException;
 
-    public <T> T findNotByEvent_XML(Class<T> responseType, String idEvent) throws WebApplicationException;
+    public <T> T findNotByEvent_XML(Class<T> responseType, String idEvent) throws ReadException, InternalServerErrorException;
 
     public void remove(String id) throws WebApplicationException;
 
-    public <T> T findByEvent_XML(Class<T> responseType, String idEvent) throws WebApplicationException, ReadException;
+    public <T> T findByEvent_XML(Class<T> responseType, String idEvent) throws ReadException, InternalServerErrorException;
 
     public void close();
 

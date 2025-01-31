@@ -6,6 +6,7 @@
 package ui_controllers;
 
 import control.Sesion;
+import exceptions.InternalServerErrorException;
 import exceptions.ReadException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -132,7 +133,7 @@ public class ShowAllArtistsViewController {
         LOGGER.info("Initializing 'ShowAllArtists' window.");
 
         Scene scene = new Scene(root);
-        
+
         initializeInfo();
         changeTheme();
         initializeControlListeners();
@@ -178,41 +179,44 @@ public class ShowAllArtistsViewController {
     }
 
     private void initializeInfo() {
-        user = Sesion.getUser();
-        stage = Sesion.getStage();
-        tema = Sesion.getTema();
-        if (event == null) {
-            if (user.getIsAdmin()) {
-                btnCrear.setOnAction(this::crearArtista);
-                tvArtists.setEditable(true);
-                tcEventos.setEditable(false);
-                tvArtists.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-                tcNombre.setCellFactory(column -> new ArtistEditingCell(this));
-                tcTipoMusica.setCellFactory(column -> new ArtistEditingCell(this));
-                tcDescripcion.setCellFactory(column -> new ArtistEditingCell(this));
-                btnSeleccionar.setDisable(true);
+        try {
+            user = Sesion.getUser();
+            stage = Sesion.getStage();
+            tema = Sesion.getTema();
+            if (event == null) {
+                if (user.getIsAdmin()) {
+                    btnCrear.setOnAction(this::crearArtista);
+                    tvArtists.setEditable(true);
+                    tcEventos.setEditable(false);
+                    tvArtists.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+                    tcNombre.setCellFactory(column -> new ArtistEditingCell(this));
+                    tcTipoMusica.setCellFactory(column -> new ArtistEditingCell(this));
+                    tcDescripcion.setCellFactory(column -> new ArtistEditingCell(this));
+                    btnSeleccionar.setDisable(true);
+                } else {
+                    tvArtists.setEditable(false);
+                }
+                stage.setTitle("Visualizar artistas");
+                tcEventos.setText("¿Tiene eventos?");
             } else {
-                tvArtists.setEditable(false);
-            }
-            stage.setTitle("Visualizar artistas");
-            tcEventos.setText("¿Tiene eventos?");
-        } else {
-            stage.setTitle("Selector de artistas");
-            tcEventos.setText("¿Seleccionado?");
-            tvArtists.setEditable(true);
-            tcNombre.setEditable(false);
-            tcTipoMusica.setEditable(false);
-            tcDescripcion.setEditable(false);
-            tcEventos.setEditable(true);
-            tcEventos.setCellFactory(column -> new ArtistEditingCell(this));
-            btnCrear.setVisible(false);
-            btnEliminar.setVisible(false);
-            try {
+                stage.setTitle("Selector de artistas");
+                tcEventos.setText("¿Seleccionado?");
+                tvArtists.setEditable(true);
+                tcNombre.setEditable(false);
+                tcTipoMusica.setEditable(false);
+                tcDescripcion.setEditable(false);
+                tcEventos.setEditable(true);
+                tcEventos.setCellFactory(column -> new ArtistEditingCell(this));
+                btnCrear.setVisible(false);
+                btnEliminar.setVisible(false);
                 seleccionadosBusqueda = Arrays.asList(ArtistManagerFactory.get().findByEvent_XML(Artist[].class, String.valueOf(event.getId())));
-            } catch (ReadException e) {
-
+                
             }
-
+        } catch (ReadException e) {
+            LOGGER.info("The Event does not have any Artist related");
+        } catch (InternalServerErrorException e) {
+            LOGGER.severe("An InternalServerErrorException ocurred while initializing the info of the view");
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, e.getMessage());
         }
 
         loadTableData();
@@ -329,7 +333,7 @@ public class ShowAllArtistsViewController {
             Parent root = loader.load();
 
             ShowArtistViewController controller = (ShowArtistViewController) loader.getController();
-            
+
             controller.setArtist((Artist) tvArtists.getSelectionModel().getSelectedItem());
 
             controller.initStage(root);

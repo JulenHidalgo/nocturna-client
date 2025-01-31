@@ -5,6 +5,7 @@
  */
 package rest;
 
+import exceptions.InternalServerErrorException;
 import exceptions.ReadException;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
@@ -51,21 +52,11 @@ public class ArtistRESTClient implements ArtistManager {
                 .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Artist.class);
     }
 
-    public void edit_JSON(Object requestEntity, String id) throws ClientErrorException {
-        webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
-    }
-
     @Override
     public <T> T find_XML(Class<T> responseType, String id) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
-    }
-
-    public <T> T find_JSON(Class<T> responseType, String id) throws ClientErrorException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
     @Override
@@ -75,19 +66,9 @@ public class ArtistRESTClient implements ArtistManager {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findRange_JSON(Class<T> responseType, String from, String to) throws ClientErrorException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[]{from, to}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
-    }
-
     @Override
     public void create_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Artist.class);
-    }
-
-    public void create_JSON(Object requestEntity) throws ClientErrorException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
     }
 
     @Override
@@ -96,22 +77,25 @@ public class ArtistRESTClient implements ArtistManager {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T findAll_JSON(Class<T> responseType) throws ClientErrorException {
-        WebTarget resource = webTarget;
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
-    }
-
     @Override
-    public <T> T findNotByEvent_XML(Class<T> responseType, String idEvent) throws WebApplicationException {
+    public <T> T findNotByEvent_XML(Class<T> responseType, String idEvent) throws ReadException, InternalServerErrorException{
         WebTarget resource = webTarget;
+        
         resource = resource.path(java.text.MessageFormat.format("artistsNotByEvent/{0}", new Object[]{idEvent}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
-    }
+        
+        Response response = resource
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .get();
 
-    public <T> T findNotByEvent_JSON(Class<T> responseType, String idEvent) throws ClientErrorException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("artistsNotByEvent/{0}", new Object[]{idEvent}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
+        if (response.getStatus() > 404) {
+            throw new ReadException();
+        }
+
+        if (response.getStatus() > 500) {
+            throw new InternalServerErrorException();
+        }
+
+        return response.readEntity(responseType);
     }
 
     @Override
@@ -120,7 +104,7 @@ public class ArtistRESTClient implements ArtistManager {
     }
 
     @Override
-    public <T> T findByEvent_XML(Class<T> responseType, String idEvent) throws WebApplicationException, ReadException{
+    public <T> T findByEvent_XML(Class<T> responseType, String idEvent) throws ReadException, InternalServerErrorException {
         WebTarget resource = webTarget;
 
         resource = resource.path(java.text.MessageFormat.format("findArtistsByEvent/{0}", new Object[]{idEvent}));
@@ -129,19 +113,15 @@ public class ArtistRESTClient implements ArtistManager {
                 .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                 .get();
 
-        if (response.getStatus() > 200) {
-            // Opcionalmente, puedes extraer información del cuerpo de la respuesta
-            String errorDetails = response.readEntity(String.class); // Suponiendo que el error tenga un mensaje en el cuerpo
+        if (response.getStatus() > 404) {
             throw new ReadException();
         }
-        
-        return response.readEntity(responseType);
-    }
 
-    public <T> T findByEvent_JSON(Class<T> responseType, String idEvent) throws ClientErrorException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("artistsByEvent/{0}", new Object[]{idEvent}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
+        if (response.getStatus() > 500) {
+            throw new InternalServerErrorException();
+        }
+
+        return response.readEntity(responseType);
     }
 
     @Override
