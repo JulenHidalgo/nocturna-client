@@ -41,6 +41,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -155,9 +156,23 @@ public class ShowAllEventsViewController {
     
    @FXML
     private void deleteEvent(ActionEvent event) {
-        ObservableList<Event>  selectedEvent = tablaEvent.getSelectionModel().getSelectedItems();
-        selectedEvent.forEach(item -> {EventManagerFactory.get().remove(item.getId().toString());});
-        cargarTabla(recogerAllEvents());
+       Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Seguro que quieres borrar el evento " + tablaEvent.getSelectionModel().getSelectedItem().getNombre(), ButtonType.YES, ButtonType.NO);
+
+       // Muestra la alerta y espera la respuesta del usuario
+       alert.showAndWait().ifPresent(response -> {
+           if (response == ButtonType.YES) {
+               // El usuario seleccionó "Sí", realiza la acción de borrar el evento
+               ObservableList<Event> selectedEvent = tablaEvent.getSelectionModel().getSelectedItems();
+               selectedEvent.forEach(item -> {
+                   EventManagerFactory.get().remove(item.getId().toString());
+               });
+               cargarTabla(recogerAllEvents());
+               new Alert(Alert.AlertType.INFORMATION, "Evento borrado", ButtonType.OK).showAndWait();
+           } else {
+               new Alert(Alert.AlertType.INFORMATION, "El evento se mantiene", ButtonType.OK).showAndWait();
+           }
+       });
+       
     }
     
     @FXML
