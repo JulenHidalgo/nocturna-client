@@ -12,9 +12,13 @@ import exceptions.ReadException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
@@ -30,11 +34,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -44,8 +52,16 @@ import jxl.write.WriteException;
 import logic.ArtistManagerFactory;
 import logic.EventManagerFactory;
 import model.Artist;
+import model.Club;
 import model.Event;
 import model.User;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 import utils.ArtistEditingCell;
 import utils.CustomAlert;
 
@@ -184,7 +200,6 @@ public class ShowAllArtistsViewController {
         try {
             user = Sesion.getUser();
             stage = Sesion.getStage();
-            tema = Sesion.getTema();
             if (event == null) {
                 if (user.getIsAdmin()) {
                     btnCrear.setOnAction(this::crearArtista);
@@ -200,6 +215,18 @@ public class ShowAllArtistsViewController {
                 }
                 stage.setTitle("Visualizar artistas");
                 tcEventos.setText("¿Tiene eventos?");
+
+                ContextMenu contextMenu = new ContextMenu();
+                MenuItem item1 = new MenuItem("Cambiar tema");
+                item1.setOnAction(a -> {
+                    Sesion.setTema(!Sesion.getTema());
+                    changeTheme();
+                });
+                MenuItem item2 = new MenuItem("Imprimir los datos de la tabla");
+                item2.setOnAction(this::imprimirTabla);
+                contextMenu.getItems().addAll(item1, item2);
+
+                anchorPane.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
             } else {
                 stage.setTitle("Selector de artistas");
                 tcEventos.setText("¿Seleccionado?");
@@ -224,8 +251,30 @@ public class ShowAllArtistsViewController {
         loadTableData();
     }
 
+    private void imprimirTabla(ActionEvent event) {
+        try {
+            JasperReport report = JasperCompileManager.compileReport("src/reports/ArtistReport.jrxml");
+
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Artist>) this.tvArtists.getItems());
+
+            Map<String, Object> parameters = new HashMap<>();
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+
+            jasperViewer.setVisible(true);
+
+        } catch (JRException ex) {
+            Logger.getLogger(ShowAllClubsViewController.class
+                    .getName()).log(Level.SEVERE, null, ex);
+
+        }
+    }
+
     private void loadTableData() {
-        artists = Arrays.asList(ArtistManagerFactory.get().findAll_XML(Artist[].class));
+        artists = Arrays.asList(ArtistManagerFactory.get().findAll_XML(Artist[].class
+        ));
         initializeTableColumns();
         applyFilters();
         // Convertir ArrayList a ObservableList
@@ -318,7 +367,8 @@ public class ShowAllArtistsViewController {
 
     private String comprobarEventos(Long id) {
         try {
-            EventManagerFactory.get().findByArtist_XML(Event[].class, String.valueOf(id));
+            EventManagerFactory.get().findByArtist_XML(Event[].class,
+                     String.valueOf(id));
             return "Sí";
         } catch (ReadException e) {
             return "No";
@@ -375,10 +425,21 @@ public class ShowAllArtistsViewController {
 
     private void changeTheme() {
         String currentStyle = anchorPane.getStyle();
-        if (tema) {
+        if (Sesion.getTema()) {
             anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: url\\('[^']+'\\);", "-fx-background-image: url('/img/fondogris.jpg');"));
         } else {
             anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
+        }
+    }
+
+    private void controlMenuConceptual(MouseEvent event, ContextMenu menu) {
+        //Se comprueba si se hace clic con el borón derecho del ratón.
+        if (event.getButton() == MouseButton.SECONDARY) {
+            //Si es así se abre el menú contextual.
+            menu.show(anchorPane, event.getScreenX(), event.getScreenY());
+        } else {
+            //Si no, se cierra el mismo.
+            menu.hide();
         }
     }
 

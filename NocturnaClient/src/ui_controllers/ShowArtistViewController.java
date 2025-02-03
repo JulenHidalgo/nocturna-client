@@ -27,14 +27,18 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -110,27 +114,11 @@ public class ShowArtistViewController {
 
     private final Logger LOGGER = Logger.getLogger("ShowArtistViewController.view");
 
-    public Stage getStage() {
-        return stage;
-    }
-
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public void setArtist(Artist artist) {
         this.artist = artist;
     }
 
-    public void setTema(boolean tema) {
-        this.tema = tema;
-    }
-
-    public void initStage(Parent root) throws IOException{
+    public void initStage(Parent root) throws IOException {
         LOGGER.info("Initializing 'ShowArtistView' window.");
 
         Scene scene = new Scene(root);
@@ -194,6 +182,16 @@ public class ShowArtistViewController {
             cbFiltrar.getItems().add("Sala");
 
             loadTableData();
+
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem item1 = new MenuItem("Cambiar tema");
+            item1.setOnAction(a -> {
+                Sesion.setTema(!Sesion.getTema());
+                changeTheme();
+            });
+            contextMenu.getItems().addAll(item1);
+
+            anchorPane.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
         }
     }
 
@@ -282,10 +280,21 @@ public class ShowArtistViewController {
 
     private void changeTheme() {
         String currentStyle = anchorPane.getStyle();
-        if (tema) {
+        if (Sesion.getTema()) {
             anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: url\\('[^']+'\\);", "-fx-background-image: url('/img/fondogris.jpg');"));
         } else {
             anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
+        }
+    }
+
+    private void controlMenuConceptual(MouseEvent event, ContextMenu menu) {
+        //Se comprueba si se hace clic con el borón derecho del ratón.
+        if (event.getButton() == MouseButton.SECONDARY) {
+            //Si es así se abre el menú contextual.
+            menu.show(anchorPane, event.getScreenX(), event.getScreenY());
+        } else {
+            //Si no, se cierra el mismo.
+            menu.hide();
         }
     }
 
