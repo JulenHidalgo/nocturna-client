@@ -8,7 +8,8 @@ package ui_controllers;
 import control.Sesion;
 import exceptions.SignInException;
 import java.io.IOException;
-import java.util.Optional;
+import java.net.URLEncoder;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -18,12 +19,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -107,6 +106,7 @@ public class SignInViewController {
 
     public void initStage(Parent root) {
         LOGGER.info("Initializing 'SignIn' window.");
+        stage = Sesion.getStage();
         Scene scene = new Scene(root);
 
         if (user == null) {
@@ -171,9 +171,10 @@ public class SignInViewController {
                 throw new Exception();
             }
             user = new User();
-            user.setMail(AsimetricEncrypt.encrypt(tfMail.getText()));
-            user.setPasswd(AsimetricEncrypt.encrypt(pfPass.getText()));
-
+            user.setMail(URLEncoder.encode(AsimetricEncrypt.encrypt(tfMail.getText()), "UTF-8"));
+            user.setPasswd(URLEncoder.encode(AsimetricEncrypt.encrypt(pfPass.getText()), "UTF-8"));
+            
+            LOGGER.log(Level.INFO, user.getMail());
             user = UserManagerFactory.get().login_XML(User.class, user.getMail(), user.getPasswd());
             Long id = user.getId();
             if (user.getIsAdmin()) {

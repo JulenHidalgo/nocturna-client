@@ -206,8 +206,8 @@ public class SignUpViewController {
             checkModifyInfo();
 
             newUser.setId(user.getId());
-            newUser.setMail(AsimetricEncrypt.encrypt(newUser.getMail()));
-            newUser.setPasswd(AsimetricEncrypt.encrypt(newUser.getPasswd()));
+            newUser.setMail(URLEncoder.encode(AsimetricEncrypt.encrypt(tfMail.getText()), "UTF-8"));
+            newUser.setPasswd(URLEncoder.encode(AsimetricEncrypt.encrypt(pfPass.getText()), "UTF-8"));
 
             ClientManagerFactory.get().edit_XML(newUser, newUser.getId().toString());
 
@@ -318,8 +318,8 @@ public class SignUpViewController {
             client.setTelefono(Integer.parseInt(tfTelefono.getText()));
             client.setFechaNacimiento(Date.from(dpFechaNac.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
             client.setDni(tfDni.getText());
-            client.setMail(AsimetricEncrypt.encrypt(tfMail.getText()));
-            client.setPasswd(URLEncoder.encode(AsimetricEncrypt.encrypt(pfPass.getText()), "UTF-8") );
+            client.setMail(URLEncoder.encode(AsimetricEncrypt.encrypt(tfMail.getText()), "UTF-8"));
+            client.setPasswd(URLEncoder.encode(AsimetricEncrypt.encrypt(pfPass.getText()), "UTF-8"));
             System.out.println(client.getMail());
             ClientManagerFactory.get().create_XML(client);
             Sesion.setUser(client);
