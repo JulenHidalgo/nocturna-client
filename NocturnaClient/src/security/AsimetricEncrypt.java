@@ -42,9 +42,6 @@ public class AsimetricEncrypt {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             byte[] encryptedData = cipher.doFinal(data.getBytes());
-            System.out.println(encryptedData.length);
-            
-            System.out.println(javax.xml.bind.DatatypeConverter.printBase64Binary(encryptedData));
             
             return javax.xml.bind.DatatypeConverter.printBase64Binary(encryptedData);
         } catch (Exception e) {
