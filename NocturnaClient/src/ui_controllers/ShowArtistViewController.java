@@ -130,7 +130,7 @@ public class ShowArtistViewController {
         this.tema = tema;
     }
 
-    public void initStage(Parent root) {
+    public void initStage(Parent root) throws IOException{
         LOGGER.info("Initializing 'ShowArtistView' window.");
 
         Scene scene = new Scene(root);
