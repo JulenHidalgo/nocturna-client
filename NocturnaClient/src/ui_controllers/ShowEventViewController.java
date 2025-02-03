@@ -21,8 +21,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Admin;
 import model.Artist;
@@ -34,6 +40,9 @@ import model.User;
  * @author 2dam
  */
 public class ShowEventViewController {
+    
+    @FXML
+    AnchorPane bpPrincipal;
     
     @FXML
     Label lblNombreEvento;
@@ -55,6 +64,21 @@ public class ShowEventViewController {
     
     @FXML
     Label lbArtist;
+    
+    @FXML
+    Text txArtist;
+    
+    @FXML
+    Text txSalas;
+    
+    @FXML
+    Text txPrecio;
+    
+    @FXML
+    Text txConsumicion;
+    
+    @FXML
+    Text txCantEntradas;
     
     @FXML
     Button btnRestar;
@@ -116,7 +140,64 @@ public class ShowEventViewController {
         }
     }
     
+    private void cambiarTema(ActionEvent event) {
+        if (tema) {
+            Sesion.setTema(false);
+        } else {
+            Sesion.setTema(true);
+        }
+        tema = Sesion.getTema();
+        changeTheme();
+    }
+
+    private void changeTheme() {
+        String currentStyle = bpPrincipal.getStyle();
+
+        if (tema) {
+            
+            lbArtist.setStyle("-fx-text-fill: black;");
+            lblNombreSala.setStyle("-fx-text-fill: black;");
+            lblNombreEvento.setStyle("-fx-text-fill: black;");
+            lblCantConsumiciones.setStyle("-fx-text-fill: black;");
+            lblPrecio.setStyle("-fx-text-fill: black;");
+            lblTipoMusica.setStyle("-fx-text-fill: black;");
+            txArtist.setStyle("-fx-fill: black;");
+            txCantEntradas.setStyle("-fx-fill: black;");
+            txConsumicion.setStyle("-fx-fill: black;");
+            txPrecio.setStyle("-fx-fill: black;");
+            txSalas.setStyle("-fx-fill : black;");
+            lblNumEntradas.setStyle("-fx-text-fill: black;");
+            bpPrincipal.setStyle(currentStyle.replaceAll("-fx-background-image: url\\('[^']+'\\);", "-fx-background-image: url('/img/fondogris.jpg');"));
+        } else {
+            
+            lbArtist.setStyle("-fx-text-fill: white;");
+            lblNombreSala.setStyle("-fx-text-fill: white;");
+            lblNombreEvento.setStyle("-fx-text-fill: white;");
+            lblCantConsumiciones.setStyle("-fx-text-fill: white;");
+            lblPrecio.setStyle("-fx-text-fill: white;");
+            lblTipoMusica.setStyle("-fx-text-fill: white;");
+            txArtist.setStyle("-fx-fill: white;");
+            txCantEntradas.setStyle("-fx-fill: white;");
+            txConsumicion.setStyle("-fx-fill: white;");
+            txPrecio.setStyle("-fx-fill: white;");
+            txSalas.setStyle("-fx-fill: white;");
+            lblNumEntradas.setStyle("-fx-text-fill: white;");
+            bpPrincipal.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
+        }
+    }
     
+     private void controlMenuConceptual(MouseEvent event, ContextMenu menu) {
+        //Se comprueba si se hace clic con el borón derecho del ratón.
+        if (event.getButton() == MouseButton.SECONDARY) {
+            //Si es así se abre el menú contextual.
+            menu.show(bpPrincipal, event.getScreenX(), event.getScreenY());
+        } else {
+            //Si no, se cierra el mismo.
+            menu.hide();
+        }
+    }
+     
+     
     public void setEvent(Event event){
         this.event = event;
     }
@@ -129,8 +210,18 @@ public class ShowEventViewController {
         tema = Sesion.getTema();
         stage = Sesion.getStage();
         
+        changeTheme();
+        
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem item1 = new MenuItem("Cambiar tema");
+        item1.setOnAction(this::cambiarTema);  
+        contextMenu.getItems().addAll(item1);
+        bpPrincipal.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
+        
         if(user instanceof Admin){
             btnComprar.setVisible(false);
+            btnSumar.setVisible(false);
+            btnRestar.setVisible(false);
         }
         
         lblNombreEvento.setText(event.getNombre());

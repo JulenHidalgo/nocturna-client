@@ -5,6 +5,7 @@
  */
 package rest;
 
+import exceptions.InternalServerErrorException;
 import exceptions.ReadException;
 import exceptions.SignInException;
 import javax.ws.rs.ClientErrorException;
@@ -141,9 +142,15 @@ public class EventRESTClient implements EventManager {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public void create_XML(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), requestEntity.getClass());
+    @Override
+    public void create_XML(Object requestEntity) throws InternalServerErrorException{
+        WebTarget resource = webTarget;
+         Response response = resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+        
+         if (response.getStatus() >= 500) {
+            throw new InternalServerErrorException();
+        }
     }
 
     public void create_JSON(Object requestEntity) throws WebApplicationException {
@@ -161,7 +168,7 @@ public class EventRESTClient implements EventManager {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_JSON).get(responseType);
     }
 
-    public void remove(String id) throws WebApplicationException {
+    public void remove(String id) throws InternalServerErrorException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
     }
 

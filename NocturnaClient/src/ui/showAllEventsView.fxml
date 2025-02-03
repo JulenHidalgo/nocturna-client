@@ -30,7 +30,7 @@
             <TableColumn fx:id="tcConsumicion" prefWidth="136.0" text="Consumicion/es" />
         </columns>
       </TableView>
-      <Label layoutX="1045.0" layoutY="164.0" prefHeight="39.0" prefWidth="55.0" text="Precio" textFill="WHITE" AnchorPane.rightAnchor="179.79999999999995" AnchorPane.topAnchor="170.0">
+      <Label fx:id="txPrecio" layoutX="1045.0" layoutY="164.0" prefHeight="39.0" prefWidth="55.0" text="Precio" textFill="WHITE" AnchorPane.rightAnchor="179.79999999999995" AnchorPane.topAnchor="170.0">
          <font>
             <Font size="18.0" />
          </font>
@@ -39,12 +39,12 @@
       <TextField fx:id="tfBuscador" layoutX="111.0" layoutY="174.0" prefHeight="26.0" prefWidth="278.0" promptText="Buscar" AnchorPane.leftAnchor="111.0" AnchorPane.topAnchor="174.0" />
       <DatePicker fx:id="dateFecha" layoutX="463.0" layoutY="174.0" prefHeight="26.0" prefWidth="144.0" AnchorPane.topAnchor="174.0" />
       <DatePicker fx:id="dateFechaHasta" layoutX="635.0" layoutY="174.0" prefHeight="26.0" prefWidth="144.0" visible="false" AnchorPane.topAnchor="174.0" />
-      <Label layoutX="468.0" layoutY="152.0" text="Fecha" textFill="WHITE" AnchorPane.topAnchor="152.0" />
+      <Label fx:id="txFecha" layoutX="468.0" layoutY="152.0" text="Fecha" textFill="WHITE" AnchorPane.topAnchor="152.0" />
       <Label fx:id="lbHasta" layoutX="732.0" layoutY="151.0" text="Hasta" textFill="#f5f5f5" visible="false" />
       <Button fx:id="btnSeleccionar" disable="true" layoutX="1047.0" layoutY="648.0" mnemonicParsing="false" onAction="#irShowEventView" prefHeight="40.0" prefWidth="120.0" text="ver evento" AnchorPane.bottomAnchor="32.0" AnchorPane.rightAnchor="113.0" />
       <Button fx:id="btnBorrarEvento" disable="true" layoutX="771.0" layoutY="648.0" mnemonicParsing="false" onAction="#deleteEvent" prefHeight="40.0" prefWidth="120.0" text="Borrar" AnchorPane.bottomAnchor="32.0" AnchorPane.rightAnchor="410.0" />
       <Button fx:id="btnCrearEvento" layoutX="633.0" layoutY="648.0" mnemonicParsing="false" onAction="#createEvent" prefHeight="40.0" prefWidth="120.0" text="Crear " AnchorPane.bottomAnchor="32.0" AnchorPane.rightAnchor="547.0" />
-      <Label layoutX="111.0" layoutY="152.0" text="Buscar" textFill="WHITE" AnchorPane.leftAnchor="111.0" AnchorPane.topAnchor="152.0" />
+      <Label fx:id="txBuscar" layoutX="111.0" layoutY="152.0" text="Buscar" textFill="WHITE" AnchorPane.leftAnchor="111.0" AnchorPane.topAnchor="152.0" />
       <Button fx:id="btnAñadirArtistas" disable="true" layoutX="909.0" layoutY="648.0" mnemonicParsing="false" onAction="#añadirAtists" prefHeight="40.0" prefWidth="142.0" text="Añadir Artista/s" AnchorPane.bottomAnchor="32.0" AnchorPane.rightAnchor="251.0" />
       <Text fill="WHITE" layoutX="99.0" layoutY="128.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Eventos" wrappingWidth="208.80001544952387" AnchorPane.leftAnchor="111.0">
          <font>

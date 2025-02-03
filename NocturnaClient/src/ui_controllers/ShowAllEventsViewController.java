@@ -32,6 +32,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -106,6 +107,16 @@ public class ShowAllEventsViewController {
 
     @FXML
     Label lbHasta;
+    
+    @FXML
+    Label txBuscar;
+    
+    @FXML
+    Label txPrecio;
+    
+    @FXML
+    Label txFecha;
+    
 
     @FXML
     TableView<Event> tablaEvent;
@@ -152,45 +163,67 @@ public class ShowAllEventsViewController {
     private List<Event> events = recogerAllEvents();
     private final Logger LOGGER = Logger.getLogger("crudbankjfxclient.view");
 
+    /**
+    * eliminar el evento o eventos seleccionados 
+    * @param event 
+    */
     @FXML
     private void deleteEvent(ActionEvent event) {
+        try {
+            //poner alerta con opciones para que tenga que confirmar para borrar el evento o eventos
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Seguro que quieres borrar el evento ", ButtonType.YES, ButtonType.NO);
 
-       Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Seguro que quieres borrar el evento " + tablaEvent.getSelectionModel().getSelectedItem().getNombre(), ButtonType.YES, ButtonType.NO);
+            alert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.YES) {
+                    ObservableList<Event> selectedEvent = tablaEvent.getSelectionModel().getSelectedItems();
+                    selectedEvent.forEach(item -> {
+                        try {
+                            EventManagerFactory.get().remove(item.getId().toString());
+                        } catch (InternalServerErrorException ex) {
+                            LOGGER.severe("An error occurred while deleting an artist");
+                            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error en el servidor");
+                        }
 
-       // Muestra la alerta y espera la respuesta del usuario
-       alert.showAndWait().ifPresent(response -> {
-           if (response == ButtonType.YES) {
-               // El usuario seleccionó "Sí", realiza la acción de borrar el evento
-               ObservableList<Event> selectedEvent = tablaEvent.getSelectionModel().getSelectedItems();
-               selectedEvent.forEach(item -> {
-                   EventManagerFactory.get().remove(item.getId().toString());
-               });
-               cargarTabla(recogerAllEvents());
-               new Alert(Alert.AlertType.INFORMATION, "Evento borrado", ButtonType.OK).showAndWait();
-           } else {
-               new Alert(Alert.AlertType.INFORMATION, "El evento se mantiene", ButtonType.OK).showAndWait();
-           }
-       });
-       
-
-        ObservableList<Event> selectedEvent = tablaEvent.getSelectionModel().getSelectedItems();
-        selectedEvent.forEach(item -> {
-            EventManagerFactory.get().remove(item.getId().toString());
-        });
-        cargarTabla(recogerAllEvents());
-
+                    });
+                    cargarTabla(recogerAllEvents());
+                    new Alert(Alert.AlertType.INFORMATION, "Evento borrado", ButtonType.OK).showAndWait();
+                } else {
+                    new Alert(Alert.AlertType.INFORMATION, "El evento se mantiene", ButtonType.OK).showAndWait();
+                }
+            });
+            
+        } catch (Exception ex) {
+            LOGGER.severe("An error occurred");
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error");
+        }
     }
-
+    
+    /**
+    * metodo para crear nuevos eventos
+    * @param event 
+    */
     @FXML
     private void createEvent(ActionEvent event) {
-
-        Event evento = new Event();
-        EventManagerFactory.get().create_XML(evento);
-        events = recogerAllEvents();
-        cargarTabla(events);
-
+        try {
+            Event evento = new Event();
+             EventManagerFactory.get().create_XML(evento);
+            events = recogerAllEvents();
+            cargarTabla(events);
+            int lastIndex = tablaEvent.getItems().size() - 1;
+            tablaEvent.getSelectionModel().clearAndSelect(lastIndex);
+        }catch (InternalServerErrorException ex) {
+            LOGGER.severe("The server throwed an InternalServerErrorException");
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, ex.getMessage());
+        } catch (Exception ex) {
+            LOGGER.severe("The server throwed an Exception");
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error, intentalo de nuevo más tarde");
+        }
     }
-
+    
+    /**
+    * ir a la ventana showAllArtistsView para hacer la relacion de vento y artista
+    * @param event 
+    */
     @FXML
     private void añadirAtists(ActionEvent event) {
         try {
@@ -205,7 +238,11 @@ public class ShowAllEventsViewController {
             Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
+    /**
+     * ir a la ventana showEventView con el evento seleccionado
+     * @param event 
+     */
     @FXML
     private void irShowEventView(ActionEvent event) {
         try {
@@ -223,7 +260,11 @@ public class ShowAllEventsViewController {
             Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
+    /**
+     * Carga los datos de la tabla 
+     * @param eventTable 
+     */
     private void cargarTabla(List<Event> eventTable) {
         initializeTableColumns();
         // Convertir ArrayList a ObservableList
@@ -232,7 +273,10 @@ public class ShowAllEventsViewController {
         tablaEvent.setItems(observableEvents);
 
     }
-
+    
+    /**
+     * inicializa las columnas de la tabla 
+     */
     private void initializeTableColumns() {
         tcNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         tcSala.setCellValueFactory(new PropertyValueFactory<>("club"));
@@ -266,15 +310,19 @@ public class ShowAllEventsViewController {
         tcSala.setCellFactory(ChoiceBoxTableCell.forTableColumn(clubs));
 
     }
-
+    
+    /**
+     * pone diferentes filtros a los eventos y carga la tabla con los eventos filtrados
+     */
     private void aplicarFiltros() {
         events = recogerAllEvents();
         List<Event> eventos = new ArrayList<>();
-
+        
+        /**Filtra los eventos por su nombre*/
         if (!tfBuscador.getText().isEmpty()) {
             events = events.stream().filter(event -> event.getNombre().toLowerCase().startsWith(tfBuscador.getText().toLowerCase())).collect(Collectors.toList());
         }
-
+            /**Filtra los eventos a partir de una fecha */
         if (dateFechaHasta.getValue() != null) {
             Event[] eventosArray = EventManagerFactory.get().findByDates_XML(Event[].class, dateFecha.getValue().toString(), dateFechaHasta.getValue().toString());
             for (Event e : Arrays.asList(eventosArray)) {
@@ -283,6 +331,7 @@ public class ShowAllEventsViewController {
                 }
             }
             events = eventos;
+         /**Filtra los eventos entre dos fechas */
         } else if (dateFecha.getValue() != null) {
             Event[] eventsArray = EventManagerFactory.get().findByDate_XML(Event[].class, dateFecha.getValue().toString());
             for (Event e : Arrays.asList(eventsArray)) {
@@ -292,7 +341,8 @@ public class ShowAllEventsViewController {
             }
             events = eventos;
         }
-
+        
+        /**Filtra los eventos que tengan el mismo precio */
         if (!tfPrecio.getText().isEmpty()) {
             events = events.stream()
                     .filter(event -> event.getPrecioEntrada() >= Double.valueOf(tfPrecio.getText()) && event.getPrecioEntrada() < Double.valueOf(tfPrecio.getText()) + 1)
@@ -302,14 +352,22 @@ public class ShowAllEventsViewController {
 
         cargarTabla(events);
     }
-
+    
+    /**
+     * devuelve una lista de todos los clubs
+     * @return 
+     */
     private List<Club> recogerAllClubs() {
         Club[] clubArray = ClubManagerFactory.get().findAll_XML(Club[].class);
         List<Club> listClubs = Arrays.asList(clubArray);
         return listClubs;
 
     }
-
+    
+    /**
+     * devuelve una lista de todos los eventos que su fecha sea posterior a la de hoy
+     * @return 
+     */
     private List<Event> recogerAllEvents() {
         Event[] eventsArray = EventManagerFactory.get().findByDate_XML(Event[].class, LocalDate.now().toString());
         List<Event> events = Arrays.asList(eventsArray);
@@ -325,17 +383,25 @@ public class ShowAllEventsViewController {
         tema = Sesion.getTema();
         changeTheme();
     }
-
+    
+    /**
+     * Cambia el estilo del fondno y los textos
+     */
     private void changeTheme() {
         String currentStyle = bpPrincipal.getStyle();
 
         if (tema) {
             lbHasta.setStyle("-fx-text-fill: black;");
-
+            txBuscar.setStyle("-fx-text-fill: black;");
+            txPrecio.setStyle("-fx-text-fill: black;");
+            txFecha.setStyle("-fx-text-fill: black;");
             bpPrincipal.setStyle(currentStyle.replaceAll("-fx-background-image: url\\('[^']+'\\);", "-fx-background-image: url('/img/fondogris.jpg');"));
         } else {
             lbHasta.setStyle("-fx-text-fill: white;");
-
+            txBuscar.setStyle("-fx-text-fill: white;");
+            txPrecio.setStyle("-fx-text-fill: white;");
+            txFecha.setStyle("-fx-text-fill: white;");
+            
             bpPrincipal.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
         }
     }
@@ -378,126 +444,138 @@ public class ShowAllEventsViewController {
     }
 
     public void initStage(Parent root) {
+        try {
+            LOGGER.info("Initializing Bank Statement window.");
+            Scene scene = new Scene(root);
+            user = Sesion.getUser();
+            tema = Sesion.getTema();
+            stage = Sesion.getStage();
 
-        LOGGER.info("Initializing Bank Statement window.");
-        Scene scene = new Scene(root);
-        user = Sesion.getUser();
-        tema = Sesion.getTema();
-        stage = Sesion.getStage();
+            cargarTabla(events);
 
-        cargarTabla(events);
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem item1 = new MenuItem("Cambiar tema");
+            item1.setOnAction(this::cambiarTema);
+            MenuItem item2 = new MenuItem("Imprimir los datos de la tabla");
+            item2.setOnAction(this::imprimirTabla);
+            contextMenu.getItems().addAll(item1, item2);
 
-        ContextMenu contextMenu = new ContextMenu();
-        MenuItem item1 = new MenuItem("Cambiar tema");
-        item1.setOnAction(this::cambiarTema);
-        MenuItem item2 = new MenuItem("Imprimir los datos de la tabla");
-        item2.setOnAction(this::imprimirTabla);
-        contextMenu.getItems().addAll(item1, item2);
+            bpPrincipal.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
 
-        bpPrincipal.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
+            if (user instanceof Client) {
+                btnAñadirArtistas.setVisible(false);
+                btnBorrarEvento.setVisible(false);
+                btnCrearEvento.setVisible(false);
+            } else {
+                tablaEvent.setEditable(true);
+                tablaEvent.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+                tcMusica.setEditable(false);
+            }
 
-        if (user instanceof Client) {
-            btnAñadirArtistas.setVisible(false);
-            btnBorrarEvento.setVisible(false);
-            btnCrearEvento.setVisible(false);
-        } else {
-            tablaEvent.setEditable(true);
-            //tablaEvent.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-            tcMusica.setEditable(false);
+            tablaEvent.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Event>() {
+                @Override
+                public void onChanged(ListChangeListener.Change<? extends Event> e) {
+                    if (e.getList().isEmpty()) {
+                        btnAñadirArtistas.setDisable(true);
+                        btnBorrarEvento.setDisable(true);
+                        btnSeleccionar.setDisable(true);
+                    } else if (e.getList().size() == 1) {
+                        btnAñadirArtistas.setDisable(false);
+                        btnBorrarEvento.setDisable(false);
+                        btnSeleccionar.setDisable(false);
+                    } else if (e.getList().size() > 1) {
+                        btnAñadirArtistas.setDisable(true);
+                        btnSeleccionar.setDisable(true);
+                    }
+                }
+            });
+
+            dateFecha.valueProperty().addListener(new ChangeListener<LocalDate>() {
+                @Override
+                public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
+                    if (newValue != null) {
+                        if (dateFecha.getValue() != null) {
+                            lbHasta.setVisible(true);
+                            dateFechaHasta.setVisible(true);
+                            aplicarFiltros();
+                        }
+                    }
+                }
+            });
+
+            dateFecha.setDayCellFactory(picker -> {
+                return new javafx.scene.control.DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+                        // Establecer como no seleccionable cualquier fecha posterior a hoy
+                        setDisable(item.isBefore(LocalDate.now()));
+                    }
+                };
+            });
+
+            dateFechaHasta.valueProperty().addListener(new ChangeListener<LocalDate>() {
+                @Override
+                public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
+                    if (newValue != null) {
+                        if (dateFecha.getValue() != null) {
+                            Event[] eventsArray = EventManagerFactory.get().findByDates_XML(Event[].class, dateFecha.getValue().toString(), dateFechaHasta.getValue().toString());
+                            events = Arrays.asList(eventsArray);
+                            cargarTabla(events);
+                        }
+                    }
+                }
+            });
+
+            dateFechaHasta.setDayCellFactory(picker -> {
+                return new javafx.scene.control.DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+                        //Establecer como no seleccionable fechas anteriores a la otra fehca
+                        setDisable(item.isBefore(dateFecha.getValue()));
+                    }
+                };
+            });
+
+            //hacer la modificacion de las columnas
+            tcPrecio.setCellFactory(column -> new EventEditingCell());
+            tcConsumicion.setCellFactory(column -> new EventEditingCell());
+            tcNumEntradas.setCellFactory(column -> new EventEditingCell());
+            tcNombre.setCellFactory(column -> new EventEditingCell());
+            tcSala.setCellFactory(column -> new EventEditingCell());
+            tcFecha.setCellFactory(column -> new EventEditingCell());
+
+            //Filrar los eventos por lo que escriba en el buscador
+            tfBuscador.textProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                    //onTextFieldChange(newValue); 
+                    aplicarFiltros();
+                }
+            });
+
+            //Filtrar los eventos que tengan el precio que ha introducido
+            tfPrecio.textProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                    //onTextFieldChange(newValue); 
+                    aplicarFiltros();
+                }
+            });
+            changeTheme();
+            stage.show();
+            stage.setScene(scene);
+            LOGGER.info("Bank Statement window initialized.");
+            
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Exception setting up de window.", e.getMessage());
+            try {
+                throw new Exception("ERROR INICIANDO LA VENTANA");
+            } catch (Exception ex) {
+                Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-
-        tablaEvent.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Event>() {
-            @Override
-            public void changed(ObservableValue<? extends Event> observable, Event oldValue, Event newValue) {
-                if (newValue != null) {
-                    btnAñadirArtistas.setDisable(false);
-                    btnBorrarEvento.setDisable(false);
-                    btnSeleccionar.setDisable(false);
-                } else {
-                    btnAñadirArtistas.setDisable(true);
-                    btnBorrarEvento.setDisable(true);
-                    btnSeleccionar.setDisable(true);
-                }
-            }
-        });
-
-        dateFecha.valueProperty().addListener(new ChangeListener<LocalDate>() {
-            @Override
-            public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
-                if (newValue != null) {
-                    if (dateFecha.getValue() != null) {
-                        lbHasta.setVisible(true);
-                        dateFechaHasta.setVisible(true);
-                        aplicarFiltros();
-                    }
-                }
-            }
-        });
-
-        dateFecha.setDayCellFactory(picker -> {
-            return new javafx.scene.control.DateCell() {
-                @Override
-                public void updateItem(LocalDate item, boolean empty) {
-                    super.updateItem(item, empty);
-                    // Establecer como no seleccionable cualquier fecha posterior a hoy
-                    setDisable(item.isBefore(LocalDate.now()));
-                }
-            };
-        });
-
-        dateFechaHasta.valueProperty().addListener(new ChangeListener<LocalDate>() {
-            @Override
-            public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
-                if (newValue != null) {
-                    if (dateFecha.getValue() != null) {
-                        Event[] eventsArray = EventManagerFactory.get().findByDates_XML(Event[].class, dateFecha.getValue().toString(), dateFechaHasta.getValue().toString());
-                        events = Arrays.asList(eventsArray);
-                        cargarTabla(events);
-                    }
-                }
-            }
-        });
-
-        dateFechaHasta.setDayCellFactory(picker -> {
-            return new javafx.scene.control.DateCell() {
-                @Override
-                public void updateItem(LocalDate item, boolean empty) {
-                    super.updateItem(item, empty);
-                    //Establecer como no seleccionable fechas anteriores a la otra fehca
-                    setDisable(item.isBefore(dateFecha.getValue()));
-                }
-            };
-        });
-
-        //hacer la modificacion de las columnas
-        tcPrecio.setCellFactory(column -> new EventEditingCell());
-        tcConsumicion.setCellFactory(column -> new EventEditingCell());
-        tcNumEntradas.setCellFactory(column -> new EventEditingCell());
-        tcNombre.setCellFactory(column -> new EventEditingCell());
-        tcSala.setCellFactory(column -> new EventEditingCell());
-        tcFecha.setCellFactory(column -> new EventEditingCell());
-
-        //Filrar los eventos por lo que escriba en el buscador
-        tfBuscador.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                //onTextFieldChange(newValue); 
-                aplicarFiltros();
-            }
-        });
-
-        //Filtrar los eventos que tengan el precio que ha introducido
-        tfPrecio.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                //onTextFieldChange(newValue); 
-                aplicarFiltros();
-            }
-        });
-        changeTheme();
-        stage.show();
-        stage.setScene(scene);
-        LOGGER.info("Bank Statement window initialized.");
 
     }
 

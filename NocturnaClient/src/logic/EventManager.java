@@ -5,6 +5,7 @@
  */
 package logic;
 
+import exceptions.InternalServerErrorException;
 import exceptions.ReadException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.WebTarget;
@@ -43,7 +44,7 @@ public interface EventManager {
 
     public <T> T findByDates_JSON(Class<T> responseType, String de_fecha, String hasta_fecha) throws WebApplicationException;
 
-    public void create_XML(Object requestEntity) throws WebApplicationException;
+    public void create_XML(Object requestEntity) throws InternalServerErrorException;
 
     public void create_JSON(Object requestEntity) throws WebApplicationException;
 
@@ -51,7 +52,7 @@ public interface EventManager {
 
     public <T> T findAll_JSON(Class<T> responseType) throws WebApplicationException;
 
-    public void remove(String id) throws WebApplicationException;
+    public void remove(String id) throws InternalServerErrorException;
 
     public void close();
         

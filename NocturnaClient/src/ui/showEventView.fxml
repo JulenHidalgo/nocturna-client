@@ -9,9 +9,9 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-image: url('/img/fondo.jpg'); -fx-background-size: cover;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui_controllers.ShowEventViewController">
+<AnchorPane fx:id="bpPrincipal" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-image: url('/img/fondo.jpg'); -fx-background-size: cover;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui_controllers.ShowEventViewController">
    <children>
-      <HBox fx:id="hbMenu" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <HBox fx:id="hbMenu" layoutY="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="1.0">
             <children>
                 <fx:include prefWidth="1280.0" source="menu.fxml" />
             </children>
@@ -30,7 +30,7 @@
             </Label>
             <HBox alignment="CENTER_LEFT" maxHeight="80.0" maxWidth="400.0" minWidth="200.0" prefHeight="80.0" prefWidth="200.0">
                <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Sala : ">
+                  <Text fx:id="txSalas" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Sala : ">
                      <font>
                         <Font size="24.0" />
                      </font>
@@ -53,7 +53,7 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" maxHeight="80.0" maxWidth="500.0" prefHeight="100.0" prefWidth="230.0">
                <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Artista/s : ">
+                  <Text fx:id="txArtist" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Artista/s : ">
                      <font>
                         <Font size="24.0" />
                      </font>
@@ -76,7 +76,7 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" maxHeight="80.0" maxWidth="400.0" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Precio : ">
+                  <Text fx:id="txPrecio" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Precio : ">
                      <font>
                         <Font size="24.0" />
                      </font>
@@ -99,7 +99,7 @@
             </HBox>
             <HBox alignment="CENTER_LEFT" maxHeight="80.0" maxWidth="400.0" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Consumicion/es :">
+                  <Text fx:id="txConsumicion" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Consumicion/es :">
                      <font>
                         <Font size="24.0" />
                      </font>
@@ -122,7 +122,7 @@
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Catidad Entradas">
+                  <Text fx:id="txCantEntradas" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Catidad Entradas">
                      <font>
                         <Font size="30.0" />
                      </font>
