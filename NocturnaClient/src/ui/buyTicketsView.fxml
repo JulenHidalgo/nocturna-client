@@ -16,7 +16,7 @@
                <fx:include prefWidth="1280.0" source="menu.fxml" />
            </children>
        </HBox>
-       <Label layoutX="337.0" layoutY="211.0" prefHeight="30.0" prefWidth="210.0" text="Nombre del evento:" textFill="#fafafa" AnchorPane.leftAnchor="337.0" AnchorPane.topAnchor="211.0">
+       <Label fx:id="txNombre" layoutX="337.0" layoutY="211.0" prefHeight="30.0" prefWidth="210.0" text="Nombre del evento:" textFill="#fafafa" AnchorPane.leftAnchor="337.0" AnchorPane.topAnchor="211.0">
          <font>
             <Font name="Calisto MT" size="24.0" />
          </font>
@@ -32,12 +32,12 @@
       </HBox>
       <TextField fx:id="tfnuevoDni" layoutX="553.0" layoutY="268.0" prefHeight="26.0" prefWidth="199.0" />
       <ListView fx:id="listViewListaDni" layoutX="553.0" layoutY="305.0" prefHeight="218.0" prefWidth="200.0" AnchorPane.topAnchor="305.0" />
-      <Label layoutX="337.0" layoutY="266.0" prefHeight="30.0" prefWidth="210.0" text="DNI asistentes:" textFill="#fafafa" AnchorPane.leftAnchor="337.0" AnchorPane.topAnchor="266.0">
+      <Label fx:id="txDni" layoutX="337.0" layoutY="266.0" prefHeight="30.0" prefWidth="210.0" text="DNI asistentes:" textFill="#fafafa" AnchorPane.leftAnchor="337.0" AnchorPane.topAnchor="266.0">
          <font>
             <Font name="Calisto MT" size="24.0" />
          </font>
       </Label>
-      <Label layoutX="775.0" layoutY="569.0" prefHeight="30.0" prefWidth="70.0" text="Total:" textFill="#fafafa" AnchorPane.rightAnchor="434.6" AnchorPane.topAnchor="569.0">
+      <Label fx:id="txTotal" layoutX="775.0" layoutY="569.0" prefHeight="30.0" prefWidth="70.0" text="Total:" textFill="#fafafa" AnchorPane.rightAnchor="434.6" AnchorPane.topAnchor="569.0">
          <font>
             <Font name="Calisto MT" size="24.0" />
          </font>

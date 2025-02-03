@@ -21,11 +21,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javax.swing.ButtonGroup;
@@ -55,6 +59,15 @@ public class buyTicketsViewController {
     
     @FXML
     Label lblName;
+    
+    @FXML
+    Label txName;
+    
+    @FXML
+    Label txDni;
+    
+    @FXML
+    Label txTotal;
     
     @FXML
     ButtonGroup btnGourp;
@@ -149,7 +162,50 @@ public class buyTicketsViewController {
     }
      
     
+     private void cambiarTema(ActionEvent event) {
+        if (tema) {
+            Sesion.setTema(false);
+        } else {
+            Sesion.setTema(true);
+        }
+        tema = Sesion.getTema();
+        changeTheme();
+    }
+
+    private void changeTheme() {
+        String currentStyle = panel.getStyle();
+
+        if (tema) {
+            lblName.setStyle("-fx-text-fill: black;");
+            lblTotal.setStyle("-fx-text-fill: black;");
+            txDni.setStyle("-fx-fill: black;");
+            txName.setStyle("-fx-fill: black;");
+            txTotal.setStyle("-fx-fill: black;");
+            rdBtnBizum.setStyle("-fx-fill: black;");
+            rdBtnTarjeta.setStyle("-fx-fill: black;");
+            panel.setStyle(currentStyle.replaceAll("-fx-background-image: url\\('[^']+'\\);", "-fx-background-image: url('/img/fondogris.jpg');"));
+        } else {
+            lblName.setStyle("-fx-text-fill: white;");
+            lblTotal.setStyle("-fx-text-fill: white;");
+            txDni.setStyle("-fx-fill: white;");
+            txName.setStyle("-fx-fill: white;");
+            txTotal.setStyle("-fx-fill: white;");
+             rdBtnBizum.setStyle("-fx-fill: white;");
+            rdBtnTarjeta.setStyle("-fx-fill: white;");
+            panel.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
+        }
+    }
     
+    private void controlMenuConceptual(MouseEvent event, ContextMenu menu) {
+        //Se comprueba si se hace clic con el borón derecho del ratón.
+        if (event.getButton() == MouseButton.SECONDARY) {
+            //Si es así se abre el menú contextual.
+            menu.show(panel, event.getScreenX(), event.getScreenY());
+        } else {
+            //Si no, se cierra el mismo.
+            menu.hide();
+        }
+    }
     
     public void setEvent(Event event){
         this.event = event;
@@ -167,6 +223,16 @@ public class buyTicketsViewController {
         tema = Sesion.getTema();
         stage = Sesion.getStage();
         panel.requestFocus();
+        
+        changeTheme();
+        
+        ContextMenu contextMenu = new ContextMenu();
+        MenuItem item1 = new MenuItem("Cambiar tema");
+        item1.setOnAction(this::cambiarTema);  
+        contextMenu.getItems().addAll(item1);
+        panel.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
+        
+        
         tfnuevoDni.setPromptText(((Client) user).getDni());
         rdBtnBizum.setToggleGroup(toggleGroup);
         rdBtnTarjeta.setToggleGroup(toggleGroup);
