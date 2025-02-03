@@ -196,14 +196,11 @@ public class ShowAllEventsViewController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllArtistsView.fxml"));
             Parent root = loader.load();
-<<<<<<< HEAD
+
             ShowAllArtistsViewController controller = (ShowAllArtistsViewController) loader.getController();
             controller.setEvent(tablaEvent.getSelectionModel().getSelectedItem());
             controller.initStage(root);
-=======
-            ShowAllEventsViewController controller = (ShowAllEventsViewController) loader.getController();
 
->>>>>>> bd8fb2eaef06f3d7ff21e880564d45b72cad0566
         } catch (IOException ex) {
             Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
         }
