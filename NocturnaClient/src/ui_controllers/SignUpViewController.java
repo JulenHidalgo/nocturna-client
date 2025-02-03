@@ -267,12 +267,14 @@ public class SignUpViewController {
     }
 
     private void resetPass(ActionEvent event){
-        String respuesta;
+        String[] respuesta;
+        String oldPass, newPass;
         try {
             respuesta = CustomAlert.lanzarAlertResetPass();
             if (respuesta != null) {
-                this.user.setPasswd(URLEncoder.encode(AsimetricEncrypt.encrypt(respuesta), "UTF-8"));
-                UserManagerFactory.get().updatePasswd_XML(this.user);
+                oldPass = URLEncoder.encode(AsimetricEncrypt.encrypt(respuesta[0]), "UTF-8");
+                newPass = URLEncoder.encode(AsimetricEncrypt.encrypt(respuesta[1]), "UTF-8");
+                UserManagerFactory.get().updatePasswd_XML(user, user.getMail(), oldPass, newPass);
             }
         } catch (UnsupportedEncodingException ex) {
             LOGGER.severe("An error occurred encrypting the new password");

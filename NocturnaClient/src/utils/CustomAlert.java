@@ -58,7 +58,7 @@ public class CustomAlert {
         return null;
     }
 
-    public static String lanzarAlertResetPass() {
+    public static String[] lanzarAlertResetPass() {
         Alert alert = new Alert(Alert.AlertType.NONE);
         alert.setTitle("Cambio de contraseña");
         alert.setHeaderText("Introduce la contraseña anterior y la nueva para modificarla, pulsa cancelar para salir");
@@ -93,7 +93,8 @@ public class CustomAlert {
             if (!pfNueva1.getText().equals(pfNueva2.getText())) {
                 CustomAlert.throwAlertCustom(AlertType.ERROR, "Las contraseñas no coinciden");
             }
-            return pfNueva1.getText();
+            String[] array = {pfVieja.getText(), pfNueva1.getText()};
+            return array;
         }
         return null;
     }

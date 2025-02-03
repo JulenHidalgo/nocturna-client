@@ -141,30 +141,14 @@ public class UserRESTClient implements UserManager {
     }
 
     @Override
-    public void updatePasswd_XML(User newUser) throws WebApplicationException {
-        WebTarget resource = webTarget.path("updatePasswd");
-
-        try {
-            Response response = resource
-                    .request(MediaType.APPLICATION_XML)
-                    .put(Entity.entity(newUser, MediaType.APPLICATION_XML));
-
-            System.out.println(response.getStatus());
-
-            if (response.getStatus() != 200) {
-                String error = response.readEntity(String.class);
-                throw new WebApplicationException("Error: " + error);
-            }
-
-            response.close();
-
-        } catch (ProcessingException ex) {
-            throw new WebApplicationException("Error de procesamiento: " + ex.getMessage());
-        } catch (WebApplicationException ex) {
-            throw new WebApplicationException("Error de comunicación con el servidor: " + ex.getResponse().getStatus());
-        } catch (Exception ex) {
-            throw new WebApplicationException("Error desconocido: " + ex.getMessage());
-        }
+    public void updatePasswd_XML(Object requestEntity, String mail, String oldPasswd, String newPasswd) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("updatePasswd/{0}/{1}/{2}", new Object[]{mail, oldPasswd, newPasswd}));
+        
+        Response response = resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+        
+        System.out.println(response.getStatus());
     }
 
     @Override
