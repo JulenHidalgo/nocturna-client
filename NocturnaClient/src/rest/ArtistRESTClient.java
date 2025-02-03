@@ -5,6 +5,7 @@
  */
 package rest;
 
+import exceptions.CreateException;
 import exceptions.InternalServerErrorException;
 import exceptions.ReadException;
 import javax.ws.rs.ClientErrorException;
@@ -67,8 +68,17 @@ public class ArtistRESTClient implements ArtistManager {
     }
 
     @Override
-    public void create_XML(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), Artist.class);
+    public void create_XML(Object requestEntity) throws InternalServerErrorException {
+        WebTarget resource = webTarget;
+
+        Response response = resource
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+
+        if (response.getStatus() >= 500) {
+            throw new InternalServerErrorException();
+        }
+
     }
 
     @Override
@@ -78,11 +88,11 @@ public class ArtistRESTClient implements ArtistManager {
     }
 
     @Override
-    public <T> T findNotByEvent_XML(Class<T> responseType, String idEvent) throws ReadException, InternalServerErrorException{
+    public <T> T findNotByEvent_XML(Class<T> responseType, String idEvent) throws ReadException, InternalServerErrorException {
         WebTarget resource = webTarget;
-        
+
         resource = resource.path(java.text.MessageFormat.format("artistsNotByEvent/{0}", new Object[]{idEvent}));
-        
+
         Response response = resource
                 .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                 .get();
@@ -99,7 +109,7 @@ public class ArtistRESTClient implements ArtistManager {
     }
 
     @Override
-    public void remove(String id) throws WebApplicationException {
+    public void remove(String id) throws InternalServerErrorException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
     }
 

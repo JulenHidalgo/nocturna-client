@@ -6,6 +6,7 @@
 package ui_controllers;
 
 import control.Sesion;
+import exceptions.CreateException;
 import exceptions.InternalServerErrorException;
 import exceptions.ReadException;
 import java.io.IOException;
@@ -39,6 +40,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
+import jxl.write.WriteException;
 import logic.ArtistManagerFactory;
 import logic.EventManagerFactory;
 import model.Artist;
@@ -210,7 +212,7 @@ public class ShowAllArtistsViewController {
                 btnCrear.setVisible(false);
                 btnEliminar.setVisible(false);
                 seleccionadosBusqueda = Arrays.asList(ArtistManagerFactory.get().findByEvent_XML(Artist[].class, String.valueOf(event.getId())));
-                
+
             }
         } catch (ReadException e) {
             LOGGER.info("The Event does not have any Artist related");
@@ -265,19 +267,39 @@ public class ShowAllArtistsViewController {
     }
 
     private void crearArtista(ActionEvent event) {
-        Artist artist = new Artist();
-        ArtistManagerFactory.get().create_XML(artist);
-        loadTableData();
-        int lastIndex = tvArtists.getItems().size() - 1;
-        tvArtists.getSelectionModel().clearAndSelect(lastIndex);
+        try {
+            Artist artist = new Artist();
+            ArtistManagerFactory.get().create_XML(artist);
+            loadTableData();
+            int lastIndex = tvArtists.getItems().size() - 1;
+            tvArtists.getSelectionModel().clearAndSelect(lastIndex);
+        } catch (InternalServerErrorException ex) {
+            LOGGER.severe("The server throwed an InternalServerErrorException");
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, ex.getMessage());
+        } catch (Exception ex) {
+            LOGGER.severe("The server throwed an Exception");
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error, intentalo de nuevo más tarde");
+        }
+
     }
 
     private void deleteArtist(ActionEvent event) {
-        ObservableList<Artist> selectedArtist = tvArtists.getSelectionModel().getSelectedItems();
-        selectedArtist.forEach(item -> {
-            ArtistManagerFactory.get().remove(item.getId().toString());
-        });
-        loadTableData();
+        try {
+            ObservableList<Artist> selectedArtist = tvArtists.getSelectionModel().getSelectedItems();
+            selectedArtist.forEach(item -> {
+                try {
+                    ArtistManagerFactory.get().remove(item.getId().toString());
+                } catch (InternalServerErrorException ex) {
+                    LOGGER.severe("An error occurred while deleting an artist");
+                    CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error en el servidor");
+                }
+            });
+            loadTableData();
+        } catch (Exception ex) {
+            LOGGER.severe("An error occurred");
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error");
+        }
+
     }
 
     private String comprobarSeleccionado(Long id) {
