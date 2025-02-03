@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Informe de artistas" pageWidth="1100" pageHeight="900" columnWidth="1040" leftMargin="30" rightMargin="30" topMargin="30" bottomMargin="30" uuid="9e0abb89-94e1-4bf6-968d-311c3d4949b1">
+	<property name="ireport.zoom" value="0.9090909090909092"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="tipoMusica" class="java.lang.String"/>
+	<field name="descripcion" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="120" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="1040" height="50" uuid="0ee3b073-0462-4c0a-a92e-47225769bf51"/>
+				<textElement textAlignment="Center">
+					<font size="36" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Informe de artistas]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="60" splitType="Stretch">
+			<staticText>
+				<reportElement x="121" y="0" width="170" height="30" uuid="d3ed7100-b109-4e1f-ad6e-bd708daac131"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nombre del artista]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="438" y="0" width="170" height="30" uuid="59444cbf-f723-40ba-a911-a2c07e52a1ab"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo de musica]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="760" y="0" width="180" height="30" uuid="169f8826-4bb5-4b7d-bf4e-aab2dc7a5b54"/>
+				<textElement textAlignment="Center">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Descripcion]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="50" splitType="Stretch">
+			<textField>
+				<reportElement x="121" y="0" width="170" height="20" uuid="3ebaa674-5062-4d05-bab8-cab90e8ecef7"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{nombre} != null && !$F{nombre}.isEmpty() ? $F{nombre} : "No disponible"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="438" y="0" width="170" height="20" uuid="fa4e10d4-096a-4be6-ba98-8b598c607b83"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{tipoMusica} != null && !$F{tipoMusica}.isEmpty() ? $F{tipoMusica} : "No disponible"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="760" y="0" width="180" height="20" uuid="94226161-daac-49e3-9982-1533b3779773"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{descripcion} != null && !$F{descripcion}.isEmpty() ? $F{descripcion} : "No disponible"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="60" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="150" height="30" uuid="9dcb9b6b-a0c6-4928-8ffa-12e1b8984040"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="950" y="0" width="150" height="30" uuid="dbdd8135-a75e-497d-aedc-d16b11ccb1d6"/>
+				<textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
