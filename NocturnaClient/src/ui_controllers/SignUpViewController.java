@@ -7,6 +7,7 @@ package ui_controllers;
 
 import control.Sesion;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -162,16 +163,16 @@ public class SignUpViewController {
             tfMail.setText(((Client) user).getMail());
             tfTelefono.setText(((Client) user).getTelefono().toString());
             dpFechaNac.setValue(((Client) user).getFechaNacimiento().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+
+            btnModificarDatos.setOnAction(this::updateInfo);
+            btnElimCuenta.setOnAction(this::deleteUser);
+
+            addListenersToTextFields();
         }
 
         stage.setOnCloseRequest(this::closeAppFromX);
         btnSignUp.setOnAction(this::signUp);
         btnCambioPass.setOnAction(this::resetPass);
-
-        btnModificarDatos.setOnAction(this::updateInfo);
-        btnElimCuenta.setOnAction(this::deleteUser);
-
-        addListenersToTextFields();
 
         dpFechaNac.setDayCellFactory(picker -> {
             return new javafx.scene.control.DateCell() {
@@ -191,21 +192,23 @@ public class SignUpViewController {
     }
 
     private void addListenersToTextFields() {
-        tfNombre.textProperty().addListener((observable, oldValue, newValue) -> {
+        tfNombre.textProperty().addListener((observable, oldValue, newValue) -> checkChangesModify());
+        tfApellido.textProperty().addListener((observable, oldValue, newValue) -> checkChangesModify());
+        tfTelefono.textProperty().addListener((observable, oldValue, newValue) -> checkChangesModify());
+        dpFechaNac.valueProperty().addListener((observable, oldValue, newValue) -> checkChangesModify());
+        tfCiudad.textProperty().addListener((observable, oldValue, newValue) -> checkChangesModify());
+    }
+
+    private void checkChangesModify() {
+        if (tfNombre.getText().equals(((Client) this.user).getNombre())
+                && tfApellido.getText().equals(((Client) this.user).getApellido())
+                && tfTelefono.getText().equals(((Client) this.user).getTelefono().toString())
+                && Date.from(dpFechaNac.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()).equals(((Client) this.user).getFechaNacimiento())
+                && tfCiudad.getText().equals(((Client) this.user).getCiudad())) {
+            btnModificarDatos.setDisable(true);
+        } else {
             btnModificarDatos.setDisable(false);
-        });
-        tfApellido.textProperty().addListener((observable, oldValue, newValue) -> {
-            btnModificarDatos.setDisable(false);
-        });
-        tfTelefono.textProperty().addListener((observable, oldValue, newValue) -> {
-            btnModificarDatos.setDisable(false);
-        });
-        dpFechaNac.valueProperty().addListener((observable, oldValue, newValue) -> {
-            btnModificarDatos.setDisable(false);
-        });
-        tfCiudad.textProperty().addListener((observable, oldValue, newValue) -> {
-            btnModificarDatos.setDisable(false);
-        });
+        }
     }
 
     private void updateInfo(ActionEvent event) {
@@ -263,52 +266,18 @@ public class SignUpViewController {
         }
     }
 
-    private void resetPass(ActionEvent event) {
+    private void resetPass(ActionEvent event){
+        String respuesta;
         try {
-            Alert alert = new Alert(Alert.AlertType.NONE);
-            alert.setTitle("Cambio de contraseña");
-            alert.setHeaderText("Introduce la contraseña anterior y la nueva para modificarla, pulsa cancelar para salir");
-
-            PasswordField pfVieja = new PasswordField();
-            pfVieja.setPromptText("Contraseña anterior");
-
-            PasswordField pfNueva1 = new PasswordField();
-            pfNueva1.setPromptText("Nueva contraseña");
-
-            PasswordField pfNueva2 = new PasswordField();
-            pfNueva2.setPromptText("Repite la nueva contraseña");
-
-            GridPane grid = new GridPane();
-            grid.add(pfVieja, 0, 0);
-            grid.add(pfNueva1, 0, 1);
-            grid.add(pfNueva2, 0, 2);
-
-            alert.getDialogPane().setContent(grid);
-
-            ButtonType btnAceptar = new ButtonType("Aceptar");
-            ButtonType btnCancelar = new ButtonType("Cancelar");
-
-            alert.getButtonTypes().setAll(btnAceptar, btnCancelar);
-
-            Optional<ButtonType> confirmar = alert.showAndWait();
-
-            if (confirmar.get() == btnAceptar) {
-                if (!pfNueva1.getText().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$")) {
-                    LOGGER.warning("Password validation error, pattern incorrect");
-                    CustomAlert.throwAlertCustom(AlertType.ERROR, "La contraseña tiene que tener al menos 6 caracteres, una mayúscula, una minúscula y un número");
-                    throw new Exception();
-                }
-                if (!pfNueva1.getText().equals(pfNueva2.getText())) {
-                    LOGGER.warning("Password validation error, pfNueva1 and pfNueva2 don't match");
-                    CustomAlert.throwAlertCustom(AlertType.ERROR, "Las contraseñas no coinciden");
-                    throw new Exception();
-                }
-                UserManagerFactory.get().updatePasswd_XML(user, pfNueva1.getText());
+            respuesta = CustomAlert.lanzarAlertResetPass();
+            if (respuesta != null) {
+                this.user.setPasswd(URLEncoder.encode(AsimetricEncrypt.encrypt(respuesta), "UTF-8"));
+                UserManagerFactory.get().updatePasswd_XML(this.user);
             }
-
-        } catch (Exception e) {
-
-        }
+        } catch (UnsupportedEncodingException ex) {
+            LOGGER.severe("An error occurred encrypting the new password");
+            CustomAlert.throwAlertCustom(AlertType.ERROR, "Ha sucedido un error guardando la contraseña");
+        } 
 
     }
 
