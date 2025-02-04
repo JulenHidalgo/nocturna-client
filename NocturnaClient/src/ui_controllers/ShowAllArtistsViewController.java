@@ -6,7 +6,6 @@
 package ui_controllers;
 
 import control.Sesion;
-import exceptions.CreateException;
 import exceptions.InternalServerErrorException;
 import exceptions.ReadException;
 import java.io.IOException;
@@ -48,11 +47,9 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
-import jxl.write.WriteException;
 import logic.ArtistManagerFactory;
 import logic.EventManagerFactory;
 import model.Artist;
-import model.Club;
 import model.Event;
 import model.User;
 import net.sf.jasperreports.engine.JRException;
