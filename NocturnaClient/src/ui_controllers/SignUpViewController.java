@@ -106,6 +106,18 @@ public class SignUpViewController {
     @FXML
     Button btnModificarDatos;
 
+    @FXML
+    Button btnVerPass1;
+
+    @FXML
+    Button btnVerPass2;
+
+    @FXML
+    TextField tfPass1;
+
+    @FXML
+    TextField tfPass2;
+
     private Stage stage;
 
     private User user;
@@ -129,10 +141,34 @@ public class SignUpViewController {
     }
 
     private void closeAppFromX(WindowEvent event) {
-        if (CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION,"¿Está seguro de que desea salir?")) {
+        if (CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION, "¿Está seguro de que desea salir?")) {
             Platform.exit();
         } else {
             event.consume();
+        }
+    }
+
+    private void verPass1(ActionEvent event) {
+        if (tfPass1.isVisible()) {
+            pfPass.setVisible(true);
+            tfPass1.setVisible(false);
+            pfPass.setText(tfPass1.getText());
+        } else {
+            pfPass.setVisible(false);
+            tfPass1.setVisible(true);
+            tfPass1.setText(pfPass.getText());
+        }
+    }
+
+    private void verPass2(ActionEvent event) {
+        if (tfPass2.isVisible()) {
+            pfPass2.setVisible(true);
+            tfPass2.setVisible(false);
+            pfPass2.setText(tfPass2.getText());
+        } else {
+            pfPass2.setVisible(false);
+            tfPass2.setVisible(true);
+            tfPass2.setText(pfPass2.getText());
         }
     }
 
@@ -162,13 +198,16 @@ public class SignUpViewController {
             tfMail.setText(((Client) user).getMail());
             tfTelefono.setText(((Client) user).getTelefono().toString());
             dpFechaNac.setValue(((Client) user).getFechaNacimiento().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            tfMail.setEditable(false);
         }
 
         stage.setOnCloseRequest(this::closeAppFromX);
         btnSignUp.setOnAction(this::signUp);
         btnCambioPass.setOnAction(this::resetPass);
         btnModificarDatos.setOnAction(this::updateInfo);
-//        btnElimCuenta.setOnAction(this::deleteUser);
+        btnElimCuenta.setOnAction(this::deleteUser);
+        btnVerPass1.setOnAction(this::verPass1);
+        btnVerPass2.setOnAction(this::verPass2);
 
         dpFechaNac.setDayCellFactory(picker -> {
             return new javafx.scene.control.DateCell() {
@@ -186,7 +225,6 @@ public class SignUpViewController {
         LOGGER.info("'SignUp' window initialized.");
 
     }
-
 
     private void updateInfo(ActionEvent event) {
         try {
@@ -217,7 +255,6 @@ public class SignUpViewController {
         }
 
     }
-
 
     private void deleteUser(ActionEvent event) {
         if (CustomAlert.throwAlertTextField("Borrado de cuenta", "Introduce la contraseña para borrar la cuenta (Se perderán todas las entradas asociadas al usuario), pulsa cancelar para salir", "Contraseña de la cuenta") != null) {
@@ -320,17 +357,16 @@ public class SignUpViewController {
             client.setDni(tfDni.getText());
             client.setMail(URLEncoder.encode(AsimetricEncrypt.encrypt(tfMail.getText()), "UTF-8"));
             client.setPasswd(URLEncoder.encode(AsimetricEncrypt.encrypt(pfPass.getText()), "UTF-8"));
-            System.out.println(client.getMail());
             ClientManagerFactory.get().create_XML(client);
+            client.setMail(tfMail.getText());
             Sesion.setUser(client);
-            
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllEventsView.fxml"));
 
             Parent root = loader.load();
 
             ShowAllEventsViewController controller = (ShowAllEventsViewController) loader.getController();
 
-           
             controller.initStage(root);
 
         } catch (IOException e) {
@@ -383,6 +419,12 @@ public class SignUpViewController {
     }
 
     public void checkPass() throws Exception {
+        if (tfPass1.isVisible()) {
+            pfPass.setText(tfPass1.getText());
+        }
+        if (tfPass2.isVisible()) {
+            pfPass2.setText(tfPass2.getText());
+        }
         if (!pfPass.getText().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$")) {
             LOGGER.warning("Password validation error, pattern incorrect");
             CustomAlert.throwAlertCustom(AlertType.ERROR, "La contraseña tiene que tener al menos 6 caracteres, una mayúscula, una minúscula y un número");
