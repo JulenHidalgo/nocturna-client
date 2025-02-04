@@ -141,14 +141,9 @@ public class UserRESTClient implements UserManager {
     }
 
     @Override
-    public void updatePasswd_XML(Object requestEntity, String mail, String oldPasswd, String newPasswd) throws WebApplicationException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("updatePasswd/{0}/{1}/{2}", new Object[]{mail, oldPasswd, newPasswd}));
-        
-        Response response = resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
-        
-        System.out.println(response.getStatus());
+    public void updatePasswd_XML(Object requestEntity, String newPasswd) throws WebApplicationException {
+        webTarget.path(java.text.MessageFormat.format("updatePasswd/{0}", new Object[]{newPasswd})).request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), User.class);
     }
 
     @Override

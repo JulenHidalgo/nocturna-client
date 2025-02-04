@@ -30,7 +30,7 @@ public interface UserManager {
 
     public <T> T login_XML(Class<T> responseType, String mail, String passwd) throws WebApplicationException, SignInException;
 
-    public void updatePasswd_XML(Object requestEntity, String mail, String oldPasswd, String newPasswd) throws WebApplicationException;
+    public void updatePasswd_XML(Object requestEntity, String newPasswd) throws WebApplicationException;
 
     public <T> T findAll_XML(Class<T> responseType) throws WebApplicationException;
 
