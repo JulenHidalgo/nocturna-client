@@ -192,7 +192,6 @@ public class MenuController {
             controller.setStage(stage);
             controller.setTema(tema);
             controller.setUser(user);
-            Sesion.setUser(null);
           
             controller.initStage(root);
             

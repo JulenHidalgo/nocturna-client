@@ -6,7 +6,9 @@
 package logic;
 
 import exceptions.SignInException;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
+import model.User;
 
 /**
  *
