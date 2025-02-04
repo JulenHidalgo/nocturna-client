@@ -20,7 +20,7 @@
          <children>
             <Label fx:id="lblNombreEvento" alignment="CENTER" prefHeight="106.0" prefWidth="846.0" text="Nombre Evento" textFill="#fdfdfd">
                <font>
-                  <Font name="Footlight MT Light" size="96.0" />
+                  <Font size="96.0" />
                </font>
             </Label>
             <Label fx:id="lblTipoMusica" alignment="CENTER" prefHeight="106.0" prefWidth="846.0" textFill="#fdfdfd">
