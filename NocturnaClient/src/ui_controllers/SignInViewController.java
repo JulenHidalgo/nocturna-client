@@ -180,9 +180,11 @@ public class SignInViewController {
             if (user.getIsAdmin()) {
                 user = new Admin();
                 user = AdminManagerFactory.get().find_XML(Admin.class, id.toString());
+                user.setIsAdmin(true);
             } else {
                 user = new Client();
                 user = ClientManagerFactory.get().find_XML(Client.class, id.toString());
+                user.setIsAdmin(false);
             }
 
             Sesion.setUser(user);

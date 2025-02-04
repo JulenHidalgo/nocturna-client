@@ -218,7 +218,7 @@ public class ShowEventViewController {
         contextMenu.getItems().addAll(item1);
         bpPrincipal.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
         
-        if(user instanceof Admin){
+        if(Sesion.getUser().getIsAdmin()){
             btnComprar.setVisible(false);
             btnSumar.setVisible(false);
             btnRestar.setVisible(false);

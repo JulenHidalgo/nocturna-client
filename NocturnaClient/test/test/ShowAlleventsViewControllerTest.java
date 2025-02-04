@@ -7,12 +7,16 @@ package test;
  */
 
 
+import com.lowagie.text.pdf.AcroFields.Item;
 import control.Main;
 import control.Sesion;
 import static java.sql.Date.valueOf;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.Node;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
@@ -20,12 +24,16 @@ import model.Artist;
 import model.Client;
 import model.Event;
 import model.User;
+import org.junit.After;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.framework.junit.ApplicationTest;
 import static org.testfx.matcher.base.NodeMatchers.isInvisible;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -44,29 +52,35 @@ public class ShowAlleventsViewControllerTest  extends ApplicationTest{
     @Override
     public void start(Stage stage) throws Exception {
         new Main().start(stage);
-        /**
-         * clickOn("#tfMail");
-         * write("");
-         * clickOn("#pfPass");
-         * write("");   
-         */
-        table = lookup("#tablaEvent").query();      
+        
+        
     }
     
-    /**
-     * test para comprobar que tipo de usuario es 
-     */
-    @Test
-    public void test_A_User() {
-        User user = Sesion.getUser();
-        if (user.getIsAdmin()) {
+    @Before
+    public void signInUser() {
+        
+            clickOn("#tfMail");
+            write("admin@gmail.com");
+            
+            clickOn("#pfPass");
+            write("Abcd123");
+            
+            clickOn("#btnSignIn");
+            
+            verifyThat("#tablaEvent", isVisible());
             verifyThat("#btnAñadirArtistas", isVisible());
             verifyThat("#btnBorrarEvento", isVisible());
             verifyThat("#btnCrearEvento", isVisible());
-        } else {
-            verifyThat("#btnAñadirArtistas", isInvisible());
-            verifyThat("#btnBorrarEvento", isInvisible());
-            verifyThat("#btnCrearEvento", isInvisible());
+            table = lookup("#tablaEvent").query(); 
+               
+    }
+    
+    @After
+    public void esperar(){
+        try {
+            Thread.sleep(600);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ShowAlleventsViewControllerTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
      
@@ -74,7 +88,7 @@ public class ShowAlleventsViewControllerTest  extends ApplicationTest{
     * comprueba que los evento se crean bien en la tabla 
     */
     @Test
-    public void test_B_CreateEvent(){
+    public void test_A_CreateEvent(){     
         int rowCount=table.getItems().size();       
         clickOn("#btnCrearEvento");
         assertEquals("Evento creado correctamente",rowCount+1,table.getItems().size());       
@@ -84,10 +98,9 @@ public class ShowAlleventsViewControllerTest  extends ApplicationTest{
     * comprueba si la tabla editable funciona bien
     */
     @Test
-    public void test_C_UpdateEvent() {
-        
+    public void test_B_UpdateEvent() {
+
         int rowCount = table.getItems().size();
-        Node row = lookup(".table-row-cell").nth(rowCount - 1).query();
         
         //modificar el nombre
         Node cell = lookup(".table-cell").nth((rowCount - 1) * table.getColumns().size()).query();
@@ -152,7 +165,8 @@ public class ShowAlleventsViewControllerTest  extends ApplicationTest{
     * test añadir artista a un evento
     */
     @Test
-    public void test_D_AñadirArtist(){    
+    public void test_C_AñadirArtist(){    
+        /**selecciona el ultimo de la tabla que es el creado antes*/
         int rowCountE = table.getItems().size();
         Node rowE = lookup(".table-row-cell").nth(rowCountE - 1).query();
         clickOn(rowE);
@@ -174,11 +188,63 @@ public class ShowAlleventsViewControllerTest  extends ApplicationTest{
     }
     
     /**
+    * comprueba si el filtrado posterior a una fecha funcione bien
+    */
+    @Test
+    public void test_D_FindByDate(){     
+
+        /**Comprobar que desparece la fila por que no es posterior a la fecha introducida*/
+        int rowCount = table.getItems().size();
+        clickOn("#dateFecha");
+        LocalDate fecha = LocalDate.now().plusDays(2);
+        String formattedDate = fecha.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        write(formattedDate);
+        push(KeyCode.ENTER);
+        
+         // Verificar que solo los elementos posteriores a la fecha permanecen
+        for (Event item : table.getItems()) {
+            assertTrue(item.getFecha().after(valueOf(fecha)) || item.getFecha().equals(fecha));
+        }
+
+    }
+    
+    /**
+    * comprueba si el filtrado entre fechas funciona bien
+    */
+    @Test
+    public void test_F_FindByDates(){   
+
+        int rowCount = table.getItems().size();
+        
+        /**Ponemos la fecha de hoy y la de dentro de dos dias para ver que salga el evento que tiene la fecha de malana*/   
+        LocalDate fechaHoy = LocalDate.now();
+        String formatDate = fechaHoy.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        clickOn("#dateFecha");
+        write(formatDate);
+        push(KeyCode.ENTER);
+        
+        clickOn("#dateFechaHasta");
+        LocalDate fechaHasta = LocalDate.now().plusDays(3);
+        formatDate = fechaHasta.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        write(formatDate);
+        push(KeyCode.ENTER);
+        
+        rowCount = table.getItems().size();
+      
+         for (Event item : table.getItems()) {
+            assertTrue((item.getFecha().after(valueOf(fechaHoy)) || item.getFecha().equals(valueOf(fechaHoy)))
+                            && (item.getFecha().before(valueOf(fechaHasta)) || item.getFecha().equals(valueOf(fechaHoy))));
+        }
+        //assertEquals("Despues de una fecha", rowCount, 1);
+        
+    }
+    
+    /**
     * comprueba si la tabla editable funciona bien
     */
     @Test
-    public void test_F_DeleteEvent(){
-        
+    public void test_G_DeleteEvent(){
+  
         int rowCount = table.getItems().size();
         Node row = lookup(".table-row-cell").nth(rowCount - 1).query();
         clickOn(row);

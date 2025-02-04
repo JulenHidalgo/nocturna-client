@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import static jdk.nashorn.tools.ShellFunctions.input;
 import logic.ArtistManagerFactory;
 import logic.ClubManagerFactory;
 import logic.EventManagerFactory;
@@ -129,7 +130,12 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
         
         textField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
-                 commitEdit((T) Double.valueOf(textField.getText()));
+                  if(!textField.getText().matches("-?\\d+(\\.\\d+)?")){
+                    new Alert(Alert.AlertType.ERROR, "Deben de ser nuemeros", ButtonType.OK).showAndWait();
+                    textField.setText(null);
+                }else{
+                    commitEdit((T) Double.valueOf(textField.getText()));
+                } 
             }
         });
         
@@ -147,7 +153,12 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
         
         textField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
-                 commitEdit((T) Integer.valueOf(textField.getText()));
+                if(!textField.getText().matches("-?\\d+")){
+                    new Alert(Alert.AlertType.ERROR, "Deben de ser nuemeros enteros", ButtonType.OK).showAndWait();
+                    textField.setText(null);
+                }else{
+                    commitEdit((T) Integer.valueOf(textField.getText()));
+                }        
             }
         });
         
@@ -206,6 +217,7 @@ public class EventEditingCell<T> extends TableCell<Event, T> {
         datePicker = new DatePicker();
         datePicker.setValue(((Date) getItem()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
         datePicker.setOnAction(event -> commitEdit((T) Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant())));
+        
         datePicker.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ESCAPE) {
                 cancelEdit();

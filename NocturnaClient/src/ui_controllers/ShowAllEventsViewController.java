@@ -324,6 +324,7 @@ public class ShowAllEventsViewController {
         }
             /**Filtra los eventos a partir de una fecha */
         if (dateFechaHasta.getValue() != null) {
+            
             Event[] eventosArray = EventManagerFactory.get().findByDates_XML(Event[].class, dateFecha.getValue().toString(), dateFechaHasta.getValue().toString());
             for (Event e : Arrays.asList(eventosArray)) {
                 if (events.contains(e)) {
@@ -333,13 +334,18 @@ public class ShowAllEventsViewController {
             events = eventos;
          /**Filtra los eventos entre dos fechas */
         } else if (dateFecha.getValue() != null) {
+            dateFechaHasta.setVisible(true);
+            lbHasta.setVisible(true);
             Event[] eventsArray = EventManagerFactory.get().findByDate_XML(Event[].class, dateFecha.getValue().toString());
             for (Event e : Arrays.asList(eventsArray)) {
                 if (events.contains(e)) {
                     eventos.add(e);
                 }
-            }
+        }
             events = eventos;
+        }else{
+             dateFechaHasta.setVisible(false);
+            lbHasta.setVisible(false);
         }
         
         /**Filtra los eventos que tengan el mismo precio */
@@ -373,7 +379,11 @@ public class ShowAllEventsViewController {
         List<Event> events = Arrays.asList(eventsArray);
         return events;
     }
-
+    
+    /**
+     * cambia el boolean de tema y llama al metodo changeTheme() para cambiar el fondo
+     * @param event 
+     */
     private void cambiarTema(ActionEvent event) {
         if (tema) {
             Sesion.setTema(false);
@@ -405,7 +415,12 @@ public class ShowAllEventsViewController {
             bpPrincipal.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
         }
     }
-
+    
+    /**
+     * Controla el menu conceptual
+     * @param event
+     * @param menu 
+     */
     private void controlMenuConceptual(MouseEvent event, ContextMenu menu) {
         //Se comprueba si se hace clic con el borón derecho del ratón.
         if (event.getButton() == MouseButton.SECONDARY) {
@@ -424,7 +439,8 @@ public class ShowAllEventsViewController {
             event.consume();
         }
     }
-
+    
+    
     private void imprimirTabla(ActionEvent event) {
         try {
             JasperReport report = JasperCompileManager.compileReport("src/reports/EventReport.jrxml");
@@ -489,19 +505,12 @@ public class ShowAllEventsViewController {
                     }
                 }
             });
-
-            dateFecha.valueProperty().addListener(new ChangeListener<LocalDate>() {
-                @Override
-                public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
-                    if (newValue != null) {
-                        if (dateFecha.getValue() != null) {
-                            lbHasta.setVisible(true);
-                            dateFechaHasta.setVisible(true);
-                            aplicarFiltros();
-                        }
-                    }
-                }
+            
+            
+            dateFecha.valueProperty().addListener((observable, oldValue, newValue) -> {
+                aplicarFiltros();
             });
+
 
             dateFecha.setDayCellFactory(picker -> {
                 return new javafx.scene.control.DateCell() {
@@ -513,18 +522,10 @@ public class ShowAllEventsViewController {
                     }
                 };
             });
-
-            dateFechaHasta.valueProperty().addListener(new ChangeListener<LocalDate>() {
-                @Override
-                public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
-                    if (newValue != null) {
-                        if (dateFecha.getValue() != null) {
-                            Event[] eventsArray = EventManagerFactory.get().findByDates_XML(Event[].class, dateFecha.getValue().toString(), dateFechaHasta.getValue().toString());
-                            events = Arrays.asList(eventsArray);
-                            cargarTabla(events);
-                        }
-                    }
-                }
+            
+            dateFechaHasta.valueProperty().addListener((observable, oldValue, newValue) -> {  
+                    aplicarFiltros();              
+               
             });
 
             dateFechaHasta.setDayCellFactory(picker -> {
@@ -563,6 +564,7 @@ public class ShowAllEventsViewController {
                     aplicarFiltros();
                 }
             });
+            
             changeTheme();
             stage.show();
             stage.setScene(scene);
