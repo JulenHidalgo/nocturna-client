@@ -5,9 +5,12 @@
  */
 package rest;
 
+import exceptions.InternalServerErrorException;
+import exceptions.ReadException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 import logic.ClubManager;
 import model.Club;
 
@@ -24,7 +27,7 @@ import model.Club;
  *
  * @author 2dam
  */
-public class ClubRESTClient implements ClubManager{
+public class ClubRESTClient implements ClubManager {
 
     private WebTarget webTarget;
     private Client client;
@@ -35,10 +38,24 @@ public class ClubRESTClient implements ClubManager{
         webTarget = client.target(BASE_URI).path("entities.club");
     }
 
-    public <T> T getClubsByEventDate_XML(Class<T> responseType, String fecha) throws WebApplicationException {
+    @Override
+    public <T> T getClubsByEventDate_XML(Class<T> responseType, String fecha) throws InternalServerErrorException, ReadException{
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("club/date/{0}", new Object[]{fecha}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+
+        Response response = resource
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .get();
+
+        if (response.getStatus() > 404) {
+            throw new ReadException();
+        }
+
+        if (response.getStatus() > 500) {
+            throw new InternalServerErrorException();
+        }
+
+        return response.readEntity(responseType);
     }
 
     public <T> T getClubsByEventDate_JSON(Class<T> responseType, String fecha) throws WebApplicationException {
@@ -56,18 +73,32 @@ public class ClubRESTClient implements ClubManager{
     public void edit_XML(Object requestEntity, String id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id}))
                 .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML)
-                ,requestEntity.getClass());
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML),
+                        requestEntity.getClass());
     }
 
     public void edit_JSON(Object requestEntity, String id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
     }
-
-    public <T> T getClubNameByEventId_XML(Class<T> responseType, String idEvent) throws WebApplicationException {
+    
+    @Override
+    public <T> T getClubNameByEventId_XML(Class<T> responseType, String idEvent) throws InternalServerErrorException, ReadException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("club/{0}", new Object[]{idEvent}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+
+        Response response = resource
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .get();
+
+        if (response.getStatus() > 404) {
+            throw new ReadException();
+        }
+
+        if (response.getStatus() > 500) {
+            throw new InternalServerErrorException();
+        }
+
+        return response.readEntity(responseType);
     }
 
     public <T> T getClubNameByEventId_JSON(Class<T> responseType, String idEvent) throws WebApplicationException {
@@ -102,14 +133,14 @@ public class ClubRESTClient implements ClubManager{
 
     public void create_XML(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML)
-                ,requestEntity.getClass());
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML),
+                        requestEntity.getClass());
     }
 
     public void create_JSON(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_JSON)
-                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON)
-                ,requestEntity.getClass());
+                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON),
+                        requestEntity.getClass());
     }
 
     public <T> T findAll_XML(Class<T> responseType) throws WebApplicationException {
@@ -127,10 +158,24 @@ public class ClubRESTClient implements ClubManager{
                 .request().delete(Club.class);
     }
 
-    public <T> T getClubsByEventDates_XML(Class<T> responseType, String fechaIni, String fechafin) throws WebApplicationException {
+    @Override
+    public <T> T getClubsByEventDates_XML(Class<T> responseType, String fechaIni, String fechafin) throws InternalServerErrorException, ReadException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("club/date/{0}/{1}", new Object[]{fechaIni, fechafin}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+
+        Response response = resource
+                .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .get();
+
+        if (response.getStatus() > 404) {
+            throw new ReadException();
+        }
+
+        if (response.getStatus() > 500) {
+            throw new InternalServerErrorException();
+        }
+
+        return response.readEntity(responseType);
     }
 
     public <T> T getClubsByEventDates_JSON(Class<T> responseType, String fechaIni, String fechafin) throws WebApplicationException {
@@ -142,5 +187,5 @@ public class ClubRESTClient implements ClubManager{
     public void close() {
         client.close();
     }
-    
+
 }
