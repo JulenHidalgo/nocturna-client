@@ -5,7 +5,7 @@
  */
 package ui_controllers;
 
-import control.Sesion;
+import model.Sesion;
 import exceptions.InternalServerErrorException;
 import exceptions.ReadException;
 import java.io.IOException;

@@ -6,10 +6,7 @@
 package model;
 
 import java.io.Serializable;
-import static java.sql.Date.valueOf;
-import java.time.LocalDate;
 import java.util.Date;
-import java.util.Set;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 

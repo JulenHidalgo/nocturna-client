@@ -5,7 +5,7 @@
  */
 package ui_controllers;
 
-import control.Sesion;
+import model.Sesion;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

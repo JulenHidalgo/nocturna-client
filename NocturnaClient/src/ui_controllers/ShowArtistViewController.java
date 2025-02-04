@@ -5,7 +5,7 @@
  */
 package ui_controllers;
 
-import control.Sesion;
+import model.Sesion;
 import exceptions.ReadException;
 import java.io.IOException;
 import java.time.ZoneId;

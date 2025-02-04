@@ -5,7 +5,7 @@
  */
 package ui_controllers;
 
-import control.Sesion;
+import model.Sesion;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -22,7 +22,6 @@ import javafx.scene.layout.HBox;
 import java.util.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Optional;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -30,8 +29,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import logic.ClientManagerFactory;
