@@ -9,7 +9,7 @@ package test;
 
 import com.lowagie.text.pdf.AcroFields.Item;
 import control.Main;
-import control.Sesion;
+import model.Sesion;
 import static java.sql.Date.valueOf;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

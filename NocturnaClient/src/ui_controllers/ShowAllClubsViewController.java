@@ -5,7 +5,7 @@
  */
 package ui_controllers;
 
-import control.Sesion;
+import model.Sesion;
 import exceptions.InternalServerErrorException;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -59,6 +59,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.view.JasperViewer;
+import utils.ClubEditingCell;
 import utils.CustomAlert;
 
 /**
