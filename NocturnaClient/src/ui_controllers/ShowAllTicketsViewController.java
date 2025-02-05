@@ -6,12 +6,9 @@
 package ui_controllers;
 
 import model.Sesion;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -31,11 +28,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import logic.TicketManagerFactory;
 import model.Client;
-import model.Club;
-import model.Event;
 import model.Ticket;
 import model.User;
-import org.eclipse.persistence.sessions.Session;
+
 
 /**
  *
