@@ -5,9 +5,10 @@
  */
 package ui_controllers;
 
-import control.Sesion;
-import static control.Sesion.getTema;
-import static control.Sesion.setTema;
+import utils.EventEditingCell;
+import model.Sesion;
+import static model.Sesion.getTema;
+import static model.Sesion.setTema;
 import exceptions.InternalServerErrorException;
 import exceptions.ReadException;
 import java.io.IOException;

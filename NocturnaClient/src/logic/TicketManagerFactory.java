@@ -7,17 +7,29 @@ package logic;
 
 import rest.TicketRESTClient;
 
-
-
 /**
- *
- * @author 2dam
+ * Fábrica que implementa el patrón Singleton para la gestión de tickets.
+ * Esta clase proporciona un punto único de acceso para obtener una instancia
+ * de TicketManager, garantizando que solo exista una instancia en toda la aplicación.
+ * 
+ * @author Adrian Rocha
  */
 public class TicketManagerFactory {
-      private static TicketManager ticketManager;
     
-    public static TicketManager get(){
-        if(ticketManager == null){
+    /**
+     * Instancia única de TicketManager que se utiliza en toda la aplicación.
+     * Esta variable estática garantiza que solo exista una instancia.
+     */
+    private static TicketManager ticketManager;
+    
+    /**
+     * Obtiene la instancia de TicketManager. Si no existe una instancia previa,
+     * crea una nueva usando TicketRESTClient como implementación.
+     * 
+     * @return La instancia única de TicketManager
+     */
+    public static TicketManager get() {
+        if (ticketManager == null) {
             ticketManager = new TicketRESTClient();
         }
         return (TicketManager) new TicketRESTClient();

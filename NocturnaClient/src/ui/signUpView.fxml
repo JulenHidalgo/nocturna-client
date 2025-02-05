@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-image: url('/img/fondo.jpg'); -fx-background-size: cover;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui_controllers.SignUpViewController">
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-image: url('/img/fondo.jpg'); -fx-background-size: cover;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui_controllers.SignUpViewController">
     <children>
         <HBox fx:id="hbMenu" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
@@ -36,9 +36,9 @@
                         <HBox>
                             <children>
                                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Nombre">
-                                    <font>
-                                        <Font name="Vivaldi Italic" size="24.0" />
-                                    </font>
+                           <font>
+                              <Font size="24.0" />
+                           </font>
                                 </Text>
                                 <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
                                     <font>
@@ -60,7 +60,7 @@
                             <children>
                                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Apellido">
                                     <font>
-                                        <Font name="Vivaldi Italic" size="24.0" />
+                                        <Font size="24.0" />
                                     </font>
                                 </Text>
                                 <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
@@ -85,7 +85,7 @@
                                     <children>
                                         <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Teléfono">
                                             <font>
-                                                <Font name="Vivaldi Italic" size="24.0" />
+                                                <Font size="24.0" />
                                             </font>
                                         </Text>
                                         <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
@@ -111,7 +111,7 @@
                                     <children>
                                         <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Fecha de nacimiento">
                                             <font>
-                                                <Font name="Vivaldi Italic" size="24.0" />
+                                                <Font size="24.0" />
                                             </font>
                                         </Text>
                                         <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
@@ -134,7 +134,7 @@
                                     <children>
                                         <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Ciudad">
                                             <font>
-                                                <Font name="Vivaldi Italic" size="24.0" />
+                                                <Font size="24.0" />
                                             </font>
                                         </Text>
                                         <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
@@ -160,7 +160,7 @@
                                     <children>
                                         <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="DNI">
                                             <font>
-                                                <Font name="Vivaldi Italic" size="24.0" />
+                                                <Font size="24.0" />
                                             </font>
                                         </Text>
                                         <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
@@ -185,7 +185,7 @@
                             <children>
                                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Correo electrónico">
                                     <font>
-                                        <Font name="Vivaldi Italic" size="24.0" />
+                                        <Font size="24.0" />
                                     </font>
                                 </Text>
                                 <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
@@ -208,7 +208,7 @@
                             <children>
                                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Contraseña">
                                     <font>
-                                        <Font name="Vivaldi Italic" size="24.0" />
+                                        <Font size="24.0" />
                                     </font>
                                 </Text>
                                 <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
@@ -218,11 +218,21 @@
                                 </Text>
                             </children>
                         </HBox>
-                        <PasswordField fx:id="pfPass">
-                            <font>
-                                <Font size="18.0" />
-                            </font>
-                        </PasswordField>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <StackPane>
+                           <children>
+                                    <PasswordField fx:id="pfPass" prefHeight="39.0" prefWidth="837.0">
+                                        <font>
+                                            <Font size="18.0" />
+                                        </font>
+                                    </PasswordField>
+                              <TextField fx:id="tfPass1" prefHeight="39.0" prefWidth="837.0" visible="false" />
+                           </children>
+                        </StackPane>
+                        <Button fx:id="btnVerPass1" mnemonicParsing="false" text="Ver" />
+                     </children>
+                  </HBox>
                     </children>
                 </VBox>
                 <VBox fx:id="vbPass2">
@@ -231,7 +241,7 @@
                             <children>
                                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Introduce la contraseña de nuevo">
                                     <font>
-                                        <Font name="Vivaldi Italic" size="24.0" />
+                                        <Font size="24.0" />
                                     </font>
                                 </Text>
                                 <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
@@ -241,11 +251,21 @@
                                 </Text>
                             </children>
                         </HBox>
-                        <PasswordField fx:id="pfPass2">
-                            <font>
-                                <Font size="18.0" />
-                            </font>
-                        </PasswordField>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <StackPane>
+                           <children>
+                                    <PasswordField fx:id="pfPass2" prefHeight="39.0" prefWidth="837.0">
+                                        <font>
+                                            <Font size="18.0" />
+                                        </font>
+                                    </PasswordField>
+                              <TextField fx:id="tfPass2" prefHeight="39.0" prefWidth="837.0" visible="false" />
+                           </children>
+                        </StackPane>
+                        <Button fx:id="btnVerPass2" mnemonicParsing="false" text="Ver" />
+                     </children>
+                  </HBox>
                     </children>
                 </VBox>
             </children>
@@ -282,7 +302,7 @@
                         <Font size="18.0" />
                     </font>
                 </Button>
-                <Button fx:id="btnModificarDatos" mnemonicParsing="false" prefHeight="35.0" prefWidth="250.0" text="Modificar Información" visible="false">
+                <Button fx:id="btnModificarDatos" disable="true" mnemonicParsing="false" prefHeight="35.0" prefWidth="250.0" text="Modificar Información" visible="false">
                     <font>
                         <Font size="18.0" />
                     </font>

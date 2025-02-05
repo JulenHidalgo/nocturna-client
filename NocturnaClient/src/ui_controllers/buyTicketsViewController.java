@@ -5,7 +5,7 @@
  */
 package ui_controllers;
 
-import control.Sesion;
+import model.Sesion;
 import static java.sql.Date.valueOf;
 import java.time.LocalDate;
 import java.util.HashSet;

@@ -5,7 +5,7 @@
  */
 package ui_controllers;
 
-import control.Sesion;
+import model.Sesion;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;

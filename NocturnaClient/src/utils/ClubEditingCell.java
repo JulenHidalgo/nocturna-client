@@ -1,4 +1,4 @@
-package ui_controllers;
+package utils;
 
 import javafx.application.Platform;
 import javafx.scene.control.*;

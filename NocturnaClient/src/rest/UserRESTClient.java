@@ -7,9 +7,12 @@ package rest;
 
 import exceptions.SignInException;
 import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import logic.UserManager;
 import model.User;
@@ -139,11 +142,8 @@ public class UserRESTClient implements UserManager {
 
     @Override
     public void updatePasswd_XML(Object requestEntity, String newPasswd) throws WebApplicationException {
-        webTarget.path(java.text.MessageFormat.format("updatePasswd/{0}", new Object[]{newPasswd})).request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
-    }
-
-    public void updatePasswd_JSON(Object requestEntity, String newPasswd) throws ClientErrorException {
-        webTarget.path(java.text.MessageFormat.format("updatePasswd/{0}", new Object[]{newPasswd})).request(javax.ws.rs.core.MediaType.APPLICATION_JSON).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_JSON));
+        webTarget.path(java.text.MessageFormat.format("updatePasswd/{0}", new Object[]{newPasswd})).request(javax.ws.rs.core.MediaType.APPLICATION_XML)
+                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), User.class);
     }
 
     @Override

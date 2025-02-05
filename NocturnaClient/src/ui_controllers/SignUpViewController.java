@@ -5,8 +5,9 @@
  */
 package ui_controllers;
 
-import control.Sesion;
+import model.Sesion;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -21,7 +22,6 @@ import javafx.scene.layout.HBox;
 import java.util.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Optional;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -29,8 +29,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import logic.ClientManagerFactory;
@@ -106,6 +104,18 @@ public class SignUpViewController {
     @FXML
     Button btnModificarDatos;
 
+    @FXML
+    Button btnVerPass1;
+
+    @FXML
+    Button btnVerPass2;
+
+    @FXML
+    TextField tfPass1;
+
+    @FXML
+    TextField tfPass2;
+
     private Stage stage;
 
     private User user;
@@ -129,10 +139,34 @@ public class SignUpViewController {
     }
 
     private void closeAppFromX(WindowEvent event) {
-        if (CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION,"¿Está seguro de que desea salir?")) {
+        if (CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION, "¿Está seguro de que desea salir?")) {
             Platform.exit();
         } else {
             event.consume();
+        }
+    }
+
+    private void verPass1(ActionEvent event) {
+        if (tfPass1.isVisible()) {
+            pfPass.setVisible(true);
+            tfPass1.setVisible(false);
+            pfPass.setText(tfPass1.getText());
+        } else {
+            pfPass.setVisible(false);
+            tfPass1.setVisible(true);
+            tfPass1.setText(pfPass.getText());
+        }
+    }
+
+    private void verPass2(ActionEvent event) {
+        if (tfPass2.isVisible()) {
+            pfPass2.setVisible(true);
+            tfPass2.setVisible(false);
+            pfPass2.setText(tfPass2.getText());
+        } else {
+            pfPass2.setVisible(false);
+            tfPass2.setVisible(true);
+            tfPass2.setText(pfPass2.getText());
         }
     }
 
@@ -143,7 +177,7 @@ public class SignUpViewController {
         Scene scene = new Scene(root);
         //Si el usuario es null, significa que no ha entrado a la app todavía y 
         //está intentando registrarse, si no, significa que va a modificar su información.
-        if (this.user == null) {
+        if (user == null) {
             stage.setTitle("Registro de usuarios");
             btnCambioPass.setVisible(false);
             btnElimCuenta.setVisible(false);
@@ -162,13 +196,20 @@ public class SignUpViewController {
             tfMail.setText(((Client) user).getMail());
             tfTelefono.setText(((Client) user).getTelefono().toString());
             dpFechaNac.setValue(((Client) user).getFechaNacimiento().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            tfMail.setEditable(false);
+            btnModificarDatos.setOnAction(this::updateInfo);
+            btnElimCuenta.setOnAction(this::deleteUser);
+
+            addListenersToTextFields();
         }
 
         stage.setOnCloseRequest(this::closeAppFromX);
         btnSignUp.setOnAction(this::signUp);
         btnCambioPass.setOnAction(this::resetPass);
         btnModificarDatos.setOnAction(this::updateInfo);
-//        btnElimCuenta.setOnAction(this::deleteUser);
+        btnElimCuenta.setOnAction(this::deleteUser);
+        btnVerPass1.setOnAction(this::verPass1);
+        btnVerPass2.setOnAction(this::verPass2);
 
         dpFechaNac.setDayCellFactory(picker -> {
             return new javafx.scene.control.DateCell() {
@@ -185,6 +226,27 @@ public class SignUpViewController {
         stage.setScene(scene);
         LOGGER.info("'SignUp' window initialized.");
 
+    }
+
+
+    private void addListenersToTextFields() {
+        tfNombre.textProperty().addListener((observable, oldValue, newValue) -> checkChangesModify());
+        tfApellido.textProperty().addListener((observable, oldValue, newValue) -> checkChangesModify());
+        tfTelefono.textProperty().addListener((observable, oldValue, newValue) -> checkChangesModify());
+        dpFechaNac.valueProperty().addListener((observable, oldValue, newValue) -> checkChangesModify());
+        tfCiudad.textProperty().addListener((observable, oldValue, newValue) -> checkChangesModify());
+    }
+
+    private void checkChangesModify() {
+        if (tfNombre.getText().equals(((Client) this.user).getNombre())
+                && tfApellido.getText().equals(((Client) this.user).getApellido())
+                && tfTelefono.getText().equals(((Client) this.user).getTelefono().toString())
+                && Date.from(dpFechaNac.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()).equals(((Client) this.user).getFechaNacimiento())
+                && tfCiudad.getText().equals(((Client) this.user).getCiudad())) {
+            btnModificarDatos.setDisable(true);
+        } else {
+            btnModificarDatos.setDisable(false);
+        }
     }
 
 
@@ -218,7 +280,6 @@ public class SignUpViewController {
 
     }
 
-
     private void deleteUser(ActionEvent event) {
         if (CustomAlert.throwAlertTextField("Borrado de cuenta", "Introduce la contraseña para borrar la cuenta (Se perderán todas las entradas asociadas al usuario), pulsa cancelar para salir", "Contraseña de la cuenta") != null) {
 
@@ -244,56 +305,29 @@ public class SignUpViewController {
         }
     }
 
-    private void resetPass(ActionEvent event) {
+    private void resetPass(ActionEvent event){
+        String[] respuesta;
+        String oldPass, newPass;
+        User usuario = new User();
         try {
-            Alert alert = new Alert(Alert.AlertType.NONE);
-            alert.setTitle("Cambio de contraseña");
-            alert.setHeaderText("Introduce la contraseña anterior y la nueva para modificarla, pulsa cancelar para salir");
-
-            PasswordField pfVieja = new PasswordField();
-            pfVieja.setPromptText("Contraseña anterior");
-
-            PasswordField pfNueva1 = new PasswordField();
-            pfNueva1.setPromptText("Nueva contraseña");
-
-            PasswordField pfNueva2 = new PasswordField();
-            pfNueva2.setPromptText("Repite la nueva contraseña");
-
-            GridPane grid = new GridPane();
-            grid.add(pfVieja, 0, 0);
-            grid.add(pfNueva1, 0, 1);
-            grid.add(pfNueva2, 0, 2);
-
-            alert.getDialogPane().setContent(grid);
-
-            ButtonType btnAceptar = new ButtonType("Aceptar");
-            ButtonType btnCancelar = new ButtonType("Cancelar");
-
-            alert.getButtonTypes().setAll(btnAceptar, btnCancelar);
-
-            Optional<ButtonType> confirmar = alert.showAndWait();
-
-            if (confirmar.get() == btnAceptar) {
-                if (!pfNueva1.getText().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$")) {
-                    LOGGER.warning("Password validation error, pattern incorrect");
-                    CustomAlert.throwAlertCustom(AlertType.ERROR, "La contraseña tiene que tener al menos 6 caracteres, una mayúscula, una minúscula y un número");
-                    throw new Exception();
-                }
-                if (!pfNueva1.getText().equals(pfNueva2.getText())) {
-                    LOGGER.warning("Password validation error, pfNueva1 and pfNueva2 don't match");
-                    CustomAlert.throwAlertCustom(AlertType.ERROR, "Las contraseñas no coinciden");
-                    throw new Exception();
-                }
-                UserManagerFactory.get().updatePasswd_XML(user, pfNueva1.getText());
+            respuesta = CustomAlert.lanzarAlertResetPass();
+            if (respuesta != null) {
+                oldPass = URLEncoder.encode(AsimetricEncrypt.encrypt(respuesta[0]), "UTF-8");
+                newPass = URLEncoder.encode(AsimetricEncrypt.encrypt(respuesta[1]), "UTF-8");
+                
+                usuario.setMail(this.user.getMail());
+                usuario.setPasswd(oldPass);
+                
+                UserManagerFactory.get().updatePasswd_XML(usuario, newPass);
             }
-
-        } catch (Exception e) {
-
-        }
+        } catch (UnsupportedEncodingException ex) {
+            LOGGER.severe("An error occurred encrypting the new password");
+            CustomAlert.throwAlertCustom(AlertType.ERROR, "Ha sucedido un error guardando la contraseña");
+        } 
 
     }
 
-    public void signUp(ActionEvent event) {
+    private void signUp(ActionEvent event) {
         try {
             if (tfNombre.getText().isEmpty() || tfApellido.getText().isEmpty()
                     || tfCiudad.getText().isEmpty() || tfTelefono.getText().isEmpty()
@@ -320,17 +354,16 @@ public class SignUpViewController {
             client.setDni(tfDni.getText());
             client.setMail(URLEncoder.encode(AsimetricEncrypt.encrypt(tfMail.getText()), "UTF-8"));
             client.setPasswd(URLEncoder.encode(AsimetricEncrypt.encrypt(pfPass.getText()), "UTF-8"));
-            System.out.println(client.getMail());
             ClientManagerFactory.get().create_XML(client);
+            client.setMail(tfMail.getText());
             Sesion.setUser(client);
-            
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllEventsView.fxml"));
 
             Parent root = loader.load();
 
             ShowAllEventsViewController controller = (ShowAllEventsViewController) loader.getController();
 
-           
             controller.initStage(root);
 
         } catch (IOException e) {
@@ -342,7 +375,7 @@ public class SignUpViewController {
 
     }
 
-    public void checkModifyInfo() throws Exception {
+    private void checkModifyInfo() throws Exception {
         newUser = new Client();
         newUser.setMail(tfMail.getText());
         ((Client) newUser).setNombre(tfNombre.getText());
@@ -358,7 +391,7 @@ public class SignUpViewController {
         }
     }
 
-    public void checkMail() throws Exception {
+    private void checkMail() throws Exception {
         if (!tfMail.getText().matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
             LOGGER.warning("Mail validation error, pattern incorrect");
             CustomAlert.throwAlertCustom(AlertType.ERROR, "El correo no tiene un patrón correcto");
@@ -366,7 +399,7 @@ public class SignUpViewController {
         }
     }
 
-    public void checkPhone() throws Exception {
+    private void checkPhone() throws Exception {
         if (!tfTelefono.getText().matches("^\\d{9}$")) {
             LOGGER.warning("PhoneNumber validation error, pattern incorrect");
             CustomAlert.throwAlertCustom(AlertType.ERROR, "El teléfono tiene que contener 9 números");
@@ -374,7 +407,7 @@ public class SignUpViewController {
         }
     }
 
-    public void checkDNI() throws Exception {
+    private void checkDNI() throws Exception {
         if (!tfDni.getText().matches("^\\d{8}[A-Za-z]$")) {
             LOGGER.warning("DNI validation error, pattern incorrect");
             CustomAlert.throwAlertCustom(AlertType.ERROR, "El DNI tiene que estar compuesto por 8 números y una letra");
@@ -382,7 +415,14 @@ public class SignUpViewController {
         }
     }
 
-    public void checkPass() throws Exception {
+
+    private void checkPass() throws Exception {
+        if (tfPass1.isVisible()) {
+            pfPass.setText(tfPass1.getText());
+        }
+        if (tfPass2.isVisible()) {
+            pfPass2.setText(tfPass2.getText());
+        }
         if (!pfPass.getText().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$")) {
             LOGGER.warning("Password validation error, pattern incorrect");
             CustomAlert.throwAlertCustom(AlertType.ERROR, "La contraseña tiene que tener al menos 6 caracteres, una mayúscula, una minúscula y un número");
@@ -395,7 +435,7 @@ public class SignUpViewController {
         }
     }
 
-    public void checkDate() throws Exception {
+    private void checkDate() throws Exception {
         if (dpFechaNac.getValue().isAfter(LocalDate.now())) {
             LOGGER.warning("Date validation error, later date");
             CustomAlert.throwAlertCustom(AlertType.ERROR, "La fecha de nacimiento no puede ser posterior a la fecha actual");
