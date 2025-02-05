@@ -1,230 +1,222 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Controlador para la ventana del menú principal en la aplicación JavaFX.
+ * Gestiona la navegación entre diferentes vistas y la sesión del usuario.
  */
 package ui_controllers;
 
 import model.Sesion;
 import java.io.IOException;
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
-import logic.UserManagerFactory;
-import model.Artist;
-import model.Client;
 import model.Event;
 import model.User;
 
 /**
- *
- * @author 2dam
+ * Controlador para gestiona el menu de la aplicacion para 
+ * moverse entre las ventanas
+ * @author Erlantz Rey
  */
 public class MenuController {
 
+     /** Barra de menú principal. */
     @FXML
-    MenuBar menuBar;
+    private MenuBar menuBar;
 
+    /** Menús dentro de la barra de menú. */
     @FXML
-    Menu menuVer;
+    private Menu menuVer, menuPerfil, menuHelp;
 
+    /** Elementos dentro de los menús. */
     @FXML
-    MenuItem miTickets;
+    private MenuItem miTickets, miEvents, miClubs, miArtists, miPerfil, miSignOut, miAbout;
 
-    @FXML
-    MenuItem miEvents;
-
-    @FXML
-    MenuItem miClubs;
-
-    @FXML
-    MenuItem miArtists;
-
-    @FXML
-    Menu menuPerfil;
-
-    @FXML
-    MenuItem miPerfil;
-
-    @FXML
-    MenuItem miSignOut;
-
-    @FXML
-    Menu menuHelp;
-
-    @FXML
-    MenuItem miAbout;
-
+    /** Ventana principal de la aplicación. */
     private Stage stage;
-
+    
+    /** Usuario actual que a iniciado sesion */
     private User user;
-
+    
+    /** Evento seleccionado en la aplicación. */
     private Event event;
-
+    
+    /** Indica si el tema oscuro está activado. */
     private boolean tema;
-
+    
+    /** Logger para registrar eventos y errores. */
     private final Logger LOGGER = Logger.getLogger("SignInViewController.view");
     
-    
+    /**
+     * Navega a la vista de todos los eventos.
+     * @param event 
+     * @throws Exception Si ocurre un error en la carga de la vista.
+     */
     @FXML
-    private void irShowAllEventsView(ActionEvent event) throws Exception{
-         try {
+    private void irShowAllEventsView(ActionEvent event) throws Exception {
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllEventsView.fxml"));
-            
             Parent root = loader.load();
-            
-            ShowAllEventsViewController controller = (ShowAllEventsViewController) loader.getController();
-           
-           
+            ShowAllEventsViewController controller = loader.getController();
             controller.initStage(root);
-            
         } catch (IOException ex) {
-            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    @FXML
-    private void irShowAllClubsView(ActionEvent event) throws Exception{
-         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllClubsView.fxml"));
-            
-            Parent root = loader.load();
-            
-            ShowAllClubsViewController controller = (ShowAllClubsViewController) loader.getController();
-    
-            controller.initStage(root);
-            
-        } catch (IOException ex) {
-            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
+    /**
+     * Navega a la vista de todos los clubes.
+     * @param event 
+     * @throws Exception Si ocurre un error en la carga de la vista.
+     */
+    @FXML
+    private void irShowAllClubsView(ActionEvent event) throws Exception {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllClubsView.fxml"));
+            Parent root = loader.load();
+            ShowAllClubsViewController controller = loader.getController();
+            controller.initStage(root);
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
     
+    /**
+     * Navega a la vista de todos los artistas.
+     * @param event 
+     */
     @FXML
     private void irShowAllArtistView(ActionEvent event) {
-         try {
-            stage=Sesion.getStage();
-            tema=Sesion.getTema();
-            user=Sesion.getUser();
+        try {
+            stage = Sesion.getStage();
+            tema = Sesion.getTema();
+            user = Sesion.getUser();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllArtistsView.fxml"));
-            
             Parent root = loader.load();
-            
-            ShowAllArtistsViewController controller = (ShowAllArtistsViewController) loader.getController();
+            ShowAllArtistsViewController controller = loader.getController();
             controller.setEvent(null);
             controller.initStage(root);
-            
         } catch (IOException ex) {
-            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
     
+    /**
+     * Navega a la vista de todos los tickets.
+     * @param event 
+     * @throws Exception Si ocurre un error en la carga de la vista.
+     */
     @FXML
-    private void irShowAllTicketsView(ActionEvent event) throws Exception{
-         try {
-            stage=Sesion.getStage();
-            tema=Sesion.getTema();
-            user=Sesion.getUser();
+    private void irShowAllTicketsView(ActionEvent event) throws Exception {
+        try {
+            stage = Sesion.getStage();
+            tema = Sesion.getTema();
+            user = Sesion.getUser();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllTicketsView.fxml"));
-            
             Parent root = loader.load();
-            
-            ShowAllTicketsViewController controller = (ShowAllTicketsViewController) loader.getController();
-           
+            ShowAllTicketsViewController controller = loader.getController();
             controller.initStage(root);
-            
         } catch (IOException ex) {
-            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
     
-      
+    /**
+     * Cierra la sesión del usuario y vuelve a la ventana de inicio de sesión.
+     * @param event 
+     * @throws Exception Si ocurre un error en la carga de la vista.
+     */
     @FXML
-    private void cerrarSesion(ActionEvent event) throws Exception{
-         try {
-            stage=Sesion.getStage();
-            tema=Sesion.getTema();
-            user=Sesion.getUser();
+    private void cerrarSesion(ActionEvent event) throws Exception {
+        try {
+            stage = Sesion.getStage();
+            tema = Sesion.getTema();
+            user = Sesion.getUser();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/signInView.fxml"));
-            
             Parent root = loader.load();
-            
-            SignInViewController controller = (SignInViewController) loader.getController();
-           
+            SignInViewController controller = loader.getController();
             controller.setStage(stage);
             controller.setTema(tema);
             controller.setUser(user);
             Sesion.setUser(null);
-          
             controller.initStage(root);
-            
         } catch (IOException ex) {
-            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
     
+    /**
+     * Navega a la vista de perfil del usuario.
+     * @param event
+     * @throws Exception Si ocurre un error en la carga de la vista.
+     */
     @FXML
-    private void irVerPerfil(ActionEvent event) throws Exception{
-         try {
-            stage=Sesion.getStage();
-            tema=Sesion.getTema();
-            user=Sesion.getUser();
+    private void irVerPerfil(ActionEvent event) throws Exception {
+        try {
+            stage = Sesion.getStage();
+            tema = Sesion.getTema();
+            user = Sesion.getUser();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/signUpView.fxml"));
-            
             Parent root = loader.load();
-            
-            SignUpViewController controller = (SignUpViewController) loader.getController();
-           
+            SignUpViewController controller = loader.getController();
             controller.setStage(stage);
             controller.setTema(tema);
             controller.setUser(user);
-          
             controller.initStage(root);
-            
         } catch (IOException ex) {
-            Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
     
+    /**
+     * Establece la ventana de la aplicación.
+     * @param stage Ventana principal.
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Establece el usuario actual.
+     * @param user Usuario autenticado.
+     */
     public void setUser(User user) {
         this.user = user;
     }
 
+    /**
+     * Establece el evento actual.
+     * @param event Evento seleccionado.
+     */
     public void setEvent(Event event) {
         this.event = event;
     }
 
+    /**
+     * Establece el tema de la aplicación.
+     * @param tema Tema de la interfaz.
+     */
     public void setTema(boolean tema) {
         this.tema = tema;
     }
 
+    /**
+     * Inicializa la escena del menú.
+     * @param root Nodo raíz de la escena.
+     */
     public void initStage(Parent root) {
-        LOGGER.info("Initializing the 'Menu'.");
+        LOGGER.info("Inicializando la ventana del menú.");
         Scene scene = new Scene(root);
-        stage=Sesion.getStage();
-        
-        stage.show();
+        stage = Sesion.getStage();
         stage.setScene(scene);
-        LOGGER.info("'ShowAllArtists' window initialized.");
-
+        stage.show();
+        LOGGER.info("Ventana del menú inicializada.");
     }
-
 }

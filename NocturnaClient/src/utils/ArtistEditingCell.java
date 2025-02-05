@@ -9,7 +9,9 @@ import ui_controllers.ShowAllArtistsViewController;
 import logic.ArtistManagerFactory;
 
 /**
- * Custom TableCell for editing Artist information.
+ * Representa una celda personalizada en una tabla que permite la edición 
+ * de información de un artista
+ * @author Julen Hidalgo
  */
 public class ArtistEditingCell extends TableCell<Artist, String> {
 
@@ -20,10 +22,19 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
     private ShowAllArtistsViewController controlador;
     private boolean seleccionado;
 
+    /**
+     * Constructor de la celda de edición.
+     * 
+     * @param controlador Controlador de la vista que gestiona la lista de artistas seleccionados.
+     */
     public ArtistEditingCell(ShowAllArtistsViewController controlador) {
         this.controlador = controlador;
     }
 
+    /**
+     * Inicia el modo de edición de la celda, mostrando un campo de texto, 
+     * un área de texto o un checkbox según la columna correspondiente.
+     */
     @Override
     public void startEdit() {
         if (!isEmpty()) {
@@ -52,6 +63,9 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
         }
     }
 
+    /**
+     * Cancela la edición de la celda y restaura su estado original.
+     */
     @Override
     public void cancelEdit() {
         super.cancelEdit();
@@ -63,6 +77,12 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
         setGraphic(null);
     }
 
+    /**
+     * Actualiza el contenido de la celda cuando los datos cambian.
+     * 
+     * @param item  Nuevo valor del elemento.
+     * @param empty Indica si la celda está vacía.
+     */
     @Override
     public void updateItem(String item, boolean empty) {
         super.updateItem(item, empty);
@@ -85,12 +105,11 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
                             textArea.setText(getString());
                         }
                         setText(null);
-                        setGraphic(textField);
+                        setGraphic(textArea);
                         break;
                     case 3:
                         if (checkBox != null) {
-                            // Use item directly here too
-                            checkBox.setSelected(item.equals("Sí"));
+                            checkBox.setSelected("Sí".equals(item));
                         }
                         setText(null);
                         setGraphic(checkBox);
@@ -98,7 +117,7 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
                 }
             } else {
                 if (columnIndex == 3) {
-                    setText(item.equals("Sí") ? "Sí" : "No");
+                    setText("Sí".equals(item) ? "Sí" : "No");
                     setGraphic(null);
                 } else {
                     setText(getString());
@@ -108,6 +127,11 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
         }
     }
 
+    /**
+     * Confirma la edición y actualiza el {@link Artist} correspondiente en la base de datos.
+     * 
+     * @param newValue Nuevo valor ingresado en la celda.
+     */
     @Override
     public void commitEdit(String newValue) {
         try {
@@ -138,18 +162,20 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
                 }
 
                 ArtistManagerFactory.get().edit_XML(artist, artist.getId().toString());
-
             }
         } catch (WebApplicationException e) {
             Platform.runLater(() -> {
-                new Alert(Alert.AlertType.ERROR, "Error al actualizar el mantenimiento en el servidor.", ButtonType.OK).showAndWait();
+                new Alert(Alert.AlertType.ERROR, "Error al actualizar el artista en el servidor.", ButtonType.OK).showAndWait();
             });
             e.printStackTrace();
         } catch (Exception e) {
-
+            // Captura de excepciones genéricas.
         }
     }
 
+    /**
+     * Crea un {@link TextField} para la edición de nombre o tipo de música.
+     */
     private void createTextField() {
         textField = new TextField(getString());
         textField.setOnKeyPressed(event -> {
@@ -164,6 +190,9 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
         }
     }
 
+    /**
+     * Crea un {@link TextArea} para la edición de la descripción del artista.
+     */
     private void createTextArea() {
         textArea = new TextArea(getString());
         textArea.setWrapText(true);
@@ -175,22 +204,22 @@ public class ArtistEditingCell extends TableCell<Artist, String> {
         textArea.setPromptText("Introduce la descripción");
     }
 
+    /**
+     * Crea un {@link CheckBox} para la selección del artista en la tabla.
+     */
     private void createCheckBox() {
         if (checkBox == null) {
             checkBox = new CheckBox();
-            checkBox.setOnAction(event -> {
-                commitEdit("Sí");
-            });
-            if (getText().equals("Sí")) {
-                checkBox.setSelected(true);
-            } else {
-                checkBox.setSelected(false);
-            }
+            checkBox.setOnAction(event -> commitEdit("Sí"));
+            checkBox.setSelected("Sí".equals(getText()));
         }
-
-
     }
 
+    /**
+     * Obtiene el texto representado en la celda.
+     * 
+     * @return El texto contenido en la celda o una cadena vacía si es nulo.
+     */
     private String getString() {
         return getItem() == null ? "" : getItem().toString();
     }

@@ -38,37 +38,48 @@ import model.User;
  */
 public class ShowAllTicketsViewController {
     
-    
+     /** Panel principal de la interfaz. */
     @FXML
     AnchorPane bpPanel;
     
+    /** Etiqueta que muestra el título "Entradas". */
     @FXML
     Label lbEntradas;
     
+    /** Tabla que muestra la lista de entradas. */
     @FXML
     TableView<Ticket> tableEntradas;
     
+    /** Columna DNI de la tabla. */
     @FXML
     TableColumn<Ticket, String> columnDni;
     
+    /** Columna nombre de la tabla. */
     @FXML
     TableColumn<Ticket, String> columnNombre;
     
+    /** Columna fecha de la tabla. */
     @FXML
     TableColumn<Ticket, String> columnFecha;
-    
-    
+
+    /** Escenario actual de la aplicación. */
     private Stage stage;
 
+    /** Usuario actual. */
     private User user;
 
+    /** Estado del tema actual (claro/oscuro). */
     private boolean tema;
     
+    /** Logger para registros del sistema. */
     private final Logger LOGGER = Logger.getLogger("crudbankjfxclient.view");
     
+    /** Lista de entradas disponibles. */
     private List<Ticket> tickets;
   
-    
+    /**
+     * Carga los datos de los tickets en la tabla 
+     */
     private void cargarTabla(){
         initializeTableColumns();        
         // Convertir ArrayList a ObservableList
@@ -78,18 +89,22 @@ public class ShowAllTicketsViewController {
     }
             
     
+    /**
+     * Inicializa las columnas de la tabla con sus fábricas de valores.
+     */
     private void initializeTableColumns() {
         columnDni.setCellValueFactory(new PropertyValueFactory<>("dniAsistentes"));
-
-        // Configurar la columna Nombre (nombre del evento)
-        columnNombre.setCellValueFactory(cellData -> {
-            String eventName = (cellData.getValue().getEvent() != null) ? cellData.getValue().getEvent().getNombre() : "Sin Evento";
-            return new SimpleStringProperty(eventName);
-        });
-        
+        columnNombre.setCellValueFactory(cellData -> 
+            new SimpleStringProperty(cellData.getValue().getEvent() != null 
+                ? cellData.getValue().getEvent().getNombre() 
+                : "Sin Evento")
+        );
         columnFecha.setCellValueFactory(new PropertyValueFactory<>("fechaCompra"));
     }
     
+    /**
+     * Cambia el tema visual de la interfaz entre oscuro y claro.
+     */
     private void cambiarTema(ActionEvent event) {
         if (tema) {
             Sesion.setTema(false);
@@ -99,7 +114,10 @@ public class ShowAllTicketsViewController {
         tema = Sesion.getTema();
         changeTheme();
     }
-
+    
+    /**
+     * Aplica el tema seleccionado a la interfaz.
+     */
     private void changeTheme() {
         String currentStyle = bpPanel.getStyle();
 
@@ -112,7 +130,9 @@ public class ShowAllTicketsViewController {
         }
     }
     
-    
+     /**
+     * Gestiona el menú contextual al hacer clic derecho.
+     */
     private void controlMenuConceptual(MouseEvent event, ContextMenu menu) {
         //Se comprueba si se hace clic con el borón derecho del ratón.
         if (event.getButton() == MouseButton.SECONDARY) {
@@ -124,6 +144,9 @@ public class ShowAllTicketsViewController {
         }
     }
     
+     /**
+     * Inicializa el escenario y carga los datos de la tabla.
+     */
     public void initStage(Parent root) {
         
         LOGGER.info("Initializing Bank Statement window.");

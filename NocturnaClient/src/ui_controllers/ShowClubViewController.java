@@ -40,72 +40,152 @@ import model.User;
 import utils.CustomAlert;
 
 /**
- *
- * @author 2dam
+ * Controlador para la vista que muestra la información detallada de un club y
+ * sus eventos asociados.
+ * @author Adrian Rocha
  */
 public class ShowClubViewController {
 
+    /**
+     * Escenario principal de la aplicación.
+     */
     private Stage stage;
 
+    /**
+     * Usuario actual.
+     */
     private User user;
 
+    /**
+     * Indica el tema actual de la interfaz (claro/oscuro).
+     */
     private boolean tema;
-    
+
+    /**
+     * Club que se está mostrando.
+     */
     private Club club;
-    
+
+    /**
+     * Lista de eventos asociados al club.
+     */
     private List<Event> events;
 
+    /**
+     * Gestor de eventos.
+     */
     private EventManager eventManager;
-    
+
+    /**
+     * Panel principal de la vista.
+     */
     @FXML
-    AnchorPane anchorPane;
-    
+    private AnchorPane anchorPane;
+
+    /**
+     * Campo de texto para mostrar el nombre del club.
+     */
     @FXML
     private TextField txtNombre;
-    
+
+    /**
+     * Botón para obtener más información sobre un evento seleccionado.
+     */
     @FXML
     private Button btnInfo;
-    
+
+    /**
+     * Campo de texto para mostrar la ciudad del club.
+     */
     @FXML
     private TextField txtCiudad;
-    
+
+    /**
+     * Campo de texto para mostrar la ubicación del club.
+     */
     @FXML
     private TextField txtUbicacion;
-    
+
+    /**
+     * Imagen que representa las redes sociales del club.
+     */
     @FXML
     private ImageView imgRedes;
-    
+
+    /**
+     * Tabla para mostrar los eventos del club.
+     */
     @FXML
     private TableView<Event> tableEvents;
-    
+
+    /**
+     * Columna de la tabla para mostrar el nombre del evento.
+     */
     @FXML
     private TableColumn<Event, String> columnNombre;
-    
+
+    /**
+     * Columna de la tabla para mostrar la fecha del evento.
+     */
     @FXML
     private TableColumn<Event, String> columnFecha;
-    
+
+    /**
+     * Logger para registrar eventos.
+     */
     private final Logger LOGGER = Logger.getLogger("Show club view");
 
+    /**
+     * Establece el club que se va a mostrar en la vista.
+     *
+     * @param club El club que se va a mostrar.
+     */
     public void setClub(Club club) {
         this.club = club;
     }
-    
+
+    /**
+     * Establece el escenario principal de la aplicación.
+     *
+     * @param stage El escenario principal.
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Establece el usuario actual.
+     *
+     * @param user El usuario actual.
+     */
     public void setUser(User user) {
         this.user = user;
     }
-    
+
+    /**
+     * Obtiene el tema actual de la interfaz.
+     *
+     * @return boolean
+     */
     public boolean getTema() {
         return this.tema;
     }
 
+    /**
+     * Establece el tema de la interfaz.
+     *
+     * @param tema true para tema oscuro, false para tema claro.
+     */
     public void setTema(boolean tema) {
         this.tema = tema;
     }
 
+    /**
+     * Inicializa la ventana y configura los componentes de la interfaz.
+     *
+     * @param root
+     * @throws Exception Si ocurre un error durante la inicialización.
+     */
     public void initStage(Parent root) throws Exception {
         try {
             LOGGER.info("Initializing Show all clubs window.");
@@ -115,7 +195,7 @@ public class ShowClubViewController {
             txtCiudad.setText(club.getCiudad());
             txtUbicacion.setText(club.getUbicacion());
             imgRedes.setOnMouseReleased(this::clickRedes);
-            
+
             eventManager = EventManagerFactory.get();
 
             events = getEventsInfo();
@@ -125,7 +205,7 @@ public class ShowClubViewController {
             setTableData();
             btnInfo.setDisable(true);
             changeTheme();
-            
+
             ContextMenu contextMenu = new ContextMenu();
             MenuItem item1 = new MenuItem("Cambiar tema");
             item1.setOnAction(this::cambiarTema);
@@ -134,19 +214,19 @@ public class ShowClubViewController {
             contextMenu.getItems().addAll(item1, item2);
 
             anchorPane.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
-            
+
             stage.show();
-            
+
             btnInfo.setOnAction(this::masInfo);
-            
+
             tableEvents.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Event>() {
                 @Override
                 public void onChanged(ListChangeListener.Change<? extends Event> c) {
                     if (c.getList().isEmpty()) {
                         btnInfo.setDisable(true);
-                    }else if (c.getList().size() == 1) {
+                    } else if (c.getList().size() == 1) {
                         btnInfo.setDisable(false);
-                    }else if (c.getList().size() > 1) {
+                    } else if (c.getList().size() > 1) {
                         btnInfo.setDisable(true);
                     }
                 }
@@ -156,11 +236,21 @@ public class ShowClubViewController {
             throw new Exception("ERROR INICIALIZANDO LA VENTANA");
         }
     }
-    
+
+    /**
+     * Método para imprimir los datos de la tabla.
+     *
+     * @param event
+     */
     private void imprimirTabla(ActionEvent event) {
-        
+        // Implementación pendiente.
     }
-    
+
+    /**
+     * Cambia el tema de la interfaz entre claro y oscuro.
+     *
+     * @param event
+     */
     private void cambiarTema(ActionEvent event) {
         if (getTema()) {
             setTema(false);
@@ -169,18 +259,26 @@ public class ShowClubViewController {
         }
         changeTheme();
     }
-    
+
+    /**
+     * Controla la apertura y cierre del menú contextual.
+     *
+     * @param event
+     * @param menu El menú contextual a controlar.
+     */
     private void controlMenuConceptual(MouseEvent event, ContextMenu menu) {
-        //Se comprueba si se hace clic con el borón derecho del ratón.
         if (event.getButton() == MouseButton.SECONDARY) {
-            //Si es así se abre el menú contextual.
             menu.show(anchorPane, event.getScreenX(), event.getScreenY());
         } else {
-            //Si no, se cierra el mismo.
             menu.hide();
         }
     }
-    
+
+    /**
+     * Abre la página de Instagram del club en el navegador.
+     *
+     * @param event
+     */
     private void clickRedes(MouseEvent event) {
         try {
             java.awt.Desktop.getDesktop().browse(new URI(club.getInstagram()));
@@ -189,7 +287,10 @@ public class ShowClubViewController {
             CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "ERROR CREANDO USUARIO");
         }
     }
-    
+
+    /**
+     * Establece los datos en la tabla de eventos.
+     */
     private void setTableData() {
         try {
             ObservableList<Event> observableEvents = FXCollections.observableArrayList(events);
@@ -200,23 +301,31 @@ public class ShowClubViewController {
             LOGGER.log(Level.SEVERE, "Exception setting table data", ex.getMessage());
         }
     }
-    
+
+    /**
+     * Muestra más información sobre un evento seleccionado.
+     *
+     * @param event El evento de acción que desencadena este método.
+     */
     private void masInfo(ActionEvent event) {
         try {
             Event eventTable = tableEvents.getSelectionModel().getSelectedItem();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showEventView.fxml"));
-            
+
             Parent root = loader.load();
-            
+
             ShowEventViewController controller = (ShowEventViewController) loader.getController();
-            
+
             controller.setEvent(eventTable);
             controller.initStage(root);
         } catch (Exception ex) {
             Logger.getLogger(ShowAllClubsViewController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
+    /**
+     * Cambia el tema de la interfaz gráfica.
+     */
     private void changeTheme() {
         String currentStyle = anchorPane.getStyle();
         if (tema) {
@@ -225,7 +334,13 @@ public class ShowClubViewController {
             anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
         }
     }
-    
+
+    /**
+     * Obtiene la lista de eventos asociados al club.
+     *
+     * @return List<Event>
+     * @throws Exception Si ocurre un error al obtener los eventos.
+     */
     private List<Event> getEventsInfo() throws Exception {
         try {
             Event[] eventsArray = eventManager.findAll_XML(Event[].class);
@@ -241,5 +356,4 @@ public class ShowClubViewController {
             throw new Exception("ERROR RECOGIENDO CLUBES");
         }
     }
-
 }

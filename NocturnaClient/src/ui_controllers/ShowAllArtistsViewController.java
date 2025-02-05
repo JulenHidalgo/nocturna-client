@@ -63,87 +63,185 @@ import utils.ArtistEditingCell;
 import utils.CustomAlert;
 
 /**
+ * Controlador de la ventana que muestra todos los artista dejando, crearlos,
+ * modificarlos y borrarlos
  *
  * @author Julen Hidalgo
  */
 public class ShowAllArtistsViewController {
 
+    /**
+     * Panel principal de la interfaz.
+     */
     @FXML
-    AnchorPane anchorPane;
+    private AnchorPane anchorPane;
 
+    /**
+     * Barra de menú horizontal.
+     */
     @FXML
-    HBox hbMenu;
+    private HBox hbMenu;
 
+    /**
+     * Filtro por nombre del artista.
+     */
     @FXML
-    TextField tfFiltroNombre;
+    private TextField tfFiltroNombre;
 
+    /**
+     * Filtro por tipo de música.
+     */
     @FXML
-    TextField tfFiltroMusica;
+    private TextField tfFiltroMusica;
 
+    /**
+     * Tabla que muestra los artistas.
+     */
     @FXML
-    TableView<Artist> tvArtists;
+    private TableView<Artist> tvArtists;
 
+    /**
+     * Columna de nombres en la tabla.
+     */
     @FXML
-    TableColumn tcNombre;
+    private TableColumn tcNombre;
 
+    /**
+     * Columna de tipo musical.
+     */
     @FXML
-    TableColumn tcTipoMusica;
+    private TableColumn tcTipoMusica;
 
+    /**
+     * Columna de descripción.
+     */
     @FXML
-    TableColumn tcDescripcion;
+    private TableColumn tcDescripcion;
 
+    /**
+     * Columna de eventos.
+     */
     @FXML
-    TableColumn tcEventos;
+    private TableColumn tcEventos;
 
+    /**
+     * Botón para seleccionar artista.
+     */
     @FXML
-    Button btnSeleccionar;
+    private Button btnSeleccionar;
 
+    /**
+     * Botón para crear nuevo artista.
+     */
     @FXML
-    Button btnCrear;
+    private Button btnCrear;
 
+    /**
+     * Botón para eliminar artista.
+     */
     @FXML
-    Button btnEliminar;
+    private Button btnEliminar;
 
+    /**
+     * Escenario actual de la aplicación.
+     */
     private Stage stage;
 
+    /**
+     * Usuario autenticado.
+     */
     private User user;
 
+    /**
+     * Evento en curso.
+     */
     private Event event;
 
+    /**
+     * Indicador del tema visual.
+     */
     private boolean tema;
 
-    List<Artist> artists;
+    /**
+     * Lista de artistas disponibles.
+     */
+    private List<Artist> artists;
 
-    List<Artist> artistsCopia;
+    /**
+     * Copia de seguridad de la lista de artistas.
+     */
+    private List<Artist> artistsCopia;
 
-    Set<Artist> seleccionados = new HashSet<>();
+    /**
+     * Artistas seleccionados.
+     */
+    private Set<Artist> seleccionados = new HashSet<>();
 
-    List<Artist> seleccionadosBusqueda = new ArrayList<>();
+    /**
+     * Resultados de búsqueda filtrada.
+     */
+    private List<Artist> seleccionadosBusqueda = new ArrayList<>();
 
+    /**
+     * Contador de artistas totales.
+     */
     private int cantidadArtistas = 0;
 
+    /**
+     * Logger del controlador.
+     */
     private final Logger LOGGER = Logger.getLogger("ShowAllArtistView.view");
 
+    /**
+     * Recoge la ventana.
+     *
+     * @param stage
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Recoge el usuario autenticado.
+     *
+     * @param user
+     */
     public void setUser(User user) {
         this.user = user;
     }
 
+    /**
+     * Recoge el evento seleccionado.
+     *
+     * @param event
+     */
     public void setEvent(Event event) {
         this.event = event;
     }
 
+    /**
+     * Recoge el tema oscuro o claro.
+     *
+     * @param tema
+     */
     public void setTema(boolean tema) {
         this.tema = tema;
     }
 
+    /**
+     * Obtiene los artistas seleccionados.
+     *
+     * @return Set<Artist>
+     */
     public Set<Artist> getSeleccionados() {
         return seleccionados;
     }
 
+    /**
+     * Inicializa la ventana
+     *
+     * @param root
+     */
     public void initStage(Parent root) {
         LOGGER.info("Initializing 'ShowAllArtists' window.");
 
@@ -160,6 +258,9 @@ public class ShowAllArtistsViewController {
 
     }
 
+    /**
+     * Inicializa los eventos y listeners de la interfaz.
+     */
     private void initializeControlListeners() {
         stage.setOnCloseRequest(this::closeAppFromX);
         btnEliminar.setOnAction(this::deleteArtist);
@@ -193,6 +294,9 @@ public class ShowAllArtistsViewController {
 
     }
 
+    /**
+     * Carga los datos en la tabla de artistas.
+     */
     private void initializeInfo() {
         try {
             user = Sesion.getUser();
@@ -248,6 +352,11 @@ public class ShowAllArtistsViewController {
         loadTableData();
     }
 
+    /**
+     * Carga el report de la tabla de artistas
+     *
+     * @param event
+     */
     private void imprimirTabla(ActionEvent event) {
         try {
             JasperReport report = JasperCompileManager.compileReport("src/reports/ArtistReport.jrxml");
@@ -269,6 +378,9 @@ public class ShowAllArtistsViewController {
         }
     }
 
+    /**
+     * Carga los datos en la tabla de artistas.
+     */
     private void loadTableData() {
         artists = Arrays.asList(ArtistManagerFactory.get().findAll_XML(Artist[].class
         ));
@@ -280,6 +392,9 @@ public class ShowAllArtistsViewController {
         tvArtists.setItems(observableArtist);
     }
 
+    /**
+     * Inicializa las columnas de la tabla.
+     */
     private void initializeTableColumns() {
         tcNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         tcTipoMusica.setCellValueFactory(new PropertyValueFactory<>("tipoMusica"));
@@ -299,6 +414,9 @@ public class ShowAllArtistsViewController {
         });
     }
 
+    /**
+     * Aplica filtros a la lista de artistas en base a los campos de búsqueda.
+     */
     private void applyFilters() {
         artistsCopia = artists;
 
@@ -312,6 +430,11 @@ public class ShowAllArtistsViewController {
 
     }
 
+    /**
+     * Crea un artista y lo añade a la tabla
+     *
+     * @param event
+     */
     private void crearArtista(ActionEvent event) {
         try {
             Artist artist = new Artist();
@@ -329,6 +452,11 @@ public class ShowAllArtistsViewController {
 
     }
 
+    /**
+     * Borra el artista seleccionado o seleccionados
+     *
+     * @param event
+     */
     private void deleteArtist(ActionEvent event) {
         try {
             ObservableList<Artist> selectedArtist = tvArtists.getSelectionModel().getSelectedItems();
@@ -365,13 +493,18 @@ public class ShowAllArtistsViewController {
     private String comprobarEventos(Long id) {
         try {
             EventManagerFactory.get().findByArtist_XML(Event[].class,
-                     String.valueOf(id));
+                    String.valueOf(id));
             return "Sí";
         } catch (ReadException e) {
             return "No";
         }
     }
 
+    /**
+     * guarda los nuevos artistas seleccionado en el evento
+     *
+     * @param event
+     */
     public void seleccionarArtistasEvento(ActionEvent event) {
         this.event.setArtists(seleccionados);
         EventManagerFactory.get().edit_XML(this.event, this.event.getId().toString());
@@ -379,6 +512,11 @@ public class ShowAllArtistsViewController {
         goToShowEventView();
     }
 
+    /**
+     * Muestra la ventana de visualización de un artista seleccionado.
+     *
+     * @param event Evento de acción.
+     */
     private void goToShowEventView() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showEventView.fxml"));
@@ -395,6 +533,11 @@ public class ShowAllArtistsViewController {
         }
     }
 
+    /**
+     * va a la ventana de ver un artista seleccionado
+     *
+     * @param event
+     */
     private void goToShowArtistView(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showArtistView.fxml"));
@@ -412,6 +555,12 @@ public class ShowAllArtistsViewController {
 
     }
 
+    /**
+     * cuando el usuario le da a la "X" pide confirmacion y sale de la
+     * aplicacion
+     *
+     * @param event
+     */
     private void closeAppFromX(WindowEvent event) {
         if (CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION, "¿Está seguro de que desea salir?")) {
             Platform.exit();
@@ -420,6 +569,9 @@ public class ShowAllArtistsViewController {
         }
     }
 
+    /**
+     * Cambia el estilo del fondno y los textos
+     */
     private void changeTheme() {
         String currentStyle = anchorPane.getStyle();
         if (Sesion.getTema()) {
@@ -429,6 +581,13 @@ public class ShowAllArtistsViewController {
         }
     }
 
+    /**
+     * Controla el menú contextual en la interfaz. Muestra el menú contextual
+     * cuando se hace clic derecho en la interfaz.
+     *
+     * @param event
+     * @param menu
+     */
     private void controlMenuConceptual(MouseEvent event, ContextMenu menu) {
         //Se comprueba si se hace clic con el borón derecho del ratón.
         if (event.getButton() == MouseButton.SECONDARY) {

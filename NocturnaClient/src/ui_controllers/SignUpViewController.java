@@ -39,105 +39,218 @@ import security.AsimetricEncrypt;
 import utils.CustomAlert;
 
 /**
+ * Controlador de la vista de registro de usuarios. Esta clase maneja la lógica
+ * de la interfaz de registro y modificación de usuarios.
  *
  * @author 2dam
  */
 public class SignUpViewController {
-
+    
     /**
-     * Panel principal que contiene los elementos de la interfaz.
+     * Panel principal que contiene todos los elementos de la interfaz.
      */
     @FXML
-    AnchorPane anchorPane;
-
+    private AnchorPane anchorPane;
+    
+    /**
+     * Campo de texto para ingresar el nombre del usuario.
+     */
     @FXML
-    TextField tfNombre;
-
+    private TextField tfNombre;
+    
+    /**
+     * Campo de texto para ingresar el apellido del usuario.
+     */
     @FXML
-    TextField tfApellido;
-
+    private TextField tfApellido;
+    
+    /**
+     * Campo de texto para ingresar el número de teléfono del usuario.
+     */
     @FXML
-    TextField tfTelefono;
-
+    private TextField tfTelefono;
+    
+     /**
+     * Selector de fecha para ingresar la fecha de nacimiento del usuario.
+     */
     @FXML
-    DatePicker dpFechaNac;
-
+    private DatePicker dpFechaNac;
+    
+   /**
+     * Campo de texto para ingresar la ciudad del usuario.
+     */
     @FXML
-    TextField tfCiudad;
-
+    private TextField tfCiudad;
+    
+    /**
+     * Contenedor vertical que agrupa los elementos relacionados con el DNI.
+     */
     @FXML
-    VBox vbDni;
-
+    private VBox vbDni;
+    
+    /**
+     * Campo de texto para ingresar el DNI del usuario.
+     */
     @FXML
-    TextField tfDni;
-
+    private TextField tfDni;
+    
+    /**
+     * Campo de texto para ingresar el correo electrónico del usuario.
+     */
     @FXML
-    TextField tfMail;
-
+    private TextField tfMail;
+    
+    /**
+     * Contenedor vertical que agrupa los elementos relacionados con la
+     * contraseña.
+     */
     @FXML
-    VBox vbPass;
-
+    private VBox vbPass;
+    
+    /**
+     * Campo de contraseña para ingresar la contraseña del usuario.
+     */
     @FXML
-    PasswordField pfPass;
-
+    private PasswordField pfPass;
+    
+    /**
+     * Contenedor vertical que agrupa los elementos relacionados con la
+     * confirmación de la contraseña.
+     */
     @FXML
-    VBox vbPass2;
-
+    private VBox vbPass2;
+    
+    /**
+     * Campo de contraseña para confirmar la contraseña del usuario.
+     */
     @FXML
-    PasswordField pfPass2;
-
+    private PasswordField pfPass2;
+    
+    /**
+     * Contenedor horizontal que agrupa los elementos relacionados con el enlace
+     * de inicio de sesión.
+     */
     @FXML
-    HBox hbTienesCuenta;
-
+    private HBox hbTienesCuenta;
+    
+    /**
+     * Enlace para redirigir al usuario a la vista de inicio de sesión.
+     */
     @FXML
-    Hyperlink hlSignIn;
-
+    private Hyperlink hlSignIn;
+    
+    /**
+     * Botón para cambiar la contraseña del usuario.
+     */
     @FXML
-    Button btnCambioPass;
-
+    private Button btnCambioPass;
+    
+    /**
+     * Botón para eliminar la cuenta del usuario.
+     */
     @FXML
-    Button btnElimCuenta;
-
+    private Button btnElimCuenta;
+    
+    /**
+    * Botón para registrar al usuario.
+    */
     @FXML
-    Button btnSignUp;
-
+    private Button btnSignUp;
+  
+    /**
+     * Botón para modificar los datos del usuario.
+     */
     @FXML
-    Button btnModificarDatos;
-
+    private Button btnModificarDatos;
+    
+    /**
+     * Botón para mostrar/ocultar la contraseña en el primer campo de
+     * contraseña.
+     */
     @FXML
-    Button btnVerPass1;
-
+    private Button btnVerPass1;
+    
+     /**
+     * Botón para mostrar/ocultar la contraseña en el segundo campo de
+     * contraseña.
+     */
     @FXML
-    Button btnVerPass2;
-
+    private Button btnVerPass2;
+   
+    /**
+     * Campo de texto para mostrar la contraseña en texto plano (alternativa al
+     * PasswordField).
+     */
     @FXML
-    TextField tfPass1;
-
+    private TextField tfPass1;
+    
+    /**
+     * Campo de texto para mostrar la confirmación de la contraseña en texto
+     * plano (alternativa al PasswordField).
+     */
     @FXML
-    TextField tfPass2;
-
+    private TextField tfPass2;
+    
+     /**
+     * Referencia a la ventana (Stage) actual de la aplicación.
+     */
     private Stage stage;
-
+   
+    /**
+     * Objeto que representa al usuario actual.
+     */
     private User user;
-
+    
+    /**
+     * Variable para controlar el tema de la interfaz (por ejemplo,
+     * claro/oscuro).
+     */
     private boolean tema;
-
+    
+     /**
+     * Objeto que representa un nuevo usuario que se está registrando.
+     */
     private User newUser;
-
+   
+    /**
+     * Logger para registrar eventos y errores en la vista de registro.
+     */
     private final Logger LOGGER = Logger.getLogger("SignUpViewController.view");
 
+    
+
+    /**
+     * Establece el stage de la ventana.
+     *
+     * @param stage El stage de la ventana.
+     */
     public void setStage(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Establece el usuario actual.
+     *
+     * @param user El usuario actual.
+     */
     public void setUser(User user) {
         this.user = user;
     }
 
+    /**
+     * Establece el tema de la interfaz.
+     *
+     * @param tema El tema de la interfaz.
+     */
     public void setTema(boolean tema) {
         this.tema = tema;
     }
 
+    /**
+     * Maneja el cierre de la aplicación desde la 'X' de la ventana.
+     *
+     * @param event El evento de cierre de la ventana.
+     */
     private void closeAppFromX(WindowEvent event) {
         if (CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION, "¿Está seguro de que desea salir?")) {
             Platform.exit();
@@ -146,6 +259,11 @@ public class SignUpViewController {
         }
     }
 
+    /**
+     * Alterna la visibilidad de la contraseña en el primer campo de contraseña.
+     *
+     * @param event El evento de acción.
+     */
     private void verPass1(ActionEvent event) {
         if (tfPass1.isVisible()) {
             pfPass.setVisible(true);
@@ -158,6 +276,12 @@ public class SignUpViewController {
         }
     }
 
+    /**
+     * Alterna la visibilidad de la contraseña en el segundo campo de
+     * contraseña.
+     *
+     * @param event El evento de acción.
+     */
     private void verPass2(ActionEvent event) {
         if (tfPass2.isVisible()) {
             pfPass2.setVisible(true);
@@ -170,6 +294,11 @@ public class SignUpViewController {
         }
     }
 
+    /**
+     * Inicializa la ventana de registro o modificación de usuarios.
+     *
+     * @param root El nodo raíz de la interfaz.
+     */
     public void initStage(Parent root) {
         LOGGER.info("Initializing 'SignUp' window.");
         stage = Sesion.getStage();
@@ -228,7 +357,9 @@ public class SignUpViewController {
 
     }
 
-
+    /**
+     * Añade listeners a los campos de texto para detectar cambios.
+     */
     private void addListenersToTextFields() {
         tfNombre.textProperty().addListener((observable, oldValue, newValue) -> checkChangesModify());
         tfApellido.textProperty().addListener((observable, oldValue, newValue) -> checkChangesModify());
@@ -237,6 +368,10 @@ public class SignUpViewController {
         tfCiudad.textProperty().addListener((observable, oldValue, newValue) -> checkChangesModify());
     }
 
+    /**
+     * Verifica si hay cambios en los campos de texto para habilitar o
+     * deshabilitar el botón de modificar.
+     */
     private void checkChangesModify() {
         if (tfNombre.getText().equals(((Client) this.user).getNombre())
                 && tfApellido.getText().equals(((Client) this.user).getApellido())
@@ -249,7 +384,11 @@ public class SignUpViewController {
         }
     }
 
-
+    /**
+     * Actualiza la información del usuario.
+     *
+     * @param event El evento de acción.
+     */
     private void updateInfo(ActionEvent event) {
         try {
             if (tfNombre.getText().isEmpty() || tfApellido.getText().isEmpty()
@@ -280,6 +419,11 @@ public class SignUpViewController {
 
     }
 
+    /**
+     * Elimina el usuario actual.
+     *
+     * @param event El evento de acción.
+     */
     private void deleteUser(ActionEvent event) {
         if (CustomAlert.throwAlertTextField("Borrado de cuenta", "Introduce la contraseña para borrar la cuenta (Se perderán todas las entradas asociadas al usuario), pulsa cancelar para salir", "Contraseña de la cuenta") != null) {
 
@@ -305,7 +449,12 @@ public class SignUpViewController {
         }
     }
 
-    private void resetPass(ActionEvent event){
+    /**
+     * Restablece la contraseña del usuario.
+     *
+     * @param event El evento de acción.
+     */
+    private void resetPass(ActionEvent event) {
         String[] respuesta;
         String oldPass, newPass;
         User usuario = new User();
@@ -314,19 +463,24 @@ public class SignUpViewController {
             if (respuesta != null) {
                 oldPass = URLEncoder.encode(AsimetricEncrypt.encrypt(respuesta[0]), "UTF-8");
                 newPass = URLEncoder.encode(AsimetricEncrypt.encrypt(respuesta[1]), "UTF-8");
-                
+
                 usuario.setMail(this.user.getMail());
                 usuario.setPasswd(oldPass);
-                
+
                 UserManagerFactory.get().updatePasswd_XML(usuario, newPass);
             }
         } catch (UnsupportedEncodingException ex) {
             LOGGER.severe("An error occurred encrypting the new password");
             CustomAlert.throwAlertCustom(AlertType.ERROR, "Ha sucedido un error guardando la contraseña");
-        } 
+        }
 
     }
 
+    /**
+     * Registra un nuevo usuario.
+     *
+     * @param event El evento de acción.
+     */
     private void signUp(ActionEvent event) {
         try {
             if (tfNombre.getText().isEmpty() || tfApellido.getText().isEmpty()
@@ -375,6 +529,11 @@ public class SignUpViewController {
 
     }
 
+    /**
+     * Verifica si la información del usuario ha sido modificada.
+     *
+     * @throws Exception Si no se han realizado cambios.
+     */
     private void checkModifyInfo() throws Exception {
         newUser = new Client();
         newUser.setMail(tfMail.getText());
@@ -391,6 +550,11 @@ public class SignUpViewController {
         }
     }
 
+    /**
+     * Verifica que el correo electrónico tenga un formato válido.
+     *
+     * @throws Exception Si el correo no tiene un formato válido.
+     */
     private void checkMail() throws Exception {
         if (!tfMail.getText().matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
             LOGGER.warning("Mail validation error, pattern incorrect");
@@ -399,6 +563,11 @@ public class SignUpViewController {
         }
     }
 
+    /**
+     * Verifica que el número de teléfono tenga un formato válido.
+     *
+     * @throws Exception Si el número de teléfono no tiene un formato válido.
+     */
     private void checkPhone() throws Exception {
         if (!tfTelefono.getText().matches("^\\d{9}$")) {
             LOGGER.warning("PhoneNumber validation error, pattern incorrect");
@@ -407,6 +576,11 @@ public class SignUpViewController {
         }
     }
 
+    /**
+     * Verifica que el DNI tenga un formato válido.
+     *
+     * @throws Exception Si el DNI no tiene un formato válido.
+     */
     private void checkDNI() throws Exception {
         if (!tfDni.getText().matches("^\\d{8}[A-Za-z]$")) {
             LOGGER.warning("DNI validation error, pattern incorrect");
@@ -415,7 +589,13 @@ public class SignUpViewController {
         }
     }
 
-
+    /**
+     * Verifica que la contraseña tenga un formato válido y que coincida con la
+     * confirmación.
+     *
+     * @throws Exception Si la contraseña no tiene un formato válido o no
+     * coincide con la confirmación.
+     */
     private void checkPass() throws Exception {
         if (tfPass1.isVisible()) {
             pfPass.setText(tfPass1.getText());

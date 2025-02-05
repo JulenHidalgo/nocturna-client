@@ -45,7 +45,7 @@ import model.FormaPago;
 /**
  * Controlador de la vista para comprar entradas.
  * realiza la compra creando los tickets y modificando el evento
- * @author Erlantz
+ * @author Erlantz Rey
  */
 public class buyTicketsViewController {
     
