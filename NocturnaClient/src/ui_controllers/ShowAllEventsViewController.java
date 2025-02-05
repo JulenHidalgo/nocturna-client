@@ -85,88 +85,115 @@ import net.sf.jasperreports.view.JasperViewer;
 import utils.CustomAlert;
 
 /**
- *
- * @author 2dam
+ * Controlador para la vista de mostrar todos los eventos.
+ * Permite gestionar eventos, podiendo crear, modificar, 
+ * añadir artistas y eliminar.
+ *  @author Erlantz
  */
 public class ShowAllEventsViewController {
-
+    
+    /**Panel principal de la ventana*/
     @FXML
     AnchorPane bpPrincipal;
-
+    
+    /**Campo para filtrar eventos por nombre*/
     @FXML
     TextField tfBuscador;
-
+    
+    /**Campo para filtrar eventos por precio*/
     @FXML
     TextField tfPrecio;
-
+    
+    /**Campo para filtrar eventos posteriores a una fecha*/
     @FXML
     DatePicker dateFecha;
-
+    
+    /**Campo para filtrar eventos entre dos fechas*/
     @FXML
     DatePicker dateFechaHasta;
-
+    
+    /**Testo de informacion*/
     @FXML
     Label lbHasta;
     
+    /**Testo de informacion del filtro buscar*/
     @FXML
     Label txBuscar;
     
+    /**Testo de informacion del filtro precio*/
     @FXML
     Label txPrecio;
     
+    /**Testo de informacion del filtro fecha*/
     @FXML
     Label txFecha;
     
-
+    /**Tabla de eventos*/
     @FXML
     TableView<Event> tablaEvent;
-
+    
+    /**Columna con el nombre del evento*/
     @FXML
     TableColumn<Event, String> tcNombre;
-
+    
+    /**Columna con el nombre del club realzionado con el evento*/
     @FXML
     TableColumn<Event, String> tcSala;
-
+    
+    /**Columna con la fecha del evento*/
     @FXML
     TableColumn<Event, String> tcFecha;
-
+    
+    /**Columna con el precio del evento*/
     @FXML
     TableColumn<Event, Double> tcPrecio;
-
+    
+    /**Columna con el numero de entradas que quedan*/
     @FXML
     TableColumn<Event, Integer> tcNumEntradas;
-
+    
+    /**Columna con el tipo musica que hacen los artistas que actuan en ese evento*/
     @FXML
     TableColumn<Event, String> tcMusica;
-
+    
+    /**Columna con las consumiciones que incluye el evento*/
     @FXML
     TableColumn<Event, Integer> tcConsumicion;
-
+    
+    /**boton para crear eventos*/
     @FXML
     Button btnCrearEvento;
-
+    
+    /**boton para borrar uno o mas eventos*/
     @FXML
     Button btnBorrarEvento;
-
+    
+    /**boton para añadir artistas a un evento*/
     @FXML
     Button btnAñadirArtistas;
-
+    
+    /**boton ver un solo evento seleccionado*/
     @FXML
     Button btnSeleccionar;
-
+    
+    /**la escena*/
     private Stage stage;
 
+    /**usuario que inia sesion*/
     private User user;
-
+    
+    /**cambia dependiendo de que tema(fondo) este puesto*/
     private boolean tema;
-
+    
+    /**lista de que recoge todos los eventos*/
     private List<Event> events = recogerAllEvents();
+    
     private final Logger LOGGER = Logger.getLogger("crudbankjfxclient.view");
 
     /**
-    * eliminar el evento o eventos seleccionados 
-    * @param event 
-    */
+     * Elimina el evento o los eventos seleccionados pidiendo al usuario que confirme
+     * @param event
+     */
     @FXML
     private void deleteEvent(ActionEvent event) {
         try {
@@ -199,7 +226,7 @@ public class ShowAllEventsViewController {
     }
     
     /**
-    * metodo para crear nuevos eventos
+    * metodo para crear nuevos eventos y añadirlo a la tabla
     * @param event 
     */
     @FXML
@@ -262,7 +289,7 @@ public class ShowAllEventsViewController {
     }
     
     /**
-     * Carga los datos de la tabla 
+     * Carga los datos de la tabla con los eventos
      * @param eventTable 
      */
     private void cargarTabla(List<Event> eventTable) {
@@ -361,7 +388,7 @@ public class ShowAllEventsViewController {
     
     /**
      * devuelve una lista de todos los clubs
-     * @return 
+     * @return List<Club>
      */
     private List<Club> recogerAllClubs() {
         Club[] clubArray = ClubManagerFactory.get().findAll_XML(Club[].class);
@@ -372,7 +399,7 @@ public class ShowAllEventsViewController {
     
     /**
      * devuelve una lista de todos los eventos que su fecha sea posterior a la de hoy
-     * @return 
+     * @return List<Event>  
      */
     private List<Event> recogerAllEvents() {
         Event[] eventsArray = EventManagerFactory.get().findByDate_XML(Event[].class, LocalDate.now().toString());
@@ -417,8 +444,9 @@ public class ShowAllEventsViewController {
     }
     
     /**
-     * Controla el menu conceptual
-     * @param event
+     * Controla el menú contextual en la interfaz.
+     * Muestra el menú contextual cuando se hace clic derecho en la interfaz.
+     * @param event 
      * @param menu 
      */
     private void controlMenuConceptual(MouseEvent event, ContextMenu menu) {
@@ -432,6 +460,10 @@ public class ShowAllEventsViewController {
         }
     }
 
+    /**
+    * cuando el usuario le da a la  "X" pide confirmacion y sale de la aplicacion
+    * @param event
+    */
     private void closeAppFromX(WindowEvent event) {
         if (CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION, "¿Está seguro de que desea salir?")) {
             Platform.exit();
@@ -439,8 +471,11 @@ public class ShowAllEventsViewController {
             event.consume();
         }
     }
-    
-    
+   
+    /**
+    * Genera e imprime un report con los datos de la tabla de eventos
+    * @param event
+    */
     private void imprimirTabla(ActionEvent event) {
         try {
             JasperReport report = JasperCompileManager.compileReport("src/reports/EventReport.jrxml");
@@ -458,7 +493,12 @@ public class ShowAllEventsViewController {
             Logger.getLogger(ShowAllClubsViewController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
+    /**
+    * Inicializa la ventana segun el usuario.
+    * 
+    * @param root 
+    */
     public void initStage(Parent root) {
         try {
             LOGGER.info("Initializing Bank Statement window.");
@@ -478,7 +518,7 @@ public class ShowAllEventsViewController {
 
             bpPrincipal.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
 
-            if (user instanceof Client) {
+            if (user.getIsAdmin()) {
                 btnAñadirArtistas.setVisible(false);
                 btnBorrarEvento.setVisible(false);
                 btnCrearEvento.setVisible(false);

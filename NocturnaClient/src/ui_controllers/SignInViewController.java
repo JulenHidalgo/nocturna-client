@@ -186,7 +186,7 @@ public class SignInViewController {
                 user = ClientManagerFactory.get().find_XML(Client.class, id.toString());
                 user.setIsAdmin(false);
             }
-
+            
             Sesion.setUser(user);
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllEventsView.fxml"));

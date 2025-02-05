@@ -36,73 +36,102 @@ import model.Event;
 import model.User;
 
 /**
- *
- * @author 2dam
+ * Controlador de la vista para mostrar detalles de un evento.
+ * si el usuario es cliente permite seleccionar cuantas entradas quiere comprar
+ * 
+ * @author Erlantz
  */
 public class ShowEventViewController {
-    
+  
+    /**Panel principal de la interfaz.*/
     @FXML
     AnchorPane bpPrincipal;
-    
+
+    /** Etiqueta para mostrar el nombre del evento */
     @FXML
     Label lblNombreEvento;
 
+    /**
+     * Etiqueta para mostrar el tipo de música 
+     * de los artistas que actuan en el evento.
+     */
     @FXML
     Label lblTipoMusica;
 
+    /**Etiqueta para mostrar el nombre de la sala del evento.*/
     @FXML
     Label lblNombreSala;
 
+    /**Etiqueta para mostrar el precio de la entrada al evento.*/
     @FXML
     Label lblPrecio;
 
+    /**Etiqueta para mostrar la cantidad de consumiciones incluidas en el evento.*/
     @FXML
     Label lblCantConsumiciones;
 
+    /**Etiqueta para mostrar el número de entradas seleccionadas.*/
     @FXML
     Label lblNumEntradas;
-    
+
+    /**Etiqueta para mostrar el nombre de los artistas*/
     @FXML
     Label lbArtist;
-    
+
+    /**Texto para mostrar detalles del artista. */
     @FXML
     Text txArtist;
-    
+
+    /**Texto para mostrar detalles de la sala.*/
     @FXML
     Text txSalas;
-    
+
+    /**Texto para mostrar detalles del precio.*/
     @FXML
     Text txPrecio;
-    
+
+    /**Texto para mostrar detalles de las consumiciones. */
     @FXML
     Text txConsumicion;
-    
+
+    /**Texto para mostrar la cantidad de entradas disponibles.*/
     @FXML
     Text txCantEntradas;
-    
+
+    /** Botón para restar entradas seleccionadas*/
     @FXML
     Button btnRestar;
 
+    /**Botón para sumar entradas seleccionadas */
     @FXML
     Button btnSumar;
 
+    /**Botón para comprar entradas.*/
     @FXML
     Button btnComprar;
-    
-   
-    
+
+    /**Escenario principal de la aplicación*/
     private Stage stage;
 
+    /**Usuario actual de la sesión.*/
     private User user;
 
+    /**Indicador del tema actual (claro u oscuro).*/
     private boolean tema;
-    
+
+    /**Evento actual mostrado en la interfaz*/
     private Event event = new Event();
-    
+
+    /**Logger para registrar eventos e información de depuración*/
     private final Logger LOGGER = Logger.getLogger("crudbankjfxclient.view");
-    
-    
-    
+
+
+    /**
+     * Resta el numero de entradas que quiere comprar
+     * siendo 1 el minimo permitido 
+     * muestra alert si intenta bajar del 1
+     * @param event 
+     */
     @FXML
     private void restarTicket(ActionEvent event){
         if(Integer.parseInt(lblNumEntradas.getText())>1){
@@ -112,6 +141,12 @@ public class ShowEventViewController {
         }
     }
     
+    /**
+     * Suma el numero de entradas que quiere comprar
+     * Muestra una alerta si el número de entradas qu equiere intenta superar 
+     * el numero de entradas que quedan en el evento(NumEntradas).
+     * @param event 
+     */
     @FXML
     private void sumarTicket(ActionEvent event){
         if(Integer.parseInt(lblNumEntradas.getText())<this.event.getNumEntradas()){
@@ -122,6 +157,12 @@ public class ShowEventViewController {
         
     }
     
+    /**
+     * Navega a la vista de compra de entradas.
+     * Inicializa el controlador de la vista de compra de entradas con el evento actual 
+     * y la cantidad de entradas que quiere comprar.
+     * @param aevent 
+     */
     @FXML
     private void irBuyTicketsView(ActionEvent aevent){
            try {
@@ -140,6 +181,11 @@ public class ShowEventViewController {
         }
     }
     
+    /**
+     * Cambia el tema de la aplicación.
+     * Alterna entre el tema claro y oscuro.
+     * @param event 
+     */
     private void cambiarTema(ActionEvent event) {
         if (tema) {
             Sesion.setTema(false);
@@ -150,11 +196,14 @@ public class ShowEventViewController {
         changeTheme();
     }
 
+    /**
+     * Aplica el tema actual a la interfaz gráfica.
+     * Cambia los estilos de los componentes de la interfaz según el tema seleccionado.
+     */
     private void changeTheme() {
         String currentStyle = bpPrincipal.getStyle();
 
         if (tema) {
-            
             lbArtist.setStyle("-fx-text-fill: black;");
             lblNombreSala.setStyle("-fx-text-fill: black;");
             lblNombreEvento.setStyle("-fx-text-fill: black;");
@@ -169,7 +218,6 @@ public class ShowEventViewController {
             lblNumEntradas.setStyle("-fx-text-fill: black;");
             bpPrincipal.setStyle(currentStyle.replaceAll("-fx-background-image: url\\('[^']+'\\);", "-fx-background-image: url('/img/fondogris.jpg');"));
         } else {
-            
             lbArtist.setStyle("-fx-text-fill: white;");
             lblNombreSala.setStyle("-fx-text-fill: white;");
             lblNombreEvento.setStyle("-fx-text-fill: white;");
@@ -186,24 +234,34 @@ public class ShowEventViewController {
         }
     }
     
-     private void controlMenuConceptual(MouseEvent event, ContextMenu menu) {
-        //Se comprueba si se hace clic con el borón derecho del ratón.
+    /**
+     * Controla el menú contextual en la interfaz.
+     * Muestra el menú contextual cuando se hace clic derecho en la interfaz.
+     * @param event 
+     * @param menu 
+     */
+    private void controlMenuConceptual(MouseEvent event, ContextMenu menu) {
         if (event.getButton() == MouseButton.SECONDARY) {
-            //Si es así se abre el menú contextual.
             menu.show(bpPrincipal, event.getScreenX(), event.getScreenY());
         } else {
-            //Si no, se cierra el mismo.
             menu.hide();
         }
     }
      
-     
+    /**
+     * Establece el evento actual.
+     * @param event (evento sseleccionado en la ventana anterior).
+     */
     public void setEvent(Event event){
         this.event = event;
     }
     
+    /**
+     * Inicializa la escena de la ventana.
+     * Configura la ventana, el tema y los componentes de la interfaz.
+     * @param root 
+     */
     public void initStage(Parent root) {
-        
         LOGGER.info("Initializing Bank Statement window.");
         Scene scene = new Scene(root);
         user = Sesion.getUser();
@@ -236,11 +294,9 @@ public class ShowEventViewController {
             lblTipoMusica.setText(musicas);
         }
 
-        
         stage.show();
         stage.setScene(scene);
         LOGGER.info("Bank Statement window initialized.");
-        
     }
-    
 }
+

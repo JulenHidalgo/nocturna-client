@@ -43,72 +43,111 @@ import model.Client;
 import model.FormaPago;
 
 /**
- *
- * @author 2dam
+ * Controlador de la vista para comprar entradas.
+ * realiza la compra creando los tickets y modificando el evento
+ * @author Erlantz
  */
 public class buyTicketsViewController {
     
+    /**
+     * Panel principal de la interfaz.
+     */
     @FXML
     AnchorPane panel;
     
+    /**
+     * Campo de texto para introducir un nuevo DNI.
+     */
     @FXML
     TextField tfnuevoDni;
      
+    /**
+     * Etiqueta para mostrar el total de la compra.
+     */
     @FXML
     Label lblTotal;
     
+    /**
+     * Etiqueta para mostrar el nombre del evento.
+     */
     @FXML
     Label lblName;
     
+    /**
+     * Etiqueta para mostrar el nombre del usuario.
+     */
     @FXML
     Label txName;
     
+    /**
+     * Etiqueta para mostrar el DNI del usuario.
+     */
     @FXML
     Label txDni;
     
+    /**
+     * Etiqueta para mostrar el total de la compra.
+     */
     @FXML
     Label txTotal;
     
+    /**
+     * Grupo de botones para seleccionar la forma de pago.
+     */
     @FXML
     ButtonGroup btnGourp;
     
+    /**
+     * Botón de radio para seleccionar Bizum como forma de pago.
+     */
     @FXML
     RadioButton rdBtnBizum;
     
+    /**
+     * Botón de radio para seleccionar tarjeta como forma de pago.
+     */
     @FXML
     RadioButton rdBtnTarjeta;
     
+    /**
+     * Botón para agregar un nuevo DNI.
+     */
     @FXML
     Button btnAgregarDni;
     
+    /**
+     * Botón para realizar la compra.
+     */
     @FXML
     Button btnComprar;
     
+    /**
+     * Lista de vista para mostrar la lista de DNIs.
+     */
     @FXML
     ListView listViewListaDni;
     
+    /**
+     * Grupo de alternancia para los botones de radio.
+     */
     ToggleGroup toggleGroup = new ToggleGroup();
     
-    
     private Stage stage;
-
     private User user;
-
     private boolean tema;
-    
     private Event event = new Event();
-    
     private int dnisIntroducidos = 0;
-    
     private int cantCompra;
-    
     private Ticket ticket = new Ticket();
-    
     private final Logger LOGGER = Logger.getLogger("crudbankjfxclient.view");
     
+    /**
+     * Añade un nuevo DNI a la lista de DNIs.
+     * Valida el formato del DNI antes de agregarlo.
+     * @param event 
+     */
     @FXML
     private void añadirDni(ActionEvent event){
-      
         if(tfnuevoDni!=null){
             tfnuevoDni.setText(tfnuevoDni.getPromptText());  
         }
@@ -131,9 +170,13 @@ public class buyTicketsViewController {
         }    
     }
     
+    /**
+     * Realiza la compra de entradas.
+     * Agrega los detalles de la compra crea los tickets y actualiza el evento.
+     * @param event 
+     */
     @FXML
     private void comprarTickets(ActionEvent event){
-        
         ObservableList<String> observableDni = FXCollections.observableArrayList(listViewListaDni.getItems());
         
         ticket.setCantidad(cantCompra); 
@@ -154,15 +197,18 @@ public class buyTicketsViewController {
         }
         TicketManagerFactory.get().create_XML(ticket);
         
-        //modificar el numero de enradas que quedan en el evcento
+        //modificar el numero de enradas que quedan en el evento
         this.event.setNumEntradas(this.event.getNumEntradas()-cantCompra); 
         EventManagerFactory.get().edit_XML(this.event, this.event.getId().toString());
         new Alert(Alert.AlertType.CONFIRMATION, "Compra realizada con exito", ButtonType.OK).showAndWait();
-            
     }
-     
     
-     private void cambiarTema(ActionEvent event) {
+    /**
+     * Cambia el tema de la aplicación.
+     * Alterna entre el tema claro y oscuro.
+     * @param event 
+     */
+    private void cambiarTema(ActionEvent event) {
         if (tema) {
             Sesion.setTema(false);
         } else {
@@ -172,6 +218,10 @@ public class buyTicketsViewController {
         changeTheme();
     }
 
+    /**
+     * Aplica el tema actual a la interfaz gráfica.
+     * Cambia los estilos de los componentes de la interfaz según el tema seleccionado.
+     */
     private void changeTheme() {
         String currentStyle = panel.getStyle();
 
@@ -190,31 +240,46 @@ public class buyTicketsViewController {
             txDni.setStyle("-fx-fill: white;");
             txName.setStyle("-fx-fill: white;");
             txTotal.setStyle("-fx-fill: white;");
-             rdBtnBizum.setStyle("-fx-fill: white;");
+            rdBtnBizum.setStyle("-fx-fill: white;");
             rdBtnTarjeta.setStyle("-fx-fill: white;");
             panel.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
         }
     }
     
+    /**
+     * Controla el menú contextual en la interfaz.
+     * Muestra el menú contextual cuando se hace clic derecho en la interfaz.
+     * @param event 
+     * @param menu 
+     */
     private void controlMenuConceptual(MouseEvent event, ContextMenu menu) {
-        //Se comprueba si se hace clic con el borón derecho del ratón.
         if (event.getButton() == MouseButton.SECONDARY) {
-            //Si es así se abre el menú contextual.
             menu.show(panel, event.getScreenX(), event.getScreenY());
         } else {
-            //Si no, se cierra el mismo.
             menu.hide();
         }
     }
     
+    /**
+     * Establece el evento actual.
+     * @param event
+     */
     public void setEvent(Event event){
         this.event = event;
     }
     
+    /**
+     * Establece la cantidad de entradas a comprar.
+     * @param cantCompra Cantidad de entradas a comprar.
+     */
     public void setCantCompra(Integer cantCompra){
         this.cantCompra = cantCompra;
     }
     
+    /**
+     * Inicia la ventana con los datos necesarios
+     * @param root 
+     */
     public void initStage(Parent root) {
         
         LOGGER.info("Initializing Bank Statement window.");
