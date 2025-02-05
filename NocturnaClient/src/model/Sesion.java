@@ -6,7 +6,6 @@
 package model;
 
 import javafx.stage.Stage;
-import model.User;
 
 
 /**
