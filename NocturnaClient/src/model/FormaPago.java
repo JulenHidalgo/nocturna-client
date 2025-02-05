@@ -6,9 +6,19 @@
 package model;
 
 /**
+ * Enumeración que representa las diferentes formas de pago disponibles en el sistema.
+ * Esta enumeración define los métodos de pago soportados para realizar transacciones.
  *
- * @author 2dam
+ * @author Erlantz Rey
  */
 public enum FormaPago {
-    BIZUM,TARJETA
+    /**
+     * Pago mediante BIZUM, servicio de pago móvil entre particulares.
+     */
+    BIZUM,
+    
+    /**
+     * Pago mediante tarjeta bancaria (crédito/débito).
+     */
+    TARJETA
 }

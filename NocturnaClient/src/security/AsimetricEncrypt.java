@@ -14,10 +14,18 @@ import java.security.spec.X509EncodedKeySpec;
 import javax.crypto.Cipher;
 
 /**
- *
- * @author 2dam
+ * Clase que proporciona métodos para encriptar datos utilizando criptografía asimétrica (RSA).
+ * 
+ * @author Adrian Rocha
  */
 public class AsimetricEncrypt {
+    /**
+     * Encripta los datos proporcionados utilizando una clave pública RSA.
+     * 
+     * @param data Los datos a encriptar.
+     * @return Los datos encriptados en formato Base64, o null si ocurre un error.
+     * @throws FileNotFoundException Si no se encuentra el archivo de la clave pública.
+     */
     public static String encrypt (String data) {
         try {
             // Cargar la clave pública desde un recurso del classpath
