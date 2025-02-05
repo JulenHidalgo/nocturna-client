@@ -7,36 +7,34 @@ package test;
  */
 
 
-import com.lowagie.text.pdf.AcroFields.Item;
-import control.Main;
 import model.Sesion;
 import static java.sql.Date.valueOf;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.Parent;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
+import logic.UserManagerFactory;
 import model.Artist;
-import model.Client;
 import model.Event;
 import model.User;
 import org.junit.After;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.framework.junit.ApplicationTest;
-import static org.testfx.matcher.base.NodeMatchers.isInvisible;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import ui_controllers.ShowAllEventsViewController;
+import model.Admin;
 
 /**
  *
@@ -51,34 +49,25 @@ public class ShowAlleventsViewControllerTest  extends ApplicationTest{
     
     @Override
     public void start(Stage stage) throws Exception {
-        new Main().start(stage);
         
-        
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllEventsView.fxml"));
+         
+        Parent root = loader.load();
+        ShowAllEventsViewController controller = (ShowAllEventsViewController) loader.getController();
+        User user = new Admin();
+        user = UserManagerFactory.get().find_XML(Admin.class, "1");
+        Sesion.setUser(user);
+        Sesion.setStage(stage);
+        controller.initStage(root);
+        verifyThat("#tablaEvent", isVisible());
+        table = lookup("#tablaEvent").query();            
     }
     
-    @Before
-    public void signInUser() {
-        
-            clickOn("#tfMail");
-            write("admin@gmail.com");
-            
-            clickOn("#pfPass");
-            write("Abcd123");
-            
-            clickOn("#btnSignIn");
-            
-            verifyThat("#tablaEvent", isVisible());
-            verifyThat("#btnAñadirArtistas", isVisible());
-            verifyThat("#btnBorrarEvento", isVisible());
-            verifyThat("#btnCrearEvento", isVisible());
-            table = lookup("#tablaEvent").query(); 
-               
-    }
     
     @After
     public void esperar(){
         try {
-            Thread.sleep(600);
+            Thread.sleep(400);
         } catch (InterruptedException ex) {
             Logger.getLogger(ShowAlleventsViewControllerTest.class.getName()).log(Level.SEVERE, null, ex);
         }
