@@ -8,8 +8,9 @@ package logic;
 import rest.ClubRESTClient;
 
 /**
- *
- * @author 2dam
+ * Factoria de objetos de la interfaz de Club Manager
+ * 
+ * @author Adrian Rocha
  */
 public class ClubManagerFactory {
     

@@ -562,7 +562,7 @@ public class ShowAllEventsViewController {
     /**
      * Inicializa la ventana segun el usuario.
      *
-     * @param root
+     * @param root El nodo raíz que se agrega a la escena.
      */
     public void initStage(Parent root) {
         try {
@@ -671,6 +671,7 @@ public class ShowAllEventsViewController {
             });
 
             changeTheme();
+            stage.setTitle("Visualizar eventos");
             stage.show();
             stage.setScene(scene);
             LOGGER.info("Bank Statement window initialized.");

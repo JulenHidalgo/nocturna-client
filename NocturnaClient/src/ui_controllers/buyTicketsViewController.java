@@ -265,7 +265,7 @@ public class buyTicketsViewController {
     /**
      * Establece el evento actual.
      *
-     * @param event
+     * @param event El evento de las entradas.
      */
     public void setEvent(Event event) {
         this.event = event;
@@ -283,7 +283,7 @@ public class buyTicketsViewController {
     /**
      * Inicia la ventana con los datos necesarios
      *
-     * @param root
+     * @param root El nodo raíz que se agrega a la escena.
      */
     public void initStage(Parent root) {
 
@@ -319,6 +319,7 @@ public class buyTicketsViewController {
             }
         });
 
+        stage.setTitle("Comprar entradas");
         stage.show();
         stage.setScene(scene);
         LOGGER.info("Bank Statement window initialized.");

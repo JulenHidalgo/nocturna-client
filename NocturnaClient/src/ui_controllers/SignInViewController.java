@@ -168,7 +168,7 @@ public class SignInViewController {
     /**
      * Establece el usuario actual.
      *
-     * @param user
+     * @param user El usuario de la session actual.
      */
     public void setUser(User user) {
         this.user = user;
@@ -177,7 +177,7 @@ public class SignInViewController {
     /**
      * Establece el tema de la interfaz.
      *
-     * @param tema
+     * @param tema El tema de la ventana.
      */
     public void setTema(boolean tema) {
         this.tema = tema;
@@ -186,7 +186,7 @@ public class SignInViewController {
     /**
      * Inicializa la ventana y configura los componentes de la interfaz.
      *
-     * @param root
+     * @param root El nodo raíz que se agrega a la escena.
      */
     public void initStage(Parent root) {
         LOGGER.info("Initializing 'SignIn' window.");
@@ -225,7 +225,7 @@ public class SignInViewController {
     /**
      * Maneja la solicitud de recuperación de contraseña.
      *
-     * @param event
+     * @param event El evento que salta al realizar una accion que llama al metodo.
      */
     public void resetPass(ActionEvent event) {
         try {
@@ -242,7 +242,7 @@ public class SignInViewController {
     /**
      * Maneja la navegación a la vista de registro de usuarios.
      *
-     * @param event
+     * @param event El evento que salta al realizar una accion que llama al metodo.
      */
     public void signUp(ActionEvent event) {
         try {
@@ -264,7 +264,7 @@ public class SignInViewController {
     /**
      * Maneja el proceso de inicio de sesión.
      *
-     * @param event
+     * @param event El evento que salta al realizar una accion que llama al metodo.
      */
     public void signIn(ActionEvent event) {
         try {
@@ -309,7 +309,7 @@ public class SignInViewController {
     /**
      * Maneja el registro de un nuevo administrador.
      *
-     * @param event
+     * @param event El evento que salta al realizar una accion que llama al metodo.
      */
     public void registrarAdmin(ActionEvent event) {
         try {
@@ -380,7 +380,7 @@ public class SignInViewController {
     /**
      * Maneja el cierre de la aplicación desde la ventana de inicio de sesión.
      *
-     * @param event
+     * @param event El evento que salta al realizar una accion que llama al metodo.
      */
     public void closeAppFromX(WindowEvent event) {
         if (CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION, "¿Está seguro de que desea salir?")) {

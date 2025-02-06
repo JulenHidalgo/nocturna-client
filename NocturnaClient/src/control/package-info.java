@@ -1,4 +1,4 @@
-/*
- * Paquete que contiene el main de la aplicacion.
+/**
+ * Paquete que inicia la aplicacion
  */
 package control;

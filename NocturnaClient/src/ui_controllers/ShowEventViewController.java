@@ -341,6 +341,7 @@ public class ShowEventViewController {
             lblTipoMusica.setText(musicas);
         }
 
+        stage.setTitle("Visualizar evento");
         stage.show();
         stage.setScene(scene);
         LOGGER.info("Bank Statement window initialized.");

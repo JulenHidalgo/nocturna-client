@@ -198,7 +198,8 @@ public class ShowAllClubsViewController {
             stage = Sesion.getStage();
 
             changeTheme();
-
+            
+            stage.setTitle("Visualizar clubes");
             stage.setScene(scene);
             stage.setOnCloseRequest(this::closeAppFromX);
             //Si el usuario es null, significa que no ha entrado a la app todavía y 

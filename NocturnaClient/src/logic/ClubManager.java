@@ -8,8 +8,9 @@ package logic;
 import javax.ws.rs.WebApplicationException;
 
 /**
- *
- * @author 2dam
+ * Interfaz que gestiona el CRUD de los clubes
+ * 
+ * @author Adrian Rocha
  */
 public interface ClubManager {
     public <T> T getClubsByEventDate_XML(Class<T> responseType, String fecha) throws WebApplicationException;

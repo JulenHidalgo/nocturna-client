@@ -32,8 +32,9 @@ import model.Ticket;
 import model.User;
 
 /**
- *
- * @author 2dam
+ * Vista que muestra todas las entradas en propiedad
+ * 
+ * @author Erlantz Rey
  */
 public class ShowAllTicketsViewController {
 
@@ -199,6 +200,7 @@ public class ShowAllTicketsViewController {
         }
         cargarTabla();
 
+        stage.setTitle("Viiisualizar entradas");
         stage.show();
         stage.setScene(scene);
         LOGGER.info("Bank Statement window initialized.");

@@ -192,6 +192,7 @@ public class ShowArtistViewController {
 
         menuIncludeController.checkAdmin(user.getIsAdmin());
 
+        stage.setTitle("Visualizar artista");
         stage.setScene(scene);
         stage.show();
 

@@ -224,6 +224,7 @@ public class ShowClubViewController {
 
             menuIncludeController.checkAdmin(user.getIsAdmin());
 
+            stage.setTitle("Vissualizar club");
             stage.show();
 
             btnInfo.setOnAction(this::masInfo);
