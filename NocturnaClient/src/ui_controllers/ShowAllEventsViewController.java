@@ -595,14 +595,14 @@ public class ShowAllEventsViewController {
 
             bpPrincipal.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
 
-            if (user.getIsAdmin()) {
-                tablaEvent.setEditable(true);
-                tablaEvent.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-                tcMusica.setEditable(false);
-            } else {
+            if (!user.getIsAdmin()) {
                 btnAñadirArtistas.setVisible(false);
                 btnBorrarEvento.setVisible(false);
                 btnCrearEvento.setVisible(false);
+            } else {
+                tablaEvent.setEditable(true);
+                tablaEvent.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+                tcMusica.setEditable(false);
             }
 
             tablaEvent.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Event>() {
