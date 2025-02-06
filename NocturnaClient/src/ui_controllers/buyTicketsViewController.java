@@ -8,7 +8,9 @@ package ui_controllers;
 import model.Sesion;
 import static java.sql.Date.valueOf;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -139,6 +141,7 @@ public class buyTicketsViewController {
     private int dnisIntroducidos = 0;
     private int cantCompra;
     private Ticket ticket = new Ticket();
+    private List<String> DniList = new ArrayList<>();
     private final Logger LOGGER = Logger.getLogger("crudbankjfxclient.view");
 
     /**
@@ -148,21 +151,25 @@ public class buyTicketsViewController {
      * @param event
      */
     @FXML
-    private void añadirDni(ActionEvent event) {
-        if (tfnuevoDni != null) {
-            tfnuevoDni.setText(tfnuevoDni.getPromptText());
+    private void añadirDni(ActionEvent event){
+        if( DniList.isEmpty()){
+            tfnuevoDni.setText(tfnuevoDni.getPromptText());  
         }
+        
+        if (tfnuevoDni.getText().isEmpty() || !tfnuevoDni.getText().matches("^\\d{8}[A-Za-z]$")) {
 
-        if (!tfnuevoDni.getText().matches("^\\d{8}[A-Za-z]$")) {
             LOGGER.warning("DNI validation error, pattern incorrect");
             new Alert(Alert.AlertType.ERROR, "Ese DNI no es correcto", ButtonType.OK).showAndWait();
         } else {
             dnisIntroducidos++;
-            ObservableList<String> observableDni = FXCollections.observableArrayList(tfnuevoDni.getText());
+            DniList.add(tfnuevoDni.getText());
+            ObservableList<String> observableDni = FXCollections.observableArrayList(DniList);
+            
             listViewListaDni.setItems(observableDni);
             String cant = String.valueOf(dnisIntroducidos) + " / " + String.valueOf(cantCompra);
             btnAgregarDni.setText(cant);
-            tfnuevoDni.setText(null);
+            tfnuevoDni.setText("");
+            tfnuevoDni.setPromptText("");
             if (dnisIntroducidos == cantCompra) {
                 btnAgregarDni.setDisable(true);
                 if (toggleGroup.getSelectedToggle() != null) {
@@ -305,6 +312,7 @@ public class buyTicketsViewController {
         menuIncludeController.checkAdmin(user.getIsAdmin());
 
         tfnuevoDni.setPromptText(((Client) user).getDni());
+        
         rdBtnBizum.setToggleGroup(toggleGroup);
         rdBtnTarjeta.setToggleGroup(toggleGroup);
         lblName.setText(event.getNombre());
