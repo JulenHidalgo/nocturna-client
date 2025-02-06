@@ -519,7 +519,7 @@ public class ShowAllEventsViewController {
 
             bpPrincipal.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
 
-            if (user.getIsAdmin()) {
+            if (!user.getIsAdmin()) {
                 btnAñadirArtistas.setVisible(false);
                 btnBorrarEvento.setVisible(false);
                 btnCrearEvento.setVisible(false);

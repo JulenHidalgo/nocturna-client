@@ -37,8 +37,9 @@ import ui_controllers.ShowAllEventsViewController;
 import model.Admin;
 
 /**
- *
- * @author 2dam
+ * Hace los test para comprobar que la clase ShowAlleventsViewController
+ * funciona correctamente
+ * @author Erlantz Rey
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ShowAlleventsViewControllerTest  extends ApplicationTest{
@@ -63,7 +64,9 @@ public class ShowAlleventsViewControllerTest  extends ApplicationTest{
         table = lookup("#tablaEvent").query();            
     }
     
-    
+    /**
+     * esperar un poco despues de cada test para ver bien los resultados
+     */
     @After
     public void esperar(){
         try {

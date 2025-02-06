@@ -5,7 +5,6 @@
  */
 package test;
 
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
@@ -16,7 +15,7 @@ import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import logic.UserManagerFactory;
 import model.Admin;
-import model.Artist;
+import model.Club;
 import model.Sesion;
 import model.User;
 import org.junit.After;
@@ -27,39 +26,40 @@ import org.junit.runners.MethodSorters;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.framework.junit.ApplicationTest;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
-import ui_controllers.ShowAllArtistsViewController;
+import ui_controllers.ShowAllClubsViewController;
 
 /**
- *  Hace los test para comprobar que la clase ShowAllArtistViewController
+ *  Hace los test para comprobar que la clase ShowAllClubsViewController
  * funciona correctamente
- * @author Julen Hidalgo
+ * @author Adrian Rocha
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ShowAllArtistViewControllerTest extends ApplicationTest{
+public class ShowAllClubsViewControllerTest extends ApplicationTest{
     
-     /**tabla de artistas*/
-    private TableView<Artist> table;
+    /**tabla de clubs*/
+    private TableView<Club> table;
     
-    @Override
+     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllArtistsView.fxml"));
+        
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllClubsView.fxml"));
          
         Parent root = loader.load();
-        ShowAllArtistsViewController controller = (ShowAllArtistsViewController) loader.getController();
+        ShowAllClubsViewController controller = (ShowAllClubsViewController) loader.getController();
         User user = new Admin();
         user = UserManagerFactory.get().find_XML(Admin.class, "1");
         Sesion.setUser(user);
         Sesion.setStage(stage);
         controller.initStage(root);
-        verifyThat("#tvArtists", isVisible());
-        table = lookup("#tvArtists").query();  
+        verifyThat("#tableClubs", isVisible());
+        table = lookup("#tableClubs").query();  
         
     }
     
     /**
      * esperar un poco despues de cada test para ver bien los resultados
      */
-     @After
+    @After
     public void esperar(){
         try {
             Thread.sleep(400);
@@ -68,17 +68,7 @@ public class ShowAllArtistViewControllerTest extends ApplicationTest{
         }
     }
     
-    /**
-    * comprueba que el artista se crean bien en la tabla 
-    */
-    @Test
-    public void test_A_CreateArtist(){     
-        int rowCount=table.getItems().size();       
-        clickOn("#btnCrear");
-        assertEquals("Artista creado correctamente",rowCount+1,table.getItems().size());       
-    }
-    
-    /**
+      /**
     * comprueba si la tabla editable funciona bien
     */
     @Test
@@ -89,53 +79,64 @@ public class ShowAllArtistViewControllerTest extends ApplicationTest{
         Node cell = lookup(".table-cell").nth((rowCount - 1) * table.getColumns().size()).query();
         doubleClickOn(cell);        
         clickOn(cell);
-        write("DJPrueba");
+        write("Sonora");
         push(KeyCode.ENTER);
-        assertEquals("Nombre Modificado","DJPrueba", table.getItems().get(rowCount - 1).getNombre());
+        assertEquals("Nombre Modificado","Sonora", table.getItems().get(rowCount - 1).getNombre());
         
-        //modificar Tipo Musica
+        //modificar la ubicacion
         cell = lookup(".table-cell").nth((rowCount - 1) * table.getColumns().size() + 1).query();
         doubleClickOn(cell);        
         clickOn(cell);
-        write("Hardcore");
+        write("Ribera de Axpe Etorbidea, 27");
         push(KeyCode.ENTER);
-        assertEquals("Tipo Musica Modificado","Hardcore", table.getItems().get(rowCount - 1).getTipoMusica());
+        assertEquals("Ubicacion Modificado","Ribera de Axpe Etorbidea, 27", table.getItems().get(rowCount - 1).getUbicacion());
         
-        //modificar la descripcion
+        //modificar la ciudad
         cell = lookup(".table-cell").nth((rowCount - 1) * table.getColumns().size() + 2).query();
         doubleClickOn(cell);        
         clickOn(cell);
-        write("el mejor Dj de techno hardcore");
+        write("Erandio");
         push(KeyCode.ENTER);
-        assertEquals("Descripcion Modificada","el mejor Dj de techno hardcore", table.getItems().get(rowCount - 1).getDescripcion());
+        assertEquals("Ciudad Modificada","Erandio", table.getItems().get(rowCount - 1).getCiudad());
+        
+        //modificar Instagram
+        cell = lookup(".table-cell").nth((rowCount - 1) * table.getColumns().size() + 3).query();
+        doubleClickOn(cell);        
+        clickOn(cell);
+        write("https://www.instagram.com/salasonorabilbao/");
+        push(KeyCode.ENTER);
+        assertEquals("Instagram Modificada","https://www.instagram.com/salasonorabilbao/", table.getItems().get(rowCount - 1).getInstagram());
+        
+        //Comprobar que el Link funciona
+        clickOn(cell);
               
     }
     
+    
     /**
-    * Selecciona un artista y va a la otra ventana
+    * comprueba que el Club se crean bien y lo añade en la tabla 
     */
     @Test
-    public void test_C_seleccionarArtist(){
-        int rowCount = table.getItems().size();
-        Node row = lookup(".table-row-cell").nth(rowCount - 1).query();
-        clickOn(row);
-        clickOn("#btnSeleccionar");  
-        verifyThat("#tableView", isVisible());
+    public void test_A_CreateClub(){     
+        int rowCount=table.getItems().size();       
+        clickOn("#btnCreate");
+        assertEquals("Club creado correctamente",rowCount+1,table.getItems().size());       
     }
     
     /**
-    * Comprueba si el artista se elimina
+    * Comprueba si el club se elimina
     */
     @Test
-    public void test_G_DeleteArtist(){
+    public void test_G_DeleteClub(){
   
         int rowCount = table.getItems().size();
         Node row = lookup(".table-row-cell").nth(rowCount - 1).query();
         clickOn(row);
-        clickOn("#btnEliminar");
+        clickOn("#btnDelete");
   
-        assertEquals("Artista borrado",rowCount-1,table.getItems().size()); 
+        assertEquals("Club borrado",rowCount-1,table.getItems().size()); 
         
     }
+    
     
 }
