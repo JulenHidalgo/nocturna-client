@@ -5,6 +5,8 @@
  */
 package ui_controllers;
 
+import exceptions.InternalServerErrorException;
+import exceptions.SignUpException;
 import model.Sesion;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -455,7 +457,7 @@ public class SignUpViewController {
     private void deleteUser(ActionEvent event) {
         if (CustomAlert.throwAlertTextField("Borrado de cuenta", "Introduce la contraseña para borrar la cuenta (Se perderán todas las entradas asociadas al usuario), pulsa cancelar para salir", "Contraseña de la cuenta") != null) {
 
-            ClientManagerFactory.get().remove(user.getId().toString());
+            ClientManagerFactory.get().remove(Sesion.getUser().getId().toString());
 
             CustomAlert.throwAlertCustom(AlertType.INFORMATION, "El usuario se ha borrado correctamente.");
 
@@ -465,9 +467,9 @@ public class SignUpViewController {
                 Parent root = loader.load();
 
                 SignInViewController controller = (SignInViewController) loader.getController();
-
-                controller.setStage(stage);
-                controller.setTema(tema);
+                
+                Sesion.setUser(null);
+                
                 controller.initStage(root);
 
             } catch (IOException e) {
@@ -551,8 +553,12 @@ public class SignUpViewController {
         } catch (IOException e) {
             CustomAlert.throwAlertCustom(AlertType.ERROR, "Ha sucedido un error al cargar la ventana, intentalo más tarde");
             LOGGER.warning("Error while opening 'ShowAllEvents' window");
+        } catch (SignUpException e) {
+            CustomAlert.throwAlertCustom(AlertType.ERROR, "El correo electronico ya está asignado a una cuenta");
+        } catch (InternalServerErrorException ex) {
+            CustomAlert.throwAlertCustom(AlertType.ERROR, "Ha sucedido un error con el servidor, intentalo más tarde");
         } catch (Exception e) {
-            System.out.println("ERROR");
+            CustomAlert.throwAlertCustom(AlertType.ERROR, "Ha sucedido un error inesperado, intentalo más tarde");
         }
 
     }
