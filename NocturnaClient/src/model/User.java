@@ -25,16 +25,12 @@ public class User implements Serializable {
 
     /**
      * Identificador único del usuario.
-     * 
-     * @param id El ID único del usuario.
      */
     private Long id;
     
     /**
      * Correo electrónico del usuario.
      * Este valor no puede ser nulo.
-     * 
-     * @param mail El correo electrónico del usuario.
      */
     @NotNull
     private String mail = "";
@@ -42,8 +38,6 @@ public class User implements Serializable {
     /**
      * Contraseña del usuario.
      * Este valor no puede ser nulo.
-     * 
-     * @param passwd La contraseña del usuario.
      */
     @NotNull
     private String passwd = "";
@@ -51,8 +45,6 @@ public class User implements Serializable {
     /**
      * Estado que indica si el usuario es administrador.
      * Este valor no puede ser nulo.
-     * 
-     * @param isAdmin El estado que indica si el usuario es administrador.
      */
     @NotNull
     private Boolean isAdmin = false;
@@ -60,8 +52,6 @@ public class User implements Serializable {
     /**
      * Conjunto de tickets asociados al usuario.
      * Este conjunto puede ser nulo.
-     * 
-     * @param tickets Los tickets asociados al usuario.
      */
     private Set<Ticket> tickets;
 

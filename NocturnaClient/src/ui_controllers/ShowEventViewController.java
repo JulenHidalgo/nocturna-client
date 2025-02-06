@@ -259,7 +259,7 @@ public class ShowEventViewController {
     /**
      * Inicializa la escena de la ventana.
      * Configura la ventana, el tema y los componentes de la interfaz.
-     * @param root 
+     * @param root El nodo raíz que se agrega a la escena.
      */
     public void initStage(Parent root) {
         LOGGER.info("Initializing Bank Statement window.");

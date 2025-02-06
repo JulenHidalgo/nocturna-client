@@ -65,6 +65,7 @@ public class UserRESTClient implements UserManager {
      * 
      * @param responseType Tipo de respuesta esperada
      * @param userEmail Email del usuario
+     * @param <T> Objeto se que deuelve al hacer una llamada para resetear la passwd
      * @return Respuesta del servidor en el tipo especificado
      * @throws ClientErrorException Si ocurre un error en el cliente
      */
@@ -131,6 +132,7 @@ public class UserRESTClient implements UserManager {
      * 
      * @param responseType Tipo de respuesta esperada
      * @param id Identificador del usuario
+     * @param <T> Objeto se que deuelve al hacer una llamada get de un id
      * @return Usuario encontrado en el tipo especificado
      * @throws ClientErrorException Si ocurre un error en el cliente
      */
@@ -162,6 +164,7 @@ public class UserRESTClient implements UserManager {
      * @param responseType Tipo de respuesta esperada
      * @param from Valor inicial del rango
      * @param to Valor final del rango
+     * @param <T> Objeto se que deuelve al hacer una llamada get en un rango de id
      * @return Lista de usuarios en el tipo especificado
      * @throws ClientErrorException Si ocurre un error en el cliente
      */
@@ -228,6 +231,7 @@ public class UserRESTClient implements UserManager {
      * @param responseType Tipo de respuesta esperada
      * @param mail Email del usuario
      * @param passwd Contraseña del usuario
+     * @param <T> Objeto se que deuelve al hacer una llamada de log in
      * @return Respuesta del servidor en el tipo especificado
      * @throws ClientErrorException Si ocurre un error en el cliente
      */
@@ -267,6 +271,7 @@ public class UserRESTClient implements UserManager {
      * Obtiene todos los usuarios en formato JSON.
      * 
      * @param responseType Tipo de respuesta esperada
+     * @param <T> Objeto se que deuelve al hacer una llamada get
      * @return Lista de usuarios en el tipo especificado
      * @throws ClientErrorException Si ocurre un error en el cliente
      */
