@@ -68,11 +68,21 @@ public class ShowAllClubsViewControllerTest extends ApplicationTest{
         }
     }
     
-      /**
+    /**
+    * comprueba que el Club se crean bien y lo añade en la tabla 
+    */
+    @Test
+    public void test_A_CreateClub(){     
+        int rowCount=table.getItems().size();       
+        clickOn("#btnCreate");
+        assertEquals("Club creado correctamente",rowCount+1,table.getItems().size());       
+    }
+    
+    /**
     * comprueba si la tabla editable funciona bien
     */
     @Test
-    public void test_B_UpdateEvent() {
+    public void test_B_UpdateClub() {
         int rowCount = table.getItems().size();
         
         //modificar el nombre
@@ -113,15 +123,7 @@ public class ShowAllClubsViewControllerTest extends ApplicationTest{
     }
     
     
-    /**
-    * comprueba que el Club se crean bien y lo añade en la tabla 
-    */
-    @Test
-    public void test_A_CreateClub(){     
-        int rowCount=table.getItems().size();       
-        clickOn("#btnCreate");
-        assertEquals("Club creado correctamente",rowCount+1,table.getItems().size());       
-    }
+    
     
     /**
     * Comprueba si el club se elimina
@@ -134,6 +136,30 @@ public class ShowAllClubsViewControllerTest extends ApplicationTest{
         clickOn(row);
         clickOn("#btnDelete");
   
+        assertEquals("Club borrado",rowCount-1,table.getItems().size()); 
+        
+    }
+    
+    /**
+    * Comprueba si el club se elimina
+    */
+    @Test
+    public void test_C_DeleteClub(){
+  
+        int rowCount = table.getItems().size();
+        Node row = lookup(".table-row-cell").nth(rowCount - 1).query();
+        clickOn(row);
+        clickOn("#btnDelete");
+        clickOn("No");
+        clickOn("Aceptar");
+        assertEquals("Club No borrado",rowCount,table.getItems().size());
+        
+        
+        row= lookup(".table-row-cell").nth(rowCount - 1).query();
+        clickOn(row);
+        clickOn("#btnDelete");
+        clickOn("Sí");
+        clickOn("Aceptar");
         assertEquals("Club borrado",rowCount-1,table.getItems().size()); 
         
     }

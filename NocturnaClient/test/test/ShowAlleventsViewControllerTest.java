@@ -232,7 +232,7 @@ public class ShowAlleventsViewControllerTest  extends ApplicationTest{
     }
     
     /**
-    * comprueba si la tabla editable funciona bien
+    * comprueba si los eventos se eliminan
     */
     @Test
     public void test_G_DeleteEvent(){
