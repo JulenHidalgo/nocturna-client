@@ -543,7 +543,7 @@ public class ShowAllEventsViewController {
      */
     private void imprimirTabla(ActionEvent event) {
         try {
-            JasperReport report = JasperCompileManager.compileReport("src/reports/EventReport.jrxml");
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/reports/EventReport.jrxml"));
 
             JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Event>) this.tablaEvent.getItems());
 
