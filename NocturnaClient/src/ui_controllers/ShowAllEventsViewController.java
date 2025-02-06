@@ -89,7 +89,7 @@ import utils.CustomAlert;
  * Controlador para la vista de mostrar todos los eventos.
  * Permite gestionar eventos, podiendo crear, modificar, 
  * añadir artistas y eliminar.
- *  @author Erlantz
+ *  @author Erlantz Rey
  */
 public class ShowAllEventsViewController {
     

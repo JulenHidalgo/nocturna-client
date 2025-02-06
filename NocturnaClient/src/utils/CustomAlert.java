@@ -12,14 +12,24 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import logic.UserManagerFactory;
 
 /**
- *
- * @author 2dam
+ * Clase utilitaria que proporciona métodos para mostrar alertas personalizadas 
+ * y recoger información del usuario a través de cuadros de diálogo.
+ *  @author Julen Hidalgo
  */
 public class CustomAlert {
 
+    /**
+     * Muestra una alerta personalizada con un tipo específico de alerta y mensaje.
+     * Si el tipo de alerta es de confirmación, se espera que el usuario seleccione 
+     * entre "Aceptar" o "Cancelar".
+     * 
+     * @param tipo El tipo de alerta a mostrar.
+     * @param mensaje El mensaje que se muestra en la alerta.
+     * @return {@code true} si el usuario selecciona "Aceptar" en una alerta de confirmación, 
+     *         {@code false} en otros casos o si se cierra la alerta sin una acción.
+     */
     public static boolean throwAlertCustom(AlertType tipo, String mensaje) {
         Alert alert = new Alert(tipo);
         alert.setHeaderText(mensaje);
@@ -31,6 +41,15 @@ public class CustomAlert {
         return false;
     }
 
+    /**
+     * Muestra una alerta con un campo de texto para que el usuario ingrese un valor.
+     * La alerta incluye un título, un encabezado y un texto de ayuda (prompt) para el campo de texto.
+     * 
+     * @param titulo El título de la alerta.
+     * @param cabecera El texto que aparece como encabezado de la alerta.
+     * @param prompt El texto de sugerencia que aparece en el campo de texto.
+     * @return El texto ingresado por el usuario si se acepta, o {@code null} si se cancela.
+     */
     public static String throwAlertTextField(String titulo, String cabecera, String prompt) {
         Alert alert = new Alert(Alert.AlertType.NONE);
         alert.setTitle(titulo);
@@ -58,6 +77,15 @@ public class CustomAlert {
         return null;
     }
 
+    /**
+     * Muestra una alerta para cambiar la contraseña. La alerta incluye campos para 
+     * ingresar la contraseña anterior, la nueva contraseña y la repetición de la nueva contraseña.
+     * Realiza validaciones sobre la nueva contraseña y asegura que ambas contraseñas coincidan.
+     * 
+     * @return Un array de dos elementos, donde el primero es la contraseña anterior 
+     *         y el segundo es la nueva contraseña, si la validación es exitosa. 
+     *         Si se cancela la acción, devuelve {@code null}.
+     */
     public static String[] lanzarAlertResetPass() {
         Alert alert = new Alert(Alert.AlertType.NONE);
         alert.setTitle("Cambio de contraseña");
@@ -98,5 +126,5 @@ public class CustomAlert {
         }
         return null;
     }
-
 }
+

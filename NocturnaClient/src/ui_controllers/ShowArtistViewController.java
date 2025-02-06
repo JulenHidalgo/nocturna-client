@@ -50,53 +50,98 @@ import model.User;
 import utils.CustomAlert;
 
 /**
- *
+ *Controlador que muestra un artista seleccionao
  * @author Julen Hidalgo
  */
 public class ShowArtistViewController {
 
+    /**
+     * Contenedor principal de la vista.
+     */
     @FXML
     AnchorPane anchorPane;
 
+    /**
+     * Contenedor para el menú.
+     */
     @FXML
     HBox hbMenu;
 
+    /**
+     * Etiqueta para mostrar el nombre del artista.
+     */
     @FXML
     Label lblNombre;
 
+    /**
+     * Etiqueta para mostrar el tipo de música del artista.
+     */
     @FXML
     Label lblTipoMusica;
 
+    /**
+     * Panel de desplazamiento para la descripción del artista.
+     */
     @FXML
     ScrollPane scrollPane;
 
+    /**
+     * Etiqueta para mostrar la descripción del artista.
+     */
     @FXML
     Label lblDescripcion;
 
+    /**
+     * Campo de texto para la búsqueda de eventos.
+     */
     @FXML
     TextField tfBusqueda;
 
+    /**
+     * ComboBox para seleccionar el filtro de búsqueda.
+     */
     @FXML
     ComboBox cbFiltrar;
 
+    /**
+     * DatePicker para seleccionar la fecha de inicio del filtro.
+     */
     @FXML
     DatePicker dpDesde;
 
+    /**
+     * DatePicker para seleccionar la fecha de fin del filtro.
+     */
     @FXML
     DatePicker dpHasta;
 
+    /**
+     * Tabla para mostrar la lista de eventos.
+     */
     @FXML
     TableView tableView;
 
+    /**
+     * Columna para mostrar el nombre del evento.
+     */
     @FXML
     TableColumn<Event, String> tcNombreEvento;
 
+    /**
+     * Columna para mostrar el nombre de la sala.
+     */
     @FXML
     TableColumn<Event, String> tcNombreSala;
 
+    /**
+     * Columna para mostrar la fecha del evento.
+     */
     @FXML
     TableColumn<Event, Date> tcFechaEvento;
 
+    /**
+     * Botón para seleccionar un evento.
+     */
     @FXML
     Button btnSeleccionar;
 
@@ -114,10 +159,21 @@ public class ShowArtistViewController {
 
     private final Logger LOGGER = Logger.getLogger("ShowArtistViewController.view");
 
+    /**
+     * Establece el artista cuya información se va a mostrar.
+     * 
+     * @param artist 
+     */
     public void setArtist(Artist artist) {
         this.artist = artist;
     }
 
+    /**
+     * Inicializa la ventana y configura la escena.
+     * 
+     * @param root 
+     * @throws IOException Si ocurre un error de entrada/salida.
+     */
     public void initStage(Parent root) throws IOException {
         LOGGER.info("Initializing 'ShowArtistView' window.");
 
@@ -133,7 +189,10 @@ public class ShowArtistViewController {
         LOGGER.info("'ShowArtistView' window initialized.");
 
     }
-
+    
+    /**
+     * Inicializa los listeners de control para los componentes de la interfaz.
+     */
     private void initializeControlListeners() {
         tfBusqueda.textProperty().addListener((observable, oldValue, newValue) -> loadTableData());
 
@@ -168,7 +227,10 @@ public class ShowArtistViewController {
         btnSeleccionar.setOnAction(this::goToShowEventView);
         stage.setOnCloseRequest(this::closeAppFromX);
     }
-
+    
+     /**
+     * Inicializa la información de la interfaz.
+     */
     private void initializeInfo() {
         user = Sesion.getUser();
         stage = Sesion.getStage();
@@ -194,7 +256,10 @@ public class ShowArtistViewController {
             anchorPane.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
         }
     }
-
+    
+    /**
+     * Carga los datos de la tabla de eventos y aplica los filtros.
+     */
     private void loadTableData() {
         try {
             events = Arrays.asList(EventManagerFactory.get().findByArtist_XML(Event[].class, artist.getId().toString()));
@@ -221,7 +286,10 @@ public class ShowArtistViewController {
             return new SimpleStringProperty(nombreClub != null ? nombreClub : "Sin Club");
         });
     }
-
+    
+     /**
+     * Aplica los filtros de búsqueda y fechas a la lista de eventos.
+     */
     private void applyFilters() {
         eventsCopia = events;
         if (!tfBusqueda.getText().isEmpty()) {
@@ -253,7 +321,11 @@ public class ShowArtistViewController {
 
         }
     }
-
+    
+    /**
+     * va a la ventana que muestra un evento
+     * @param event 
+     */
     private void goToShowEventView(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showEventView.fxml"));
@@ -269,7 +341,11 @@ public class ShowArtistViewController {
             CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error con la sincronización de las ventanas, intentalo más tarde");
         }
     }
-
+    
+    /**
+    * cuando el usuario le da a la  "X" pide confirmacion y sale de la aplicacion
+    * @param event
+    */
     private void closeAppFromX(WindowEvent event) {
         if (CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION, "¿Está seguro de que desea salir?")) {
             Platform.exit();
@@ -277,7 +353,10 @@ public class ShowArtistViewController {
             event.consume();
         }
     }
-
+    
+     /**
+     * Cambia el estilo del fondno 
+     */
     private void changeTheme() {
         String currentStyle = anchorPane.getStyle();
         if (Sesion.getTema()) {
@@ -286,7 +365,14 @@ public class ShowArtistViewController {
             anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
         }
     }
-
+    
+      /**
+     * Controla el menú contextual en la interfaz. Muestra el menú contextual
+     * cuando se hace clic derecho en la interfaz.
+     *
+     * @param event
+     * @param menu
+     */
     private void controlMenuConceptual(MouseEvent event, ContextMenu menu) {
         //Se comprueba si se hace clic con el borón derecho del ratón.
         if (event.getButton() == MouseButton.SECONDARY) {
