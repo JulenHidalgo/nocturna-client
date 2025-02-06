@@ -469,6 +469,9 @@ public class ShowAllArtistsViewController {
      */
     private void deleteArtist(ActionEvent event) {
         try {
+            if (!CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION, "Se eliminará el artista de la base de datos, ¿está seguro?")) {
+                throw new Exception();
+            }
             ObservableList<Artist> selectedArtist = tvArtists.getSelectionModel().getSelectedItems();
             selectedArtist.forEach(item -> {
                 try {
@@ -479,9 +482,11 @@ public class ShowAllArtistsViewController {
                 }
             });
             loadTableData();
-        } catch (Exception ex) {
+        } catch (InternalServerErrorException ex) {
             LOGGER.severe("An error occurred");
             CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error");
+        } catch (Exception ex) {
+            LOGGER.severe("Operation cancelled");
         }
 
     }

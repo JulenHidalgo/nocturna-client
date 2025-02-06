@@ -549,7 +549,6 @@ public class ShowAllClubsViewController {
             controller.initStage(root);
         } catch (Exception ex) {
             Logger.getLogger(ShowAllClubsViewController.class.getName()).log(Level.SEVERE, null, ex);
-            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "ERROR EN EL PROCESO DE ELIMINACIÓN");
         }
     }
 

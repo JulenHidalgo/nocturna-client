@@ -242,7 +242,7 @@ public class ShowClubViewController {
             columnFecha.setCellValueFactory(new PropertyValueFactory<>("fecha"));
             setTableData();
             btnInfo.setDisable(true);
-            changeTheme();
+            
 
             ContextMenu contextMenu = new ContextMenu();
             MenuItem item1 = new MenuItem("Cambiar tema");
@@ -271,6 +271,7 @@ public class ShowClubViewController {
                     }
                 }
             });
+            changeTheme();
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Exception setting up the window", ex.getMessage());
             throw new Exception("ERROR INICIALIZANDO LA VENTANA");
