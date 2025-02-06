@@ -223,6 +223,10 @@ public class ShowClubViewController {
             anchorPane.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
 
             menuIncludeController.checkAdmin(user.getIsAdmin());
+            
+            txtNombre.setEditable(false);
+            txtCiudad.setEditable(false);
+            txtUbicacion.setEditable(false);
 
             stage.setTitle("Vissualizar club");
             stage.show();

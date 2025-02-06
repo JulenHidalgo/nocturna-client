@@ -320,6 +320,8 @@ public class ShowAllArtistsViewController {
                     tcDescripcion.setCellFactory(column -> new ArtistEditingCell(this));
                     btnSeleccionar.setDisable(true);
                 } else {
+                    btnCrear.setVisible(false);
+                    btnEliminar.setVisible(false);
                     tvArtists.setEditable(false);
                 }
                 stage.setTitle("Visualizar artistas");

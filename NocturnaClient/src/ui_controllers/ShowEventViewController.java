@@ -332,7 +332,12 @@ public class ShowEventViewController {
         lblNombreEvento.setText(event.getNombre());
         lblPrecio.setText(String.valueOf(event.getPrecioEntrada()));
         lblCantConsumiciones.setText(String.valueOf(event.getConsumicion()));
-        lblNombreSala.setText(event.getClub().getNombre());
+        if(event.getClub()!=null){
+            lblNombreSala.setText(event.getClub().getNombre());
+        } else {
+            lblNombreSala.setText("No está asignado a ninguna sala todavía");
+        }
+        
 
         if (event.getArtists() != null) {
             String nombres = event.getArtists().stream().map(Artist::getNombre).collect(Collectors.joining(", "));

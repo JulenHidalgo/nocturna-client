@@ -341,11 +341,9 @@ public class SignUpViewController {
             tfMail.setEditable(false);
             btnModificarDatos.setOnAction(this::updateInfo);
             btnElimCuenta.setOnAction(this::deleteUser);
-
+            menuIncludeController.checkAdmin(user.getIsAdmin());
             addListenersToTextFields();
         }
-
-        menuIncludeController.checkAdmin(user.getIsAdmin());
 
         stage.setOnCloseRequest(this::closeAppFromX);
         btnSignUp.setOnAction(this::signUp);
