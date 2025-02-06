@@ -21,42 +21,60 @@ import model.Event;
 import model.User;
 
 /**
- * Controlador para gestiona el menu de la aplicacion para 
- * moverse entre las ventanas
+ * Controlador para gestiona el menu de la aplicacion para moverse entre las
+ * ventanas
+ *
  * @author Erlantz Rey
  */
-public class MenuController {
+public class MenuController{
 
-     /** Barra de menú principal. */
+    /**
+     * Barra de menú principal.
+     */
     @FXML
     private MenuBar menuBar;
 
-    /** Menús dentro de la barra de menú. */
+    /**
+     * Menús dentro de la barra de menú.
+     */
     @FXML
     private Menu menuVer, menuPerfil, menuHelp;
 
-    /** Elementos dentro de los menús. */
+    /**
+     * Elementos dentro de los menús.
+     */
     @FXML
-    private MenuItem miTickets, miEvents, miClubs, miArtists, miPerfil, miSignOut, miAbout;
+    private MenuItem miTickets, miEvents, miClubs, miArtists, miPerfil, miSignOut, miAbout, crearAdmins;
 
-    /** Ventana principal de la aplicación. */
+    /**
+     * Ventana principal de la aplicación.
+     */
     private Stage stage;
-    
-    /** Usuario actual que a iniciado sesion */
+
+    /**
+     * Usuario actual que a iniciado sesion
+     */
     private User user;
-    
-    /** Evento seleccionado en la aplicación. */
+
+    /**
+     * Evento seleccionado en la aplicación.
+     */
     private Event event;
-    
-    /** Indica si el tema oscuro está activado. */
+
+    /**
+     * Indica si el tema oscuro está activado.
+     */
     private boolean tema;
-    
-    /** Logger para registrar eventos y errores. */
+
+    /**
+     * Logger para registrar eventos y errores.
+     */
     private final Logger LOGGER = Logger.getLogger("SignInViewController.view");
-    
+
     /**
      * Navega a la vista de todos los eventos.
-     * @param event 
+     *
+     * @param event
      * @throws Exception Si ocurre un error en la carga de la vista.
      */
     @FXML
@@ -73,7 +91,8 @@ public class MenuController {
 
     /**
      * Navega a la vista de todos los clubes.
-     * @param event 
+     *
+     * @param event
      * @throws Exception Si ocurre un error en la carga de la vista.
      */
     @FXML
@@ -87,10 +106,11 @@ public class MenuController {
             LOGGER.log(Level.SEVERE, null, ex);
         }
     }
-    
+
     /**
      * Navega a la vista de todos los artistas.
-     * @param event 
+     *
+     * @param event
      */
     @FXML
     private void irShowAllArtistView(ActionEvent event) {
@@ -107,10 +127,11 @@ public class MenuController {
             LOGGER.log(Level.SEVERE, null, ex);
         }
     }
-    
+
     /**
      * Navega a la vista de todos los tickets.
-     * @param event 
+     *
+     * @param event
      * @throws Exception Si ocurre un error en la carga de la vista.
      */
     @FXML
@@ -127,15 +148,17 @@ public class MenuController {
             LOGGER.log(Level.SEVERE, null, ex);
         }
     }
-    
+
     /**
      * Cierra la sesión del usuario y vuelve a la ventana de inicio de sesión.
-     * @param event 
+     *
+     * @param event
      * @throws Exception Si ocurre un error en la carga de la vista.
      */
     @FXML
     private void cerrarSesion(ActionEvent event) throws Exception {
         try {
+            Sesion.setUser(null);
             stage = Sesion.getStage();
             tema = Sesion.getTema();
             user = Sesion.getUser();
@@ -151,9 +174,10 @@ public class MenuController {
             LOGGER.log(Level.SEVERE, null, ex);
         }
     }
-    
+
     /**
      * Navega a la vista de perfil del usuario.
+     *
      * @param event
      * @throws Exception Si ocurre un error en la carga de la vista.
      */
@@ -174,9 +198,34 @@ public class MenuController {
             LOGGER.log(Level.SEVERE, null, ex);
         }
     }
-    
+
+    /**
+     * Navega a la vista de perfil del usuario.
+     *
+     * @param event
+     * @throws Exception Si ocurre un error en la carga de la vista.
+     */
+    @FXML
+    private void crearAdmin(ActionEvent event) throws Exception {
+        try {
+            stage = Sesion.getStage();
+            tema = Sesion.getTema();
+            user = Sesion.getUser();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/signInView.fxml"));
+            Parent root = loader.load();
+            SignInViewController controller = loader.getController();
+            controller.setStage(stage);
+            controller.setTema(tema);
+            controller.setUser(user);
+            controller.initStage(root);
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
+
     /**
      * Establece la ventana de la aplicación.
+     *
      * @param stage Ventana principal.
      */
     public void setStage(Stage stage) {
@@ -185,6 +234,7 @@ public class MenuController {
 
     /**
      * Establece el usuario actual.
+     *
      * @param user Usuario autenticado.
      */
     public void setUser(User user) {
@@ -193,6 +243,7 @@ public class MenuController {
 
     /**
      * Establece el evento actual.
+     *
      * @param event Evento seleccionado.
      */
     public void setEvent(Event event) {
@@ -201,6 +252,7 @@ public class MenuController {
 
     /**
      * Establece el tema de la aplicación.
+     *
      * @param tema Tema de la interfaz.
      */
     public void setTema(boolean tema) {
@@ -209,6 +261,7 @@ public class MenuController {
 
     /**
      * Inicializa la escena del menú.
+     *
      * @param root Nodo raíz de la escena.
      */
     public void initStage(Parent root) {
@@ -216,6 +269,11 @@ public class MenuController {
         Scene scene = new Scene(root);
         stage = Sesion.getStage();
         stage.setScene(scene);
+        if (Sesion.getUser().getIsAdmin()) {
+            menuPerfil.getItems().remove(miPerfil);
+        } else {
+            menuPerfil.getItems().remove(crearAdmins);
+        }
         stage.show();
         LOGGER.info("Ventana del menú inicializada.");
     }

@@ -86,113 +86,166 @@ import net.sf.jasperreports.view.JasperViewer;
 import utils.CustomAlert;
 
 /**
- * Controlador para la vista de mostrar todos los eventos.
- * Permite gestionar eventos, podiendo crear, modificar, 
- * añadir artistas y eliminar.
- *  @author Erlantz Rey
+ * Controlador para la vista de mostrar todos los eventos. Permite gestionar
+ * eventos, podiendo crear, modificar, añadir artistas y eliminar.
+ *
+ * @author Erlantz Rey
  */
 public class ShowAllEventsViewController {
-    
-    /**Panel principal de la ventana*/
+
+    /**
+     * Panel principal de la ventana
+     */
     @FXML
     AnchorPane bpPrincipal;
-    
-    /**Campo para filtrar eventos por nombre*/
+
+    /**
+     * Campo para filtrar eventos por nombre
+     */
     @FXML
     TextField tfBuscador;
-    
-    /**Campo para filtrar eventos por precio*/
+
+    /**
+     * Campo para filtrar eventos por precio
+     */
     @FXML
     TextField tfPrecio;
-    
-    /**Campo para filtrar eventos posteriores a una fecha*/
+
+    /**
+     * Campo para filtrar eventos posteriores a una fecha
+     */
     @FXML
     DatePicker dateFecha;
-    
-    /**Campo para filtrar eventos entre dos fechas*/
+
+    /**
+     * Campo para filtrar eventos entre dos fechas
+     */
     @FXML
     DatePicker dateFechaHasta;
-    
-    /**Testo de informacion*/
+
+    /**
+     * Testo de informacion
+     */
     @FXML
     Label lbHasta;
-    
-    /**Testo de informacion del filtro buscar*/
+
+    /**
+     * Testo de informacion del filtro buscar
+     */
     @FXML
     Label txBuscar;
-    
-    /**Testo de informacion del filtro precio*/
+
+    /**
+     * Testo de informacion del filtro precio
+     */
     @FXML
     Label txPrecio;
-    
-    /**Testo de informacion del filtro fecha*/
+
+    /**
+     * Testo de informacion del filtro fecha
+     */
     @FXML
     Label txFecha;
-    
-    /**Tabla de eventos*/
+
+    /**
+     * Tabla de eventos
+     */
     @FXML
     TableView<Event> tablaEvent;
-    
-    /**Columna con el nombre del evento*/
+
+    /**
+     * Columna con el nombre del evento
+     */
     @FXML
     TableColumn<Event, String> tcNombre;
-    
-    /**Columna con el nombre del club realzionado con el evento*/
+
+    /**
+     * Columna con el nombre del club realzionado con el evento
+     */
     @FXML
     TableColumn<Event, String> tcSala;
-    
-    /**Columna con la fecha del evento*/
+
+    /**
+     * Columna con la fecha del evento
+     */
     @FXML
     TableColumn<Event, String> tcFecha;
-    
-    /**Columna con el precio del evento*/
+
+    /**
+     * Columna con el precio del evento
+     */
     @FXML
     TableColumn<Event, Double> tcPrecio;
-    
-    /**Columna con el numero de entradas que quedan*/
+
+    /**
+     * Columna con el numero de entradas que quedan
+     */
     @FXML
     TableColumn<Event, Integer> tcNumEntradas;
-    
-    /**Columna con el tipo musica que hacen los artistas que actuan en ese evento*/
+
+    /**
+     * Columna con el tipo musica que hacen los artistas que actuan en ese
+     * evento
+     */
     @FXML
     TableColumn<Event, String> tcMusica;
-    
-    /**Columna con las consumiciones que incluye el evento*/
+
+    /**
+     * Columna con las consumiciones que incluye el evento
+     */
     @FXML
     TableColumn<Event, Integer> tcConsumicion;
-    
-    /**boton para crear eventos*/
+
+    /**
+     * boton para crear eventos
+     */
     @FXML
     Button btnCrearEvento;
-    
-    /**boton para borrar uno o mas eventos*/
+
+    /**
+     * boton para borrar uno o mas eventos
+     */
     @FXML
     Button btnBorrarEvento;
-    
-    /**boton para añadir artistas a un evento*/
+
+    /**
+     * boton para añadir artistas a un evento
+     */
     @FXML
     Button btnAñadirArtistas;
-    
-    /**boton ver un solo evento seleccionado*/
+
+    /**
+     * boton ver un solo evento seleccionado
+     */
     @FXML
     Button btnSeleccionar;
-    
-    /**la escena*/
+
+    /**
+     * la escena
+     */
     private Stage stage;
 
-    /**usuario que inia sesion*/
+    /**
+     * usuario que inia sesion
+     */
     private User user;
-    
-    /**cambia dependiendo de que tema(fondo) este puesto*/
+
+    /**
+     * cambia dependiendo de que tema(fondo) este puesto
+     */
     private boolean tema;
-    
-    /**lista de que recoge todos los eventos*/
+
+    /**
+     * lista de que recoge todos los eventos
+     */
     private List<Event> events = recogerAllEvents();
-    
+
     private final Logger LOGGER = Logger.getLogger("crudbankjfxclient.view");
 
     /**
-     * Elimina el evento o los eventos seleccionados pidiendo al usuario que confirme
+     * Elimina el evento o los eventos seleccionados pidiendo al usuario que
+     * confirme
+     *
      * @param event
      */
     @FXML
@@ -219,27 +272,28 @@ public class ShowAllEventsViewController {
                     new Alert(Alert.AlertType.INFORMATION, "El evento se mantiene", ButtonType.OK).showAndWait();
                 }
             });
-            
+
         } catch (Exception ex) {
             LOGGER.severe("An error occurred");
             CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error");
         }
     }
-    
+
     /**
-    * metodo para crear nuevos eventos y añadirlo a la tabla
-    * @param event 
-    */
+     * metodo para crear nuevos eventos y añadirlo a la tabla
+     *
+     * @param event
+     */
     @FXML
     private void createEvent(ActionEvent event) {
         try {
             Event evento = new Event();
-             EventManagerFactory.get().create_XML(evento);
+            EventManagerFactory.get().create_XML(evento);
             events = recogerAllEvents();
             cargarTabla(events);
             int lastIndex = tablaEvent.getItems().size() - 1;
             tablaEvent.getSelectionModel().clearAndSelect(lastIndex);
-        }catch (InternalServerErrorException ex) {
+        } catch (InternalServerErrorException ex) {
             LOGGER.severe("The server throwed an InternalServerErrorException");
             CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, ex.getMessage());
         } catch (Exception ex) {
@@ -247,11 +301,13 @@ public class ShowAllEventsViewController {
             CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error, intentalo de nuevo más tarde");
         }
     }
-    
+
     /**
-    * ir a la ventana showAllArtistsView para hacer la relacion de vento y artista
-    * @param event 
-    */
+     * ir a la ventana showAllArtistsView para hacer la relacion de vento y
+     * artista
+     *
+     * @param event
+     */
     @FXML
     private void añadirAtists(ActionEvent event) {
         try {
@@ -266,10 +322,11 @@ public class ShowAllEventsViewController {
             Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     /**
      * ir a la ventana showEventView con el evento seleccionado
-     * @param event 
+     *
+     * @param event
      */
     @FXML
     private void irShowEventView(ActionEvent event) {
@@ -288,10 +345,11 @@ public class ShowAllEventsViewController {
             Logger.getLogger(ShowAllEventsViewController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     /**
      * Carga los datos de la tabla con los eventos
-     * @param eventTable 
+     *
+     * @param eventTable
      */
     private void cargarTabla(List<Event> eventTable) {
         initializeTableColumns();
@@ -301,9 +359,9 @@ public class ShowAllEventsViewController {
         tablaEvent.setItems(observableEvents);
 
     }
-    
+
     /**
-     * inicializa las columnas de la tabla 
+     * inicializa las columnas de la tabla
      */
     private void initializeTableColumns() {
         tcNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
@@ -338,21 +396,26 @@ public class ShowAllEventsViewController {
         tcSala.setCellFactory(ChoiceBoxTableCell.forTableColumn(clubs));
 
     }
-    
+
     /**
-     * pone diferentes filtros a los eventos y carga la tabla con los eventos filtrados
+     * pone diferentes filtros a los eventos y carga la tabla con los eventos
+     * filtrados
      */
     private void aplicarFiltros() {
         events = recogerAllEvents();
         List<Event> eventos = new ArrayList<>();
-        
-        /**Filtra los eventos por su nombre*/
+
+        /**
+         * Filtra los eventos por su nombre
+         */
         if (!tfBuscador.getText().isEmpty()) {
             events = events.stream().filter(event -> event.getNombre().toLowerCase().startsWith(tfBuscador.getText().toLowerCase())).collect(Collectors.toList());
         }
-            /**Filtra los eventos a partir de una fecha */
+        /**
+         * Filtra los eventos a partir de una fecha
+         */
         if (dateFechaHasta.getValue() != null) {
-            
+
             Event[] eventosArray = EventManagerFactory.get().findByDates_XML(Event[].class, dateFecha.getValue().toString(), dateFechaHasta.getValue().toString());
             for (Event e : Arrays.asList(eventosArray)) {
                 if (events.contains(e)) {
@@ -360,7 +423,9 @@ public class ShowAllEventsViewController {
                 }
             }
             events = eventos;
-         /**Filtra los eventos entre dos fechas */
+            /**
+             * Filtra los eventos entre dos fechas
+             */
         } else if (dateFecha.getValue() != null) {
             dateFechaHasta.setVisible(true);
             lbHasta.setVisible(true);
@@ -369,14 +434,16 @@ public class ShowAllEventsViewController {
                 if (events.contains(e)) {
                     eventos.add(e);
                 }
-        }
+            }
             events = eventos;
-        }else{
-             dateFechaHasta.setVisible(false);
+        } else {
+            dateFechaHasta.setVisible(false);
             lbHasta.setVisible(false);
         }
-        
-        /**Filtra los eventos que tengan el mismo precio */
+
+        /**
+         * Filtra los eventos que tengan el mismo precio
+         */
         if (!tfPrecio.getText().isEmpty()) {
             events = events.stream()
                     .filter(event -> event.getPrecioEntrada() >= Double.valueOf(tfPrecio.getText()) && event.getPrecioEntrada() < Double.valueOf(tfPrecio.getText()) + 1)
@@ -386,9 +453,10 @@ public class ShowAllEventsViewController {
 
         cargarTabla(events);
     }
-    
+
     /**
      * devuelve una lista de todos los clubs
+     *
      * @return List<Club>
      */
     private List<Club> recogerAllClubs() {
@@ -397,20 +465,24 @@ public class ShowAllEventsViewController {
         return listClubs;
 
     }
-    
+
     /**
-     * devuelve una lista de todos los eventos que su fecha sea posterior a la de hoy
-     * @return List<Event>  
+     * devuelve una lista de todos los eventos que su fecha sea posterior a la
+     * de hoy
+     *
+     * @return List<Event>
      */
     private List<Event> recogerAllEvents() {
         Event[] eventsArray = EventManagerFactory.get().findByDate_XML(Event[].class, LocalDate.now().toString());
         List<Event> events = Arrays.asList(eventsArray);
         return events;
     }
-    
+
     /**
-     * cambia el boolean de tema y llama al metodo changeTheme() para cambiar el fondo
-     * @param event 
+     * cambia el boolean de tema y llama al metodo changeTheme() para cambiar el
+     * fondo
+     *
+     * @param event
      */
     private void cambiarTema(ActionEvent event) {
         if (tema) {
@@ -421,7 +493,7 @@ public class ShowAllEventsViewController {
         tema = Sesion.getTema();
         changeTheme();
     }
-    
+
     /**
      * Cambia el estilo del fondno y los textos
      */
@@ -439,16 +511,17 @@ public class ShowAllEventsViewController {
             txBuscar.setStyle("-fx-text-fill: white;");
             txPrecio.setStyle("-fx-text-fill: white;");
             txFecha.setStyle("-fx-text-fill: white;");
-            
+
             bpPrincipal.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
         }
     }
-    
+
     /**
-     * Controla el menú contextual en la interfaz.
-     * Muestra el menú contextual cuando se hace clic derecho en la interfaz.
-     * @param event 
-     * @param menu 
+     * Controla el menú contextual en la interfaz. Muestra el menú contextual
+     * cuando se hace clic derecho en la interfaz.
+     *
+     * @param event
+     * @param menu
      */
     private void controlMenuConceptual(MouseEvent event, ContextMenu menu) {
         //Se comprueba si se hace clic con el borón derecho del ratón.
@@ -462,9 +535,11 @@ public class ShowAllEventsViewController {
     }
 
     /**
-    * cuando el usuario le da a la  "X" pide confirmacion y sale de la aplicacion
-    * @param event
-    */
+     * cuando el usuario le da a la "X" pide confirmacion y sale de la
+     * aplicacion
+     *
+     * @param event
+     */
     private void closeAppFromX(WindowEvent event) {
         if (CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION, "¿Está seguro de que desea salir?")) {
             Platform.exit();
@@ -472,11 +547,12 @@ public class ShowAllEventsViewController {
             event.consume();
         }
     }
-   
+
     /**
-    * Genera e imprime un report con los datos de la tabla de eventos
-    * @param event
-    */
+     * Genera e imprime un report con los datos de la tabla de eventos
+     *
+     * @param event
+     */
     private void imprimirTabla(ActionEvent event) {
         try {
             JasperReport report = JasperCompileManager.compileReport("src/reports/EventReport.jrxml");
@@ -494,12 +570,12 @@ public class ShowAllEventsViewController {
             Logger.getLogger(ShowAllClubsViewController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     /**
-    * Inicializa la ventana segun el usuario.
-    * 
-    * @param root 
-    */
+     * Inicializa la ventana segun el usuario.
+     *
+     * @param root
+     */
     public void initStage(Parent root) {
         try {
             LOGGER.info("Initializing Bank Statement window.");
@@ -520,13 +596,13 @@ public class ShowAllEventsViewController {
             bpPrincipal.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
 
             if (user.getIsAdmin()) {
-                btnAñadirArtistas.setVisible(false);
-                btnBorrarEvento.setVisible(false);
-                btnCrearEvento.setVisible(false);
-            } else {
                 tablaEvent.setEditable(true);
                 tablaEvent.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
                 tcMusica.setEditable(false);
+            } else {
+                btnAñadirArtistas.setVisible(false);
+                btnBorrarEvento.setVisible(false);
+                btnCrearEvento.setVisible(false);
             }
 
             tablaEvent.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<Event>() {
@@ -546,12 +622,10 @@ public class ShowAllEventsViewController {
                     }
                 }
             });
-            
-            
+
             dateFecha.valueProperty().addListener((observable, oldValue, newValue) -> {
                 aplicarFiltros();
             });
-
 
             dateFecha.setDayCellFactory(picker -> {
                 return new javafx.scene.control.DateCell() {
@@ -563,10 +637,10 @@ public class ShowAllEventsViewController {
                     }
                 };
             });
-            
-            dateFechaHasta.valueProperty().addListener((observable, oldValue, newValue) -> {  
-                    aplicarFiltros();              
-               
+
+            dateFechaHasta.valueProperty().addListener((observable, oldValue, newValue) -> {
+                aplicarFiltros();
+
             });
 
             dateFechaHasta.setDayCellFactory(picker -> {
@@ -605,12 +679,12 @@ public class ShowAllEventsViewController {
                     aplicarFiltros();
                 }
             });
-            
+
             changeTheme();
             stage.show();
             stage.setScene(scene);
             LOGGER.info("Bank Statement window initialized.");
-            
+
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Exception setting up de window.", e.getMessage());
             try {

@@ -45,179 +45,184 @@ import utils.CustomAlert;
  * @author 2dam
  */
 public class SignUpViewController {
-    
+
     /**
      * Panel principal que contiene todos los elementos de la interfaz.
      */
     @FXML
     private AnchorPane anchorPane;
-    
+
     /**
      * Campo de texto para ingresar el nombre del usuario.
      */
     @FXML
     private TextField tfNombre;
-    
+
     /**
      * Campo de texto para ingresar el apellido del usuario.
      */
     @FXML
     private TextField tfApellido;
-    
+
     /**
      * Campo de texto para ingresar el número de teléfono del usuario.
      */
     @FXML
     private TextField tfTelefono;
-    
-     /**
+
+    /**
      * Selector de fecha para ingresar la fecha de nacimiento del usuario.
      */
     @FXML
     private DatePicker dpFechaNac;
-    
-   /**
+
+    /**
      * Campo de texto para ingresar la ciudad del usuario.
      */
     @FXML
     private TextField tfCiudad;
-    
+
     /**
      * Contenedor vertical que agrupa los elementos relacionados con el DNI.
      */
     @FXML
     private VBox vbDni;
-    
+
     /**
      * Campo de texto para ingresar el DNI del usuario.
      */
     @FXML
     private TextField tfDni;
-    
+
     /**
      * Campo de texto para ingresar el correo electrónico del usuario.
      */
     @FXML
     private TextField tfMail;
-    
+
     /**
      * Contenedor vertical que agrupa los elementos relacionados con la
      * contraseña.
      */
     @FXML
     private VBox vbPass;
-    
+
     /**
      * Campo de contraseña para ingresar la contraseña del usuario.
      */
     @FXML
     private PasswordField pfPass;
-    
+
     /**
      * Contenedor vertical que agrupa los elementos relacionados con la
      * confirmación de la contraseña.
      */
     @FXML
     private VBox vbPass2;
-    
+
     /**
      * Campo de contraseña para confirmar la contraseña del usuario.
      */
     @FXML
     private PasswordField pfPass2;
-    
+
     /**
      * Contenedor horizontal que agrupa los elementos relacionados con el enlace
      * de inicio de sesión.
      */
     @FXML
     private HBox hbTienesCuenta;
-    
+
     /**
      * Enlace para redirigir al usuario a la vista de inicio de sesión.
      */
     @FXML
     private Hyperlink hlSignIn;
-    
+
     /**
      * Botón para cambiar la contraseña del usuario.
      */
     @FXML
     private Button btnCambioPass;
-    
+
     /**
      * Botón para eliminar la cuenta del usuario.
      */
     @FXML
     private Button btnElimCuenta;
-    
+
     /**
-    * Botón para registrar al usuario.
-    */
+     * Botón para registrar al usuario.
+     */
     @FXML
     private Button btnSignUp;
-  
+
     /**
      * Botón para modificar los datos del usuario.
      */
     @FXML
     private Button btnModificarDatos;
-    
+
     /**
      * Botón para mostrar/ocultar la contraseña en el primer campo de
      * contraseña.
      */
     @FXML
     private Button btnVerPass1;
-    
-     /**
+
+    /**
      * Botón para mostrar/ocultar la contraseña en el segundo campo de
      * contraseña.
      */
     @FXML
     private Button btnVerPass2;
-   
+
     /**
      * Campo de texto para mostrar la contraseña en texto plano (alternativa al
      * PasswordField).
      */
     @FXML
     private TextField tfPass1;
-    
+
     /**
      * Campo de texto para mostrar la confirmación de la contraseña en texto
      * plano (alternativa al PasswordField).
      */
     @FXML
     private TextField tfPass2;
-    
-     /**
+
+    /**
+     * Campo de texto para mostrar la confirmación de la contraseña en texto
+     * plano (alternativa al PasswordField).
+     */
+    @FXML
+    private HBox hbMenu;
+
+    /**
      * Referencia a la ventana (Stage) actual de la aplicación.
      */
     private Stage stage;
-   
+
     /**
      * Objeto que representa al usuario actual.
      */
     private User user;
-    
+
     /**
      * Variable para controlar el tema de la interfaz (por ejemplo,
      * claro/oscuro).
      */
     private boolean tema;
-    
-     /**
+
+    /**
      * Objeto que representa un nuevo usuario que se está registrando.
      */
     private User newUser;
-   
+
     /**
      * Logger para registrar eventos y errores en la vista de registro.
      */
     private final Logger LOGGER = Logger.getLogger("SignUpViewController.view");
-
-    
 
     /**
      * Establece el stage de la ventana.
@@ -303,6 +308,7 @@ public class SignUpViewController {
         LOGGER.info("Initializing 'SignUp' window.");
         stage = Sesion.getStage();
         user = Sesion.getUser();
+        tema = Sesion.getTema();
         Scene scene = new Scene(root);
         //Si el usuario es null, significa que no ha entrado a la app todavía y 
         //está intentando registrarse, si no, significa que va a modificar su información.
@@ -311,6 +317,7 @@ public class SignUpViewController {
             btnCambioPass.setVisible(false);
             btnElimCuenta.setVisible(false);
             btnModificarDatos.setVisible(false);
+            hbMenu.setVisible(false);
         } else {
             stage.setTitle("Modificar información");
             btnSignUp.setVisible(false);
@@ -339,6 +346,7 @@ public class SignUpViewController {
         btnElimCuenta.setOnAction(this::deleteUser);
         btnVerPass1.setOnAction(this::verPass1);
         btnVerPass2.setOnAction(this::verPass2);
+        hlSignIn.setOnAction(this::irSignIn);
 
         dpFechaNac.setDayCellFactory(picker -> {
             return new javafx.scene.control.DateCell() {
@@ -355,6 +363,20 @@ public class SignUpViewController {
         stage.setScene(scene);
         LOGGER.info("'SignUp' window initialized.");
 
+    }
+
+    private void irSignIn(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/signInView.fxml"));
+
+            Parent root = loader.load();
+
+            SignInViewController controller = (SignInViewController) loader.getController();
+
+            controller.initStage(root);
+        } catch (Exception e) {
+            CustomAlert.throwAlertCustom(AlertType.ERROR, "Ha sucedido un error al cargar la ventana, intentalo más tarde");
+        }
     }
 
     /**

@@ -15,7 +15,7 @@
     <children>
         <HBox fx:id="hbMenu" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <fx:include prefWidth="1280.0" source="menu.fxml" />
+                <fx:include prefWidth="1280.0" source="menu.fxml" fx:id="menu"/>
             </children>
         </HBox>
         <HBox alignment="CENTER" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="50.0">

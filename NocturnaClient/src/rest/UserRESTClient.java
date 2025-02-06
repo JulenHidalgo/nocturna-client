@@ -211,7 +211,7 @@ public class UserRESTClient implements UserManager {
                 .request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                 .get();
 
-        if (response.getStatus() == 400) {
+        if (response.getStatus() == 404) {
             throw new SignInException();
         }
 

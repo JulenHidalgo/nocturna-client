@@ -183,6 +183,9 @@ public class SignInViewController {
     public void initStage(Parent root) {
         LOGGER.info("Initializing 'SignIn' window.");
         stage = Sesion.getStage();
+        user = Sesion.getUser();
+        tema = Sesion.getTema();
+        stage = Sesion.getStage();
         Scene scene = new Scene(root);
 
         if (user == null) {
@@ -191,10 +194,10 @@ public class SignInViewController {
             vbPass2.setVisible(false);
             hbMenu.setVisible(false);
             btnRegistrarAdmin.setVisible(false);
-        } else {
+        } else if (user.getIsAdmin()) {
             stage.setTitle("Creación de admins");
-            hlSignUp.setVisible(false);
-            hlRecuperarPass.setVisible(false);
+            hbSignUp.setVisible(false);
+            hbRecuperar.setVisible(false);
             btnSignIn.setVisible(false);
         }
 
@@ -290,7 +293,7 @@ public class SignInViewController {
         } catch (IOException e) {
             CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error al cargar la ventana, intentalo más tarde");
         } catch (Exception e) {
-            System.out.println("ERROR " + e.getMessage());
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "El servidor esta cerrado, intentalo más tarde");
         }
     }
 
