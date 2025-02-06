@@ -183,7 +183,7 @@ public class ShowClubViewController {
     /**
      * Inicializa la ventana y configura los componentes de la interfaz.
      *
-     * @param root
+     * @param root El nodo raíz que se agrega a la escena.
      * @throws Exception Si ocurre un error durante la inicialización.
      */
     public void initStage(Parent root) throws Exception {

@@ -166,6 +166,7 @@ public class ShowAllTicketsViewController {
 
     /**
      * Inicializa el escenario y carga los datos de la tabla.
+     * @param root El nodo raíz que se agrega a la escena.
      */
     public void initStage(Parent root) {
 

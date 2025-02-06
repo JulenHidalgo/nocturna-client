@@ -162,7 +162,7 @@ public class ShowArtistViewController {
     /**
      * Establece el artista cuya información se va a mostrar.
      * 
-     * @param artist 
+     * @param artist Artista cuya información se va a mostrar.
      */
     public void setArtist(Artist artist) {
         this.artist = artist;
@@ -171,7 +171,7 @@ public class ShowArtistViewController {
     /**
      * Inicializa la ventana y configura la escena.
      * 
-     * @param root 
+     * @param root El nodo raíz que se agrega a la escena.
      * @throws IOException Si ocurre un error de entrada/salida.
      */
     public void initStage(Parent root) throws IOException {

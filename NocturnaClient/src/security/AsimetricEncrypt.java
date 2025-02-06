@@ -24,7 +24,6 @@ public class AsimetricEncrypt {
      * 
      * @param data Los datos a encriptar.
      * @return Los datos encriptados en formato Base64, o null si ocurre un error.
-     * @throws FileNotFoundException Si no se encuentra el archivo de la clave pública.
      */
     public static String encrypt (String data) {
         try {

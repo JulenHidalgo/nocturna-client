@@ -195,7 +195,7 @@ public class ShowAllArtistsViewController {
     /**
      * Recoge la ventana.
      *
-     * @param stage
+     * @param stage Ventana de la aplicacion
      */
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -204,7 +204,7 @@ public class ShowAllArtistsViewController {
     /**
      * Recoge el usuario autenticado.
      *
-     * @param user
+     * @param user Usuario de la sesion
      */
     public void setUser(User user) {
         this.user = user;
@@ -213,7 +213,7 @@ public class ShowAllArtistsViewController {
     /**
      * Recoge el evento seleccionado.
      *
-     * @param event
+     * @param event Evento del artista
      */
     public void setEvent(Event event) {
         this.event = event;
@@ -222,17 +222,17 @@ public class ShowAllArtistsViewController {
     /**
      * Recoge el tema oscuro o claro.
      *
-     * @param tema
+     * @param tema Tema de la aplicacion
      */
     public void setTema(boolean tema) {
         this.tema = tema;
     }
 
     /**
-     * Obtiene los artistas seleccionados.
-     *
-     * @return Set<Artist>
-     */
+    * Obtiene los artistas seleccionados.
+    *
+    * @return Set&lt;model.Artist&gt; Lista de artistas dados de alta en la app
+    */
     public Set<Artist> getSeleccionados() {
         return seleccionados;
     }
@@ -240,7 +240,7 @@ public class ShowAllArtistsViewController {
     /**
      * Inicializa la ventana
      *
-     * @param root
+     * @param root El nodo raíz que se agrega a la escena.
      */
     public void initStage(Parent root) {
         LOGGER.info("Initializing 'ShowAllArtists' window.");
@@ -503,7 +503,7 @@ public class ShowAllArtistsViewController {
     /**
      * guarda los nuevos artistas seleccionado en el evento
      *
-     * @param event
+     * @param event Evento del cuual se recogen los artistas
      */
     public void seleccionarArtistasEvento(ActionEvent event) {
         this.event.setArtists(seleccionados);
