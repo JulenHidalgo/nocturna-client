@@ -199,6 +199,12 @@ public class SignUpViewController {
     private HBox hbMenu;
 
     /**
+     * controlador del menú
+     */
+    @FXML
+    private MenuController menuIncludeController;
+
+    /**
      * Referencia a la ventana (Stage) actual de la aplicación.
      */
     private Stage stage;
@@ -338,6 +344,8 @@ public class SignUpViewController {
 
             addListenersToTextFields();
         }
+
+        menuIncludeController.checkAdmin(user.getIsAdmin());
 
         stage.setOnCloseRequest(this::closeAppFromX);
         btnSignUp.setOnAction(this::signUp);

@@ -7,24 +7,16 @@ package ui_controllers;
 
 import utils.EventEditingCell;
 import model.Sesion;
-import static model.Sesion.getTema;
-import static model.Sesion.setTema;
 import exceptions.InternalServerErrorException;
 import exceptions.ReadException;
 import java.io.IOException;
-import static java.sql.Date.valueOf;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -36,7 +28,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -53,26 +44,17 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import javafx.util.converter.DoubleStringConverter;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.GenericType;
 import logic.ArtistManagerFactory;
 import logic.ClubManagerFactory;
 
-import logic.EventManager;
 import logic.EventManagerFactory;
-import logic.UserManagerFactory;
-import ui_controllers.ShowEventViewController;
 import model.Artist;
-import model.Client;
 import model.Club;
 import model.Event;
 import model.User;
@@ -219,6 +201,12 @@ public class ShowAllEventsViewController {
      */
     @FXML
     Button btnSeleccionar;
+
+    /**
+     * controlador del menú
+     */
+    @FXML
+    private MenuController menuIncludeController;
 
     /**
      * la escena
@@ -594,6 +582,8 @@ public class ShowAllEventsViewController {
             contextMenu.getItems().addAll(item1, item2);
 
             bpPrincipal.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
+
+            menuIncludeController.checkAdmin(user.getIsAdmin());
 
             if (!user.getIsAdmin()) {
                 btnAñadirArtistas.setVisible(false);

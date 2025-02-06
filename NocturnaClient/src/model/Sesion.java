@@ -44,6 +44,7 @@ public class Sesion {
      * @param stage El escenario principal donde se mostrará la interfaz
      */
     public static void setStage(Stage stage) {
+        stage.setResizable(false);
         Sesion.stage = stage;
     }
 

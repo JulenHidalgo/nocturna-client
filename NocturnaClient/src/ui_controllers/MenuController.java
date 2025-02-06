@@ -26,7 +26,7 @@ import model.User;
  *
  * @author Erlantz Rey
  */
-public class MenuController{
+public class MenuController {
 
     /**
      * Barra de menú principal.
@@ -38,13 +38,13 @@ public class MenuController{
      * Menús dentro de la barra de menú.
      */
     @FXML
-    private Menu menuVer, menuPerfil, menuHelp;
+    private Menu menuVer, menuPerfil;
 
     /**
      * Elementos dentro de los menús.
      */
     @FXML
-    private MenuItem miTickets, miEvents, miClubs, miArtists, miPerfil, miSignOut, miAbout, crearAdmins;
+    private MenuItem miTickets, miEvents, miClubs, miArtists, miPerfil, miSignOut, crearAdmins;
 
     /**
      * Ventana principal de la aplicación.
@@ -220,6 +220,16 @@ public class MenuController{
             controller.initStage(root);
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void checkAdmin(Boolean isAdmin) {
+        if (isAdmin != null) {
+            if (isAdmin) {
+                miPerfil.setVisible(false);
+            } else {
+                crearAdmins.setVisible(false);
+            }
         }
     }
 

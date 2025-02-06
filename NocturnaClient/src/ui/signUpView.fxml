@@ -17,7 +17,7 @@
     <children>
         <HBox fx:id="hbMenu" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <fx:include prefWidth="1280.0" source="menu.fxml" />
+                <fx:include fx:id="menuInclude" prefWidth="1280.0" source="menu.fxml" />
             </children>
         </HBox>
         <HBox alignment="CENTER" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="25.0">
@@ -36,9 +36,9 @@
                         <HBox>
                             <children>
                                 <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Nombre">
-                           <font>
-                              <Font size="24.0" />
-                           </font>
+                                    <font>
+                                        <Font size="24.0" />
+                                    </font>
                                 </Text>
                                 <Text fill="RED" strokeType="OUTSIDE" strokeWidth="0.0" text="*">
                                     <font>
@@ -218,21 +218,21 @@
                                 </Text>
                             </children>
                         </HBox>
-                  <HBox alignment="CENTER">
-                     <children>
-                        <StackPane>
-                           <children>
-                                    <PasswordField fx:id="pfPass" prefHeight="39.0" prefWidth="837.0">
-                                        <font>
-                                            <Font size="18.0" />
-                                        </font>
-                                    </PasswordField>
-                              <TextField fx:id="tfPass1" prefHeight="39.0" prefWidth="837.0" visible="false" />
-                           </children>
-                        </StackPane>
-                        <Button fx:id="btnVerPass1" mnemonicParsing="false" text="Ver" />
-                     </children>
-                  </HBox>
+                        <HBox alignment="CENTER">
+                            <children>
+                                <StackPane>
+                                    <children>
+                                        <PasswordField fx:id="pfPass" prefHeight="39.0" prefWidth="837.0">
+                                            <font>
+                                                <Font size="18.0" />
+                                            </font>
+                                        </PasswordField>
+                                        <TextField fx:id="tfPass1" prefHeight="39.0" prefWidth="837.0" visible="false" />
+                                    </children>
+                                </StackPane>
+                                <Button fx:id="btnVerPass1" mnemonicParsing="false" text="Ver" />
+                            </children>
+                        </HBox>
                     </children>
                 </VBox>
                 <VBox fx:id="vbPass2">
@@ -251,21 +251,21 @@
                                 </Text>
                             </children>
                         </HBox>
-                  <HBox alignment="CENTER">
-                     <children>
-                        <StackPane>
-                           <children>
-                                    <PasswordField fx:id="pfPass2" prefHeight="39.0" prefWidth="837.0">
-                                        <font>
-                                            <Font size="18.0" />
-                                        </font>
-                                    </PasswordField>
-                              <TextField fx:id="tfPass2" prefHeight="39.0" prefWidth="837.0" visible="false" />
-                           </children>
-                        </StackPane>
-                        <Button fx:id="btnVerPass2" mnemonicParsing="false" text="Ver" />
-                     </children>
-                  </HBox>
+                        <HBox alignment="CENTER">
+                            <children>
+                                <StackPane>
+                                    <children>
+                                        <PasswordField fx:id="pfPass2" prefHeight="39.0" prefWidth="837.0">
+                                            <font>
+                                                <Font size="18.0" />
+                                            </font>
+                                        </PasswordField>
+                                        <TextField fx:id="tfPass2" prefHeight="39.0" prefWidth="837.0" visible="false" />
+                                    </children>
+                                </StackPane>
+                                <Button fx:id="btnVerPass2" mnemonicParsing="false" text="Ver" />
+                            </children>
+                        </HBox>
                     </children>
                 </VBox>
             </children>

@@ -13,63 +13,63 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="720.0" prefWidth="1280.0" style="-fx-background-image: url('/img/fondo.jpg'); -fx-background-size: cover;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui_controllers.ShowClubViewController">
-   <children>
-      <HBox fx:id="hbMenu" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <children>
+        <HBox fx:id="hbMenu" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <fx:include prefWidth="1280.0" source="menu.fxml" />
+                <fx:include fx:id="menuInclude" prefWidth="1280.0" source="menu.fxml" />
             </children>
-      </HBox>
-      <Label layoutX="258.0" layoutY="197.0" prefHeight="30.0" prefWidth="95.0" text="Nombre:" textFill="#fafafa" AnchorPane.leftAnchor="112.0" AnchorPane.topAnchor="175.0">
-         <font>
-            <Font size="24.0" />
-         </font>
-      </Label>
-      <TextField fx:id="txtNombre" layoutX="466.0" layoutY="199.0" prefHeight="26.0" prefWidth="250.0" AnchorPane.leftAnchor="220.0" AnchorPane.topAnchor="175.0" />
-      <Label layoutX="735.0" layoutY="197.0" prefHeight="30.0" prefWidth="165.0" text="Ubicación:" textFill="#fafafa" AnchorPane.leftAnchor="600.0" AnchorPane.topAnchor="175.0">
-         <font>
-            <Font size="24.0" />
-         </font>
-      </Label>
-      <TextField fx:id="txtUbicacion" layoutX="943.0" layoutY="199.0" prefHeight="26.0" prefWidth="368.0" AnchorPane.leftAnchor="800.0" AnchorPane.topAnchor="175.0" />
-      <Label layoutX="256.0" layoutY="283.0" text="Ciudad:" textFill="#fafafa" AnchorPane.leftAnchor="112.0" AnchorPane.topAnchor="250.0">
-         <font>
-            <Font size="24.0" />
-         </font>
-      </Label>
-      <TextField fx:id="txtCiudad" layoutX="464.0" layoutY="285.0" prefHeight="26.0" prefWidth="250.0" AnchorPane.leftAnchor="220.0" AnchorPane.topAnchor="250.0" />
-      <ImageView fx:id="imgRedes" fitHeight="50.0" fitWidth="50.0" layoutX="952.0" layoutY="274.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="800.0" AnchorPane.topAnchor="240.0">
-         <image>
-            <Image url="@../img/redesSociales.png" />
-         </image>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-      </ImageView>
-      <TableView fx:id="tableEvents" layoutX="540.0" layoutY="425.0" prefHeight="280.0" prefWidth="1056.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="370.0">
-        <columns>
-          <TableColumn fx:id="columnNombre" prefWidth="528.0" text="Nombre" />
-          <TableColumn fx:id="columnFecha" minWidth="0.0" prefWidth="528.0" text="Fecha" />
-        </columns>
-      </TableView>
-      <Label layoutX="738.0" layoutY="269.0" prefHeight="30.0" prefWidth="165.0" text="Redes Sociales:" textFill="#fafafa" AnchorPane.leftAnchor="600.0" AnchorPane.topAnchor="250.0">
-         <font>
-            <Font size="24.0" />
-         </font>
-      </Label>
-      <Button fx:id="btnInfo" layoutX="786.0" layoutY="616.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" text="MAS INFO" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="112.0" />
-      <HBox alignment="CENTER" layoutX="550.0" layoutY="27.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="610.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="60.0">
-         <children>
-            <Label text="Club" textFill="WHITE">
-               <font>
-                  <Font  size="36.0" />
-               </font>
-            </Label>
-         </children>
-      </HBox>
-      <Label layoutX="121.0" layoutY="304.0" text="Eventos:" textFill="#fafafa" AnchorPane.leftAnchor="112.0" AnchorPane.topAnchor="325.0">
-         <font>
-            <Font  size="24.0" />
-         </font>
-      </Label>
-   </children>
+        </HBox>
+        <Label layoutX="258.0" layoutY="197.0" prefHeight="30.0" prefWidth="95.0" text="Nombre:" textFill="#fafafa" AnchorPane.leftAnchor="112.0" AnchorPane.topAnchor="175.0">
+            <font>
+                <Font size="24.0" />
+            </font>
+        </Label>
+        <TextField fx:id="txtNombre" layoutX="466.0" layoutY="199.0" prefHeight="26.0" prefWidth="250.0" AnchorPane.leftAnchor="220.0" AnchorPane.topAnchor="175.0" />
+        <Label layoutX="735.0" layoutY="197.0" prefHeight="30.0" prefWidth="165.0" text="Ubicación:" textFill="#fafafa" AnchorPane.leftAnchor="600.0" AnchorPane.topAnchor="175.0">
+            <font>
+                <Font size="24.0" />
+            </font>
+        </Label>
+        <TextField fx:id="txtUbicacion" layoutX="943.0" layoutY="199.0" prefHeight="26.0" prefWidth="368.0" AnchorPane.leftAnchor="800.0" AnchorPane.topAnchor="175.0" />
+        <Label layoutX="256.0" layoutY="283.0" text="Ciudad:" textFill="#fafafa" AnchorPane.leftAnchor="112.0" AnchorPane.topAnchor="250.0">
+            <font>
+                <Font size="24.0" />
+            </font>
+        </Label>
+        <TextField fx:id="txtCiudad" layoutX="464.0" layoutY="285.0" prefHeight="26.0" prefWidth="250.0" AnchorPane.leftAnchor="220.0" AnchorPane.topAnchor="250.0" />
+        <ImageView fx:id="imgRedes" fitHeight="50.0" fitWidth="50.0" layoutX="952.0" layoutY="274.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="800.0" AnchorPane.topAnchor="240.0">
+            <image>
+                <Image url="@../img/redesSociales.png" />
+            </image>
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor>
+        </ImageView>
+        <TableView fx:id="tableEvents" layoutX="540.0" layoutY="425.0" prefHeight="280.0" prefWidth="1056.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="370.0">
+            <columns>
+                <TableColumn fx:id="columnNombre" prefWidth="528.0" text="Nombre" />
+                <TableColumn fx:id="columnFecha" minWidth="0.0" prefWidth="528.0" text="Fecha" />
+            </columns>
+        </TableView>
+        <Label layoutX="738.0" layoutY="269.0" prefHeight="30.0" prefWidth="165.0" text="Redes Sociales:" textFill="#fafafa" AnchorPane.leftAnchor="600.0" AnchorPane.topAnchor="250.0">
+            <font>
+                <Font size="24.0" />
+            </font>
+        </Label>
+        <Button fx:id="btnInfo" layoutX="786.0" layoutY="616.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="120.0" text="MAS INFO" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="112.0" />
+        <HBox alignment="CENTER" layoutX="550.0" layoutY="27.0" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="610.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="60.0">
+            <children>
+                <Label text="Club" textFill="WHITE">
+                    <font>
+                        <Font  size="36.0" />
+                    </font>
+                </Label>
+            </children>
+        </HBox>
+        <Label layoutX="121.0" layoutY="304.0" text="Eventos:" textFill="#fafafa" AnchorPane.leftAnchor="112.0" AnchorPane.topAnchor="325.0">
+            <font>
+                <Font  size="24.0" />
+            </font>
+        </Label>
+    </children>
 </AnchorPane>

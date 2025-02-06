@@ -74,6 +74,12 @@ public class ShowAllTicketsViewController {
     TableColumn<Ticket, String> columnFecha;
 
     /**
+     * controlador del menú
+     */
+    @FXML
+    private MenuController menuIncludeController;
+
+    /**
      * Escenario actual de la aplicación.
      */
     private Stage stage;
@@ -166,6 +172,7 @@ public class ShowAllTicketsViewController {
 
     /**
      * Inicializa el escenario y carga los datos de la tabla.
+     *
      * @param root El nodo raíz que se agrega a la escena.
      */
     public void initStage(Parent root) {
@@ -175,6 +182,8 @@ public class ShowAllTicketsViewController {
         user = Sesion.getUser();
         tema = Sesion.getTema();
         stage = Sesion.getStage();
+
+        menuIncludeController.checkAdmin(user.getIsAdmin());
 
         ContextMenu contextMenu = new ContextMenu();
         MenuItem item1 = new MenuItem("Cambiar tema");

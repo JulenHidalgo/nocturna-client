@@ -28,6 +28,7 @@ public class Admin extends User implements Serializable {
      */
     public Admin() {
         super();
+        super.setIsAdmin(true);
     }
 
     /**

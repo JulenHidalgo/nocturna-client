@@ -62,6 +62,7 @@ public class Client extends User implements Serializable {
      */
     public Client() {
         super();
+        super.setIsAdmin(false);
     }
 
     /**

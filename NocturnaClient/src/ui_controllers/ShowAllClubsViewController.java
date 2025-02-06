@@ -61,12 +61,13 @@ import utils.ClubEditingCell;
 import utils.CustomAlert;
 
 /**
- * Controlador de la vista para mostrar y gestionar todos los clubes.
- * Maneja la interfaz de usuario y las operaciones CRUD sobre clubes.
- * 
+ * Controlador de la vista para mostrar y gestionar todos los clubes. Maneja la
+ * interfaz de usuario y las operaciones CRUD sobre clubes.
+ *
  * @author Adrian Rocha
  */
 public class ShowAllClubsViewController {
+
     /**
      * Etapa principal de la aplicación.
      */
@@ -81,12 +82,12 @@ public class ShowAllClubsViewController {
      * Indicador del tema actual (claro u oscuro).
      */
     private boolean tema;
-    
+
     /**
      * Lista de clubes disponibles en el sistema.
      */
     private List<Club> clubs;
-    
+
     /**
      * Gestor de operaciones sobre clubes.
      */
@@ -97,73 +98,73 @@ public class ShowAllClubsViewController {
      */
     @FXML
     private Label lblTitulo;
-    
+
     /**
      * Panel principal que contiene todos los elementos de la interfaz.
      */
     @FXML
     private AnchorPane anchorPane;
-    
+
     /**
      * Campo de texto para filtrar clubes por nombre.
      */
     @FXML
     private TextField txtNameFilter;
-    
+
     /**
      * Selector de fecha para filtrar eventos anteriores.
      */
     @FXML
     private DatePicker dateFirst;
-    
+
     /**
      * Selector de fecha para filtrar eventos posteriores.
      */
     @FXML
     private DatePicker dateSecond;
-    
+
     /**
      * Tabla que muestra la lista de clubes.
      */
     @FXML
     private TableView<Club> tableClubs;
-    
+
     /**
      * Columna que muestra los nombres de los clubes.
      */
     @FXML
     private TableColumn<Club, String> columnNombre;
-    
+
     /**
      * Columna que muestra las ubicaciones de los clubes.
      */
     @FXML
     private TableColumn<Club, String> columnUbicacion;
-    
+
     /**
      * Columna que muestra las ciudades de los clubes.
      */
     @FXML
     private TableColumn<Club, String> columnCiudad;
-    
+
     /**
      * Columna que muestra los enlaces de Instagram de los clubes.
      */
     @FXML
     private TableColumn<Club, String> columnInstagram;
-    
+
     /**
      * Botón para eliminar clubes seleccionados.
      */
     @FXML
     private Button btnDelete;
-    
+
     /**
      * Botón para crear nuevos clubes.
      */
     @FXML
     private Button btnCreate;
-    
+
     /**
      * Botón para ver más información de un club seleccionado.
      */
@@ -171,14 +172,20 @@ public class ShowAllClubsViewController {
     private Button btnSelect;
 
     /**
+     * controlador del menú
+     */
+    @FXML
+    private MenuController menuIncludeController;
+
+    /**
      * Logger para registrar eventos y errores del sistema.
      */
     private final Logger LOGGER = Logger.getLogger("Show all clubs view");
 
     /**
-     * Inicializa la ventana con todos los componentes necesarios.
-     * Configura la interfaz de usuario y establece los manejadores de eventos.
-     * 
+     * Inicializa la ventana con todos los componentes necesarios. Configura la
+     * interfaz de usuario y establece los manejadores de eventos.
+     *
      * @param root raíz de la escena a mostrar
      * @throws Exception si ocurre un error durante la inicialización
      */
@@ -189,9 +196,9 @@ public class ShowAllClubsViewController {
             user = Sesion.getUser();
             tema = Sesion.getTema();
             stage = Sesion.getStage();
-            
+
             changeTheme();
-            
+
             stage.setScene(scene);
             stage.setOnCloseRequest(this::closeAppFromX);
             //Si el usuario es null, significa que no ha entrado a la app todavía y 
@@ -210,7 +217,7 @@ public class ShowAllClubsViewController {
             columnUbicacion.setCellFactory(column -> new ClubEditingCell());
             columnCiudad.setCellFactory(column -> new ClubEditingCell());
             columnInstagram.setCellFactory(column -> new ClubEditingCell());
-            
+
             ContextMenu contextMenu = new ContextMenu();
             MenuItem item1 = new MenuItem("Cambiar tema");
             item1.setOnAction(this::cambiarTema);
@@ -219,6 +226,8 @@ public class ShowAllClubsViewController {
             contextMenu.getItems().addAll(item1, item2);
 
             anchorPane.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
+
+            menuIncludeController.checkAdmin(user.getIsAdmin());
 
             setTableData(clubs);
             if (user.getIsAdmin() == true) {
@@ -234,7 +243,6 @@ public class ShowAllClubsViewController {
                 btnSelect.setDisable(true);
             }
 
-            
             stage.show();
             LOGGER.info("Show all clubs window initialized.");
 
@@ -250,10 +258,10 @@ public class ShowAllClubsViewController {
                     if (c.getList().isEmpty()) {
                         btnSelect.setDisable(true);
                         btnDelete.setDisable(true);
-                    }else if (c.getList().size() == 1) {
+                    } else if (c.getList().size() == 1) {
                         btnSelect.setDisable(false);
                         btnDelete.setDisable(false);
-                    }else if (c.getList().size() > 1) {
+                    } else if (c.getList().size() > 1) {
                         btnSelect.setDisable(true);
                         btnDelete.setDisable(false);
                     }
@@ -266,7 +274,7 @@ public class ShowAllClubsViewController {
                     aplicarFiltros();
                 }
             });
-            
+
             dateSecond.valueProperty().addListener(new ChangeListener<LocalDate>() {
                 @Override
                 public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
@@ -278,24 +286,24 @@ public class ShowAllClubsViewController {
             throw new Exception("ERROR INICIANDO LA VENTANA");
         }
     }
-    
+
     /**
-     * Aplica los filtros de búsqueda a la tabla de clubes.
-     * Considera el nombre del club y los rangos de fecha seleccionados.
+     * Aplica los filtros de búsqueda a la tabla de clubes. Considera el nombre
+     * del club y los rangos de fecha seleccionados.
      */
     private void aplicarFiltros() {
         List<Club> clubsFilter = new ArrayList<>();
-        
+
         if (!txtNameFilter.getText().isEmpty()) {
             for (Club club : clubs) {
-                if (club.getNombre().contains(txtNameFilter.getText())){
+                if (club.getNombre().contains(txtNameFilter.getText())) {
                     clubsFilter.add(club);
                 }
             }
         } else {
             clubsFilter = clubs;
         }
-        
+
         if (dateFirst.getValue() != null) {
             if (dateSecond.isVisible() && dateSecond.getValue() != null) {
                 clubsFilter = setSecondDateFilter(clubsFilter);
@@ -306,17 +314,17 @@ public class ShowAllClubsViewController {
         } else {
             dateSecond.setVisible(false);
         }
-        
-        if(clubsFilter.size() > 0) {
+
+        if (clubsFilter.size() > 0) {
             setTableData(clubsFilter);
         } else {
-            tableClubs.getItems().clear(); 
+            tableClubs.getItems().clear();
         }
     }
-    
+
     /**
      * Filtra clubes por un rango de fechas específico.
-     * 
+     *
      * @param clubList lista de clubes a filtrar
      * @return lista de clubes que tienen eventos en el rango de fechas
      */
@@ -329,17 +337,17 @@ public class ShowAllClubsViewController {
         Date fechaConvertidaDesde = Date.from(dateFirst.getValue()
                 .atStartOfDay(ZoneId.systemDefault()).toInstant());
         boolean first = true;
-        
+
         Event[] eventsArray = eventManager.findAll_XML(Event[].class);
         for (int i = 0; i < eventsArray.length; i++) {
-            if (eventsArray[i].getFecha().after(fechaConvertidaDesde) &&
-                    eventsArray[i].getFecha().before(fechaConvertidaHasta)) {
+            if (eventsArray[i].getFecha().after(fechaConvertidaDesde)
+                    && eventsArray[i].getFecha().before(fechaConvertidaHasta)) {
                 events.add(eventsArray[i]);
             }
         }
-        
+
         for (Event event : events) {
-            if(first) {
+            if (first) {
                 for (Club club : clubList) {
                     if (club.getId() == event.getClub().getId()) {
                         clubsFilter.add(club);
@@ -359,10 +367,10 @@ public class ShowAllClubsViewController {
         }
         return clubsFilter;
     }
-    
+
     /**
      * Filtra clubes por una fecha específica.
-     * 
+     *
      * @param clubList lista de clubes a filtrar
      * @return lista de clubes que tienen eventos en la fecha seleccionada
      */
@@ -373,16 +381,16 @@ public class ShowAllClubsViewController {
         Date fechaConvertidaDesde = Date.from(dateFirst.getValue()
                 .atStartOfDay(ZoneId.systemDefault()).toInstant());
         boolean first = true;
-        
+
         Event[] eventsArray = eventManager.findAll_XML(Event[].class);
         for (int i = 0; i < eventsArray.length; i++) {
             if (eventsArray[i].getFecha().equals(fechaConvertidaDesde)) {
                 events.add(eventsArray[i]);
             }
         }
-        
+
         for (Event event : events) {
-            if(first) {
+            if (first) {
                 for (Club club : clubList) {
                     if (club.getId() == event.getClub().getId()) {
                         clubsFilter.add(club);
@@ -402,33 +410,33 @@ public class ShowAllClubsViewController {
         }
         return clubsFilter;
     }
-    
+
     /**
      * Genera un reporte impreso de los datos mostrados en la tabla.
-     * 
+     *
      * @param event evento que activa la impresión
      */
     private void imprimirTabla(ActionEvent event) {
         try {
             JasperReport report = JasperCompileManager.compileReport("src/reports/ClubReport.jrxml");
-            
-            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Club>)this.tableClubs.getItems());
-            
+
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Club>) this.tableClubs.getItems());
+
             Map<String, Object> parameters = new HashMap<>();
-            
+
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
-            
+
             JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
-            
+
             jasperViewer.setVisible(true);
         } catch (JRException ex) {
             Logger.getLogger(ShowAllClubsViewController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     /**
      * Alterna entre el tema claro y oscuro de la interfaz.
-     * 
+     *
      * @param event evento que activa el cambio de tema
      */
     private void cambiarTema(ActionEvent event) {
@@ -439,7 +447,7 @@ public class ShowAllClubsViewController {
         }
         changeTheme();
     }
-    
+
     /**
      * Aplica el tema actual (claro u oscuro) a la interfaz.
      */
@@ -456,10 +464,10 @@ public class ShowAllClubsViewController {
             anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
         }
     }
-    
+
     /**
      * Maneja la visualización del menú contextual al hacer clic derecho.
-     * 
+     *
      * @param event evento del mouse
      * @param menu menú contextual a mostrar
      */
@@ -473,29 +481,29 @@ public class ShowAllClubsViewController {
             menu.hide();
         }
     }
-    
+
     /**
      * Maneja el cierre de la aplicación desde el botón X.
-     * 
+     *
      * @param event evento de cierre
      */
-     private void closeAppFromX(WindowEvent event) {
-        if (CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION,"¿Está seguro de que desea salir?")) {
+    private void closeAppFromX(WindowEvent event) {
+        if (CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION, "¿Está seguro de que desea salir?")) {
             Platform.exit();
         } else {
             event.consume();
         }
     }
-    
-     /**
+
+    /**
      * Elimina los clubes seleccionados del sistema.
-     * 
+     *
      * @param event evento que activa la eliminación
      */
     private void deleteClub(ActionEvent event) {
         try {
-            ObservableList<Club> obserbableClubs = 
-                    tableClubs.getSelectionModel().getSelectedItems();
+            ObservableList<Club> obserbableClubs
+                    = tableClubs.getSelectionModel().getSelectedItems();
             for (Club club : obserbableClubs) {
                 clubManager.remove(club.getId().toString());
             }
@@ -506,21 +514,21 @@ public class ShowAllClubsViewController {
             CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "ERROR EN EL PROCESO DE ELIMINACIÓN");
         }
     }
-    
+
     /**
      * Muestra más información sobre el club seleccionado.
-     * 
+     *
      * @param event evento que activa la visualización
      */
     private void masInfo(ActionEvent event) {
         try {
             Club club = tableClubs.getSelectionModel().getSelectedItem();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showClubView.fxml"));
-            
+
             Parent root = loader.load();
-            
+
             ShowClubViewController controller = (ShowClubViewController) loader.getController();
-            
+
             controller.setStage(stage);
             controller.setUser(user);
             controller.setClub(club);
@@ -533,7 +541,7 @@ public class ShowAllClubsViewController {
 
     /**
      * Crea un nuevo club en el sistema.
-     * 
+     *
      * @param event evento que activa la creación
      */
     private void createClub(ActionEvent event) {
@@ -547,10 +555,10 @@ public class ShowAllClubsViewController {
             clubManager.create_XML(club);
 
             clubs.add(club);
-            
+
             clubs = getClubsInfo();
             setTableData(clubs);
-            
+
             if (tableClubs.getSelectionModel() != null && !tableClubs.getItems().isEmpty()) {
                 int lastIndex = tableClubs.getItems().size() - 1;
                 tableClubs.getSelectionModel().clearAndSelect(lastIndex);
@@ -560,10 +568,10 @@ public class ShowAllClubsViewController {
             CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "ERROR CREANDO USUARIO");
         }
     }
-    
+
     /**
      * Establece los datos en la tabla de clubes.
-     * 
+     *
      * @param clubes lista de clubes a mostrar
      */
     private void setTableData(List<Club> clubes) {
@@ -578,11 +586,11 @@ public class ShowAllClubsViewController {
     }
 
     /**
-    * Obtiene la información de todos los clubes disponibles en el sistema.
-    * 
-    * @return lista de clubes encontrados
-    * @throws Exception si ocurre un error al obtener la información
-    */
+     * Obtiene la información de todos los clubes disponibles en el sistema.
+     *
+     * @return lista de clubes encontrados
+     * @throws Exception si ocurre un error al obtener la información
+     */
     private List<Club> getClubsInfo() throws Exception {
         try {
             Club[] clubsArray = clubManager.findAll_XML(Club[].class);

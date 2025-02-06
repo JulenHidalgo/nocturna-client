@@ -42,6 +42,7 @@ import utils.CustomAlert;
 /**
  * Controlador para la vista que muestra la información detallada de un club y
  * sus eventos asociados.
+ *
  * @author Adrian Rocha
  */
 public class ShowClubViewController {
@@ -131,6 +132,12 @@ public class ShowClubViewController {
     private TableColumn<Event, String> columnFecha;
 
     /**
+     * controlador del menú
+     */
+    @FXML
+    private MenuController menuIncludeController;
+
+    /**
      * Logger para registrar eventos.
      */
     private final Logger LOGGER = Logger.getLogger("Show club view");
@@ -214,6 +221,8 @@ public class ShowClubViewController {
             contextMenu.getItems().addAll(item1, item2);
 
             anchorPane.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
+
+            menuIncludeController.checkAdmin(user.getIsAdmin());
 
             stage.show();
 

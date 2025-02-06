@@ -143,6 +143,12 @@ public class ShowAllArtistsViewController {
     private Button btnEliminar;
 
     /**
+     * controlador del menú
+     */
+    @FXML
+    private MenuController menuIncludeController;
+
+    /**
      * Escenario actual de la aplicación.
      */
     private Stage stage;
@@ -229,10 +235,10 @@ public class ShowAllArtistsViewController {
     }
 
     /**
-    * Obtiene los artistas seleccionados.
-    *
-    * @return Set&lt;model.Artist&gt; Lista de artistas dados de alta en la app
-    */
+     * Obtiene los artistas seleccionados.
+     *
+     * @return Set&lt;model.Artist&gt; Lista de artistas dados de alta en la app
+     */
     public Set<Artist> getSeleccionados() {
         return seleccionados;
     }
@@ -250,6 +256,8 @@ public class ShowAllArtistsViewController {
         initializeInfo();
         changeTheme();
         initializeControlListeners();
+
+        menuIncludeController.checkAdmin(user.getIsAdmin());
 
         stage.setScene(scene);
         stage.show();

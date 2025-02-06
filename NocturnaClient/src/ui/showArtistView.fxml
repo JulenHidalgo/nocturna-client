@@ -19,7 +19,7 @@
     <children>
         <HBox fx:id="hbMenu" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                <fx:include prefWidth="1280.0" source="menu.fxml" />
+                <fx:include fx:id="menuInclude" prefWidth="1280.0" source="menu.fxml" />
             </children>
         </HBox>
         <Label fx:id="lblNombre" alignment="CENTER" layoutX="136.0" layoutY="28.0" text="NOMBRE DEL ARTISTA" textAlignment="CENTER" textFill="WHITE" AnchorPane.bottomAnchor="550.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="75.0">

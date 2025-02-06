@@ -8,6 +8,7 @@ package ui_controllers;
 import model.Sesion;
 import exceptions.SignInException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,6 +28,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javax.ws.rs.WebApplicationException;
 import logic.AdminManagerFactory;
 import logic.ClientManagerFactory;
 import logic.UserManagerFactory;
@@ -129,6 +131,12 @@ public class SignInViewController {
     private Button btnRegistrarAdmin;
 
     /**
+     * controlador del menú
+     */
+    @FXML
+    private MenuController menuIncludeController;
+
+    /**
      * Escenario principal de la aplicación.
      */
     private Stage stage;
@@ -199,6 +207,7 @@ public class SignInViewController {
             hbSignUp.setVisible(false);
             hbRecuperar.setVisible(false);
             btnSignIn.setVisible(false);
+            menuIncludeController.checkAdmin(user.getIsAdmin());
         }
 
         btnSignIn.setOnAction(this::signIn);
@@ -303,16 +312,69 @@ public class SignInViewController {
      * @param event
      */
     public void registrarAdmin(ActionEvent event) {
-        user = new Admin();
-        user.setMail(tfMail.getText());
-        user.setPasswd(pfPass.getText());
-        ((Admin) user).setDepartamento(tfDepartamento.getText());
+        try {
+            if (!tfMail.getText().isEmpty() && !pfPass.getText().isEmpty() && !pfPass2.getText().isEmpty() && !tfDepartamento.getText().isEmpty()) {
+                checkMail();
+                checkPass();
 
-        AdminManagerFactory.get().create_XML(user);
+                user = new Admin();
+                user.setMail(URLEncoder.encode(AsimetricEncrypt.encrypt(tfMail.getText()), "UTF-8"));
+                user.setPasswd(URLEncoder.encode(AsimetricEncrypt.encrypt(pfPass.getText()), "UTF-8"));
+                ((Admin) user).setDepartamento(tfDepartamento.getText());
 
-        CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION, "Admin creado correctamente");
+                AdminManagerFactory.get().create_XML(user);
 
-        btnRegistrarAdmin.setDisable(true);
+                CustomAlert.throwAlertCustom(Alert.AlertType.CONFIRMATION, "Admin creado correctamente");
+
+                tfMail.setText("");
+                pfPass.setText("");
+                pfPass2.setText("");
+                tfDepartamento.setText("");
+
+            } else {
+                CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Todos los campos tienen que estar llenos");
+            }
+
+        } catch (UnsupportedEncodingException | WebApplicationException ex) {
+            LOGGER.warning("A server error occured while trying to create an admin");
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Ha sucedido un error al crear un admin nuevo");
+        } catch (Exception ex) {
+            LOGGER.warning("A client error occured while trying to create an admin");
+        }
+
+    }
+
+    /**
+     * Verifica que el correo electrónico tenga un formato válido.
+     *
+     * @throws Exception Si el correo no tiene un formato válido.
+     */
+    private void checkMail() throws Exception {
+        if (!tfMail.getText().matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
+            LOGGER.warning("Mail validation error, pattern incorrect");
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "El correo no tiene un patrón correcto");
+            throw new Exception();
+        }
+    }
+
+    /**
+     * Verifica que la contraseña tenga un formato válido y que coincida con la
+     * confirmación.
+     *
+     * @throws Exception Si la contraseña no tiene un formato válido o no
+     * coincide con la confirmación.
+     */
+    private void checkPass() throws Exception {
+        if (!pfPass.getText().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$")) {
+            LOGGER.warning("Password validation error, pattern incorrect");
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "La contraseña tiene que tener al menos 6 caracteres, una mayúscula, una minúscula y un número");
+            throw new Exception();
+        }
+        if (!pfPass.getText().equals(pfPass2.getText())) {
+            LOGGER.warning("Password validation error, pfPass and pfPass2 don't match");
+            CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "Las contraseñas no coinciden");
+            throw new Exception();
+        }
     }
 
     /**
