@@ -73,11 +73,8 @@ public class buyTicketsViewController {
     @FXML
     Label lblName;
     
-    /**
-     * Etiqueta para mostrar el nombre del usuario.
-     */
-    @FXML
-    Label txName;
+
+    
     
     /**
      * Etiqueta para mostrar el DNI del usuario.
@@ -229,7 +226,6 @@ public class buyTicketsViewController {
             lblName.setStyle("-fx-text-fill: black;");
             lblTotal.setStyle("-fx-text-fill: black;");
             txDni.setStyle("-fx-fill: black;");
-            txName.setStyle("-fx-fill: black;");
             txTotal.setStyle("-fx-fill: black;");
             rdBtnBizum.setStyle("-fx-fill: black;");
             rdBtnTarjeta.setStyle("-fx-fill: black;");
@@ -238,7 +234,6 @@ public class buyTicketsViewController {
             lblName.setStyle("-fx-text-fill: white;");
             lblTotal.setStyle("-fx-text-fill: white;");
             txDni.setStyle("-fx-fill: white;");
-            txName.setStyle("-fx-fill: white;");
             txTotal.setStyle("-fx-fill: white;");
             rdBtnBizum.setStyle("-fx-fill: white;");
             rdBtnTarjeta.setStyle("-fx-fill: white;");
