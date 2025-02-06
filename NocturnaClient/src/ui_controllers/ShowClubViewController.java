@@ -22,6 +22,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -82,30 +83,60 @@ public class ShowClubViewController {
      */
     @FXML
     private AnchorPane anchorPane;
+    
+    /**
+     * Etiqueta para mostrar el nombre del club.
+     */
+    @FXML
+    private Label lblNom;
 
     /**
      * Campo de texto para mostrar el nombre del club.
      */
     @FXML
-    private TextField txtNombre;
+    private Label lblNombre;
 
     /**
      * Botón para obtener más información sobre un evento seleccionado.
      */
     @FXML
     private Button btnInfo;
+    
+    /**
+     * Etiqueta para mostrar la ciudad del club.
+     */
+    @FXML
+    private Label lblCiu;
 
     /**
      * Campo de texto para mostrar la ciudad del club.
      */
     @FXML
-    private TextField txtCiudad;
+    private Label lblCiudad;
+    
+    /**
+     * Etiqueta para mostrar la ubicación del club.
+     */
+    @FXML
+    private Label lblUbi;
 
     /**
      * Campo de texto para mostrar la ubicación del club.
      */
     @FXML
-    private TextField txtUbicacion;
+    private Label lblUbicacion;
+    
+    /**
+     * Etiqueta para mostrar las redes del club.
+     */
+    @FXML
+    private Label lblRedes;
+    
+    /**
+     * Etiqueta para mostrar el evento club.
+     */
+    @FXML
+    private Label lblEvento;
 
     /**
      * Imagen que representa las redes sociales del club.
@@ -198,9 +229,9 @@ public class ShowClubViewController {
             LOGGER.info("Initializing Show all clubs window.");
             Scene scene = new Scene(root);
             stage.setScene(scene);
-            txtNombre.setText(club.getNombre());
-            txtCiudad.setText(club.getCiudad());
-            txtUbicacion.setText(club.getUbicacion());
+            lblNombre.setText(club.getNombre());
+            lblCiudad.setText(club.getCiudad());
+            lblUbicacion.setText(club.getUbicacion());
             imgRedes.setOnMouseReleased(this::clickRedes);
 
             eventManager = EventManagerFactory.get();
@@ -217,7 +248,6 @@ public class ShowClubViewController {
             MenuItem item1 = new MenuItem("Cambiar tema");
             item1.setOnAction(this::cambiarTema);
             MenuItem item2 = new MenuItem("Imprimir los datos de la tabla");
-            item2.setOnAction(this::imprimirTabla);
             contextMenu.getItems().addAll(item1, item2);
 
             anchorPane.setOnMouseClicked(event -> controlMenuConceptual(event, contextMenu));
@@ -245,15 +275,6 @@ public class ShowClubViewController {
             LOGGER.log(Level.SEVERE, "Exception setting up the window", ex.getMessage());
             throw new Exception("ERROR INICIALIZANDO LA VENTANA");
         }
-    }
-
-    /**
-     * Método para imprimir los datos de la tabla.
-     *
-     * @param event
-     */
-    private void imprimirTabla(ActionEvent event) {
-        // Implementación pendiente.
     }
 
     /**
@@ -339,8 +360,24 @@ public class ShowClubViewController {
     private void changeTheme() {
         String currentStyle = anchorPane.getStyle();
         if (tema) {
+            lblCiu.setStyle("-fx-text-fill: black;");
+            lblCiudad.setStyle("-fx-text-fill: black;");
+            lblEvento.setStyle("-fx-text-fill: black;");
+            lblNom.setStyle("-fx-text-fill: black;");
+            lblNombre.setStyle("-fx-text-fill: black;");
+            lblRedes.setStyle("-fx-text-fill: black;");
+            lblUbi.setStyle("-fx-text-fill: black;");
+            lblUbicacion.setStyle("-fx-text-fill: black;");
             anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: url\\('[^']+'\\);", "-fx-background-image: url('/img/fondogris.jpg');"));
         } else {
+            lblCiu.setStyle("-fx-text-fill: white;");
+            lblCiudad.setStyle("-fx-text-fill: white;");
+            lblEvento.setStyle("-fx-text-fill: white;");
+            lblNom.setStyle("-fx-text-fill: white;");
+            lblNombre.setStyle("-fx-text-fill: white;");
+            lblRedes.setStyle("-fx-text-fill: white;");
+            lblUbi.setStyle("-fx-text-fill: white;");
+            lblUbicacion.setStyle("-fx-text-fill: white;");
             anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
         }
     }
