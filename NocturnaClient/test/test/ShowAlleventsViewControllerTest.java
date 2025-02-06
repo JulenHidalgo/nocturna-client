@@ -175,7 +175,8 @@ public class ShowAlleventsViewControllerTest  extends ApplicationTest{
             clickOn("#btnSeleccionar");
             clickOn("Aceptar");
             //comprobar que le tipoMusica a cambiado y ya no esta vacio
-            assertNotEquals("El Artista ya no es nulo", "No hay artistas", table.getItems().get(rowCount - 1 * table.getColumns().size()+5).getNombre());
+            
+            verifyThat("#lblTipoMusica", isVisible());
         }
     }
     

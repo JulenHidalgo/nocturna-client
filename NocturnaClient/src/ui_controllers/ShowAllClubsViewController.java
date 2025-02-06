@@ -5,6 +5,7 @@
  */
 package ui_controllers;
 
+import exceptions.InternalServerErrorException;
 import model.Sesion;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -29,6 +30,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -502,14 +504,25 @@ public class ShowAllClubsViewController {
      * @param event evento que activa la eliminación
      */
     private void deleteClub(ActionEvent event) {
+
         try {
-            ObservableList<Club> obserbableClubs
-                    = tableClubs.getSelectionModel().getSelectedItems();
-            for (Club club : obserbableClubs) {
-                clubManager.remove(club.getId().toString());
-            }
-            clubs = getClubsInfo();
-            setTableData(clubs);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Seguro que quieres borrar el evento ", ButtonType.YES, ButtonType.NO);
+
+            alert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.YES) {
+                    ObservableList<Club> obserbableClubs
+                            = tableClubs.getSelectionModel().getSelectedItems();
+                    for (Club club : obserbableClubs) {
+                        clubManager.remove(club.getId().toString());
+                    }
+                    try {
+                        clubs = getClubsInfo();
+                    } catch (Exception ex) {
+                        Logger.getLogger(ShowAllClubsViewController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    setTableData(clubs);
+                }
+            });
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Exception deleting club.", e.getMessage());
             CustomAlert.throwAlertCustom(Alert.AlertType.ERROR, "ERROR EN EL PROCESO DE ELIMINACIÓN");

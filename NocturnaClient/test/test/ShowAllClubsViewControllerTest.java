@@ -123,23 +123,6 @@ public class ShowAllClubsViewControllerTest extends ApplicationTest{
     }
     
     
-    
-    
-    /**
-    * Comprueba si el club se elimina
-    */
-    @Test
-    public void test_G_DeleteClub(){
-  
-        int rowCount = table.getItems().size();
-        Node row = lookup(".table-row-cell").nth(rowCount - 1).query();
-        clickOn(row);
-        clickOn("#btnDelete");
-  
-        assertEquals("Club borrado",rowCount-1,table.getItems().size()); 
-        
-    }
-    
     /**
     * Comprueba si el club se elimina
     */
@@ -151,15 +134,13 @@ public class ShowAllClubsViewControllerTest extends ApplicationTest{
         clickOn(row);
         clickOn("#btnDelete");
         clickOn("No");
-        clickOn("Aceptar");
         assertEquals("Club No borrado",rowCount,table.getItems().size());
         
         
         row= lookup(".table-row-cell").nth(rowCount - 1).query();
         clickOn(row);
         clickOn("#btnDelete");
-        clickOn("Sí");
-        clickOn("Aceptar");
+        clickOn("Sí"); 
         assertEquals("Club borrado",rowCount-1,table.getItems().size()); 
         
     }
