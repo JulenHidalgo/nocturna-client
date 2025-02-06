@@ -419,7 +419,7 @@ public class ShowAllClubsViewController {
      */
     private void imprimirTabla(ActionEvent event) {
         try {
-            JasperReport report = JasperCompileManager.compileReport("src/reports/ClubReport.jrxml");
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/reports/ClubReport.jrxml"));
 
             JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Club>) this.tableClubs.getItems());
 

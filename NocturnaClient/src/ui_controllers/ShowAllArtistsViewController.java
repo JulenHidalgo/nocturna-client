@@ -369,7 +369,7 @@ public class ShowAllArtistsViewController {
      */
     private void imprimirTabla(ActionEvent event) {
         try {
-            JasperReport report = JasperCompileManager.compileReport("src/reports/ArtistReport.jrxml");
+            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/reports/ArtistReport.jrxml"));
 
             JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<Artist>) this.tvArtists.getItems());
 
