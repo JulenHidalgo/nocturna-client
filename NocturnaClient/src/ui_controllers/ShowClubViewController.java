@@ -37,6 +37,7 @@ import logic.EventManager;
 import logic.EventManagerFactory;
 import model.Club;
 import model.Event;
+import model.Sesion;
 import model.User;
 import utils.CustomAlert;
 
@@ -284,10 +285,10 @@ public class ShowClubViewController {
      * @param event
      */
     private void cambiarTema(ActionEvent event) {
-        if (getTema()) {
-            setTema(false);
+        if (Sesion.getTema()) {
+            Sesion.setTema(false);
         } else {
-            setTema(true);
+            Sesion.setTema(true);
         }
         changeTheme();
     }
@@ -360,25 +361,9 @@ public class ShowClubViewController {
      */
     private void changeTheme() {
         String currentStyle = anchorPane.getStyle();
-        if (tema) {
-            lblCiu.setStyle("-fx-text-fill: black;");
-            lblCiudad.setStyle("-fx-text-fill: black;");
-            lblEvento.setStyle("-fx-text-fill: black;");
-            lblNom.setStyle("-fx-text-fill: black;");
-            lblNombre.setStyle("-fx-text-fill: black;");
-            lblRedes.setStyle("-fx-text-fill: black;");
-            lblUbi.setStyle("-fx-text-fill: black;");
-            lblUbicacion.setStyle("-fx-text-fill: black;");
+        if (Sesion.getTema()) {
             anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: url\\('[^']+'\\);", "-fx-background-image: url('/img/fondogris.jpg');"));
         } else {
-            lblCiu.setStyle("-fx-text-fill: white;");
-            lblCiudad.setStyle("-fx-text-fill: white;");
-            lblEvento.setStyle("-fx-text-fill: white;");
-            lblNom.setStyle("-fx-text-fill: white;");
-            lblNombre.setStyle("-fx-text-fill: white;");
-            lblRedes.setStyle("-fx-text-fill: white;");
-            lblUbi.setStyle("-fx-text-fill: white;");
-            lblUbicacion.setStyle("-fx-text-fill: white;");
             anchorPane.setStyle(currentStyle.replaceAll("-fx-background-image: [^;]+;", "-fx-background-image: url('/img/fondo.jpg');"));
         }
     }
