@@ -49,7 +49,7 @@ import model.FormaPago;
  *
  * @author Erlantz Rey
  */
-public class buyTicketsViewController {
+public class BuyTicketsViewController {
 
     /**
      * Panel principal de la interfaz.

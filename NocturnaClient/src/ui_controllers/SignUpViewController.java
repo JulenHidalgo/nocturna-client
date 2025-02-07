@@ -467,9 +467,9 @@ public class SignUpViewController {
                 Parent root = loader.load();
 
                 SignInViewController controller = (SignInViewController) loader.getController();
-                
+
                 Sesion.setUser(null);
-                
+
                 controller.initStage(root);
 
             } catch (IOException e) {
@@ -540,13 +540,14 @@ public class SignUpViewController {
             client.setPasswd(URLEncoder.encode(AsimetricEncrypt.encrypt(pfPass.getText()), "UTF-8"));
             ClientManagerFactory.get().create_XML(client);
             client.setMail(tfMail.getText());
-            Sesion.setUser(client);
+            
+            CustomAlert.throwAlertCustom(AlertType.INFORMATION, "El usuario se ha registrado correctamente");
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/showAllEventsView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/signInView.fxml"));
 
             Parent root = loader.load();
 
-            ShowAllEventsViewController controller = (ShowAllEventsViewController) loader.getController();
+            SignInViewController controller = (SignInViewController) loader.getController();
 
             controller.initStage(root);
 

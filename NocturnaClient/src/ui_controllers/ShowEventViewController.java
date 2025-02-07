@@ -212,7 +212,7 @@ public class ShowEventViewController {
 
             Parent root = loader.load();
 
-            buyTicketsViewController controller = (buyTicketsViewController) loader.getController();
+            BuyTicketsViewController controller = (BuyTicketsViewController) loader.getController();
 
             controller.setEvent(event);
             controller.setCantCompra(Integer.parseInt(lblNumEntradas.getText()));
