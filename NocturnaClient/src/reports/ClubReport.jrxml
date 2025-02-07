@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD JasperReport//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport name="Informe de Clubes" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+    <field name="nombre" class="java.lang.String"/>
+    <field name="ubicacion" class="java.lang.String"/>
+    <field name="ciudad" class="java.lang.String"/>
+    <field name="instagram" class="java.lang.String"/>
+    <background>
+        <band/>
+    </background>
+    <title>
+        <band height="100">
+            <staticText>
+                <reportElement x="0" y="0" width="535" height="40"/>
+                <textElement textAlignment="Center">
+                    <font size="24" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Informe de Clubes]]></text>
+            </staticText>
+        </band>
+    </title>
+    <pageHeader>
+        <band height="35"/>
+    </pageHeader>
+    <columnHeader>
+        <band height="61">
+            <staticText>
+                <reportElement x="0" y="0" width="130" height="30"/>
+                <textElement>
+                    <font size="14" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Nombre del Club]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="140" y="0" width="130" height="30"/>
+                <textElement>
+                    <font size="14" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Ubicación del Club]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="280" y="0" width="130" height="30"/>
+                <textElement>
+                    <font size="14" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Ciudad del Club]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="420" y="0" width="130" height="30"/>
+                <textElement>
+                    <font size="14" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Redes Sociales]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="50">
+            <textField>
+                <reportElement x="0" y="0" width="130" height="15"/>
+                <textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="140" y="0" width="130" height="15"/>
+                <textFieldExpression><![CDATA[$F{ubicacion}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="280" y="0" width="130" height="15"/>
+                <textFieldExpression><![CDATA[$F{ciudad}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="420" y="0" width="130" height="15"/>
+                <textFieldExpression><![CDATA[$F{instagram}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+    <columnFooter>
+        <band height="45"/>
+    </columnFooter>
+    <pageFooter>
+        <band height="54">
+            <textField>
+                <reportElement x="0" y="0" width="100" height="30"/>
+                <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="500" y="0" width="100" height="30"/>
+                <textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+    <summary>
+        <band height="42"/>
+    </summary>
+</jasperReport>

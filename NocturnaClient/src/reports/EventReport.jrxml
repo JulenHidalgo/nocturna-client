@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Informe de Eventos" pageWidth="1100" pageHeight="900" columnWidth="1040" leftMargin="30" rightMargin="30" topMargin="30" bottomMargin="30" uuid="9e0abb89-94e1-4bf6-968d-311c3d4949b1">
+    <property name="ireport.zoom" value="1.0"/>
+    <property name="ireport.x" value="0"/>
+    <property name="ireport.y" value="0"/>
+    <field name="nombre" class="java.lang.String"/>
+    <field name="club" class="model.Club"/>
+    <field name="fecha" class="java.util.Date"/>
+    <field name="precioEntrada" class="java.lang.Double"/>
+    <field name="numEntradas" class="java.lang.Integer"/>
+    <field name="consumicion" class="java.lang.Integer"/>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <title>
+        <band height="120" splitType="Stretch">
+            <staticText>
+                <reportElement x="47" y="0" width="1000" height="50" uuid="0ee3b073-0462-4c0a-a92e-47225769bf51"/>
+                <textElement textAlignment="Center">
+                    <font size="36" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Informe de Eventos]]></text>
+            </staticText>
+        </band>
+    </title>
+    <pageHeader>
+        <band height="35" splitType="Stretch"/>
+    </pageHeader>
+    <columnHeader>
+        <band height="60" splitType="Stretch">
+            <staticText>
+                <reportElement x="0" y="0" width="170" height="30" uuid="d3ed7100-b109-4e1f-ad6e-bd708daac131"/>
+                <textElement>
+                    <font size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Nombre del Evento]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="170" y="0" width="170" height="30" uuid="59444cbf-f723-40ba-a911-a2c07e52a1ab"/>
+                <textElement>
+                    <font size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Nombre del Club]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="340" y="0" width="180" height="30" uuid="169f8826-4bb5-4b7d-bf4e-aab2dc7a5b54"/>
+                <textElement>
+                    <font size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Fecha del Evento]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="520" y="0" width="180" height="30" uuid="0e36ef67-f4fe-40a2-9692-47b64bc3f8f3"/>
+                <textElement>
+                    <font size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Precio de Entrada]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="700" y="0" width="170" height="30" uuid="de6ed07c-f6e1-47a1-9b41-df74630bb462"/>
+                <textElement>
+                    <font size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Número de Entradas]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="870" y="0" width="160" height="30" uuid="dc7b67fd-32a4-4173-a364-741ce36e74fa"/>
+                <textElement>
+                    <font size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Consumiciones]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="50" splitType="Stretch">
+            <textField>
+                <reportElement x="0" y="0" width="170" height="20" uuid="3ebaa674-5062-4d05-bab8-cab90e8ecef7"/>
+                <textFieldExpression><![CDATA[$F{nombre} != null && !$F{nombre}.isEmpty() ? $F{nombre} : "No disponible"]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="170" y="0" width="170" height="20" uuid="fa4e10d4-096a-4be6-ba98-8b598c607b83"/>
+                <textFieldExpression><![CDATA[$F{club} != null && $F{club}.getNombre() != null && !$F{club}.getNombre().isEmpty() ? $F{club}.getNombre() : "No disponible"]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="340" y="0" width="180" height="20" uuid="94226161-daac-49e3-9982-1533b3779773"/>
+                <textFieldExpression><![CDATA[$F{fecha} != null ? new java.text.SimpleDateFormat("dd/MM/yyyy").format($F{fecha}) : "No disponible"]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="520" y="0" width="180" height="20" uuid="a4c63bd9-c71d-4545-8eb5-3ff4b765b50f"/>
+                <textFieldExpression><![CDATA[$F{precioEntrada} != null ? $F{precioEntrada} : 0.0]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="700" y="0" width="170" height="20" uuid="a8b436d1-c4b5-4ab9-a326-f14ff9ea7ca8"/>
+                <textFieldExpression><![CDATA[$F{numEntradas} != null ? $F{numEntradas} : 0]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="870" y="0" width="160" height="20" uuid="0ffebbae-7701-4d0b-9b9c-0e693ca2643f"/>
+                <textFieldExpression><![CDATA[$F{consumicion} != null ? $F{consumicion} : 0]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+    <columnFooter>
+        <band height="45" splitType="Stretch"/>
+    </columnFooter>
+    <pageFooter>
+        <band height="60" splitType="Stretch">
+            <textField>
+                <reportElement x="0" y="0" width="150" height="30" uuid="9dcb9b6b-a0c6-4928-8ffa-12e1b8984040"/>
+                <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="950" y="0" width="150" height="30" uuid="dbdd8135-a75e-497d-aedc-d16b11ccb1d6"/>
+                <textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+    <summary>
+        <band height="42" splitType="Stretch"/>
+    </summary>
+</jasperReport>
+
