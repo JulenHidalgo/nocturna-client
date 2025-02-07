@@ -133,7 +133,7 @@ public class ShowAllArtistViewControllerTest extends ApplicationTest{
         Node row = lookup(".table-row-cell").nth(rowCount - 1).query();
         clickOn(row);
         clickOn("#btnEliminar");
-  
+        clickOn("Aceptar"); 
         assertEquals("Artista borrado",rowCount-1,table.getItems().size()); 
         
     }
